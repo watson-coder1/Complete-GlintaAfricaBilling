@@ -24,8 +24,8 @@ See [How it Works / Cara Kerja](https://github.com/hotspotbilling/phpnuxbill/wik
 
 ## Payment Gateway And Plugin
 
-- [Payment Gateway List](https://github.com/orgs/hotspotbilling/repositories?q=payment+gateway)
-- [Plugin List](https://github.com/orgs/hotspotbilling/repositories?q=plugin)
+- MPESA
+- BANK
 
 You can download payment gateway and Plugin from Plugin Manager
 
@@ -54,30 +54,22 @@ The problem with windows is hard to set cronjob, better Linux
 
 ## Installation
 
-[Installation instructions](https://github.com/hotspotbilling/phpnuxbill/wiki)
+[Installation instructions](https://github.com/shabran01/SpeedRadius/wiki)
 
-## Freeradius
-
-Support [Freeradius with Database](https://github.com/hotspotbilling/phpnuxbill/wiki/FreeRadius)
-
-## Community Support
-
-- [Github Discussion](https://github.com/hotspotbilling/phpnuxbill/discussions)
-- [Telegram Group](https://t.me/phpmixbill)
 
 ## Technical Support
 
-This Software is Free and Open Source, Without any Warranty.
+**Disclaimer:** Paid Software Rental – No Warranty
 
-Even if the software is free, but Technical Support is not,
-Technical Support Start from Ksh 500/=  or $5
+This software is **not free** and is **not open source**. It is provided as a rental, not for sale, and comes **without any warranty**.
 
-If you chat me for any technical support,
-you need to pay,
+While the software may be available for rent, **technical support is not included**. Technical support services are available starting from **Ksh 500 or $5.**
+
+Please note: If you contact me for technical support, a fee will be required before assistance is provided.
 
 ask anything for free in the [discussion](/hotspotbilling/phpnuxbill/discussions) page or [Telegram Group](https://t.me/phpnuxbill)
 
-Contact me at [Telegram](https://t.me/ibnux)
+Contact me at [website](speedcomwifi.xyz/)
 
 ## License
 
@@ -86,22 +78,12 @@ GNU General Public License version 2 or later
 see [LICENSE](LICENSE) file
 
 
-## Donate to ibnux
+## Donate to Shabran Kweyu
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ibnux)
 
 Mpesa : 0718167262
 
-
-## SPONSORS
-
-- [mixradius.com](https://mixradius.com/) Paid Services Billing Radius
-- [mlink.id](https://mlink.id)
-- [https://github.com/sonyinside](https://github.com/sonyinside)
-
 ## Thanks
 We appreciate all people who are participating in this project.
 
-<a href="https://github.com/hotspotbilling/phpnuxbill/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=hotspotbilling/phpnuxbill" />
-</a>
