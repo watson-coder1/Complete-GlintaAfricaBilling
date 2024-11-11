@@ -1,6 +1,6 @@
 ![ReadMeSupportPalestine](https://speedcomwifi.co.ke/ui/theme/default/images/logo.png)
 
-# PHPNuxBill - PHP Mikrotik Billing
+# SpeedRadius - API Based PHP Mikrotik Billing System
 
 ![PHPNuxBill](install/img/logo.png)
 
@@ -70,7 +70,7 @@ Support [Freeradius with Database](https://github.com/hotspotbilling/phpnuxbill/
 This Software is Free and Open Source, Without any Warranty.
 
 Even if the software is free, but Technical Support is not,
-Technical Support Start from Rp 500.000 or $50
+Technical Support Start from Ksh 500/=  or $5
 
 If you chat me for any technical support,
 you need to pay,
@@ -90,11 +90,8 @@ see [LICENSE](LICENSE) file
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ibnux)
 
-BCA: 5410454825
+Mpesa : 0718167262
 
-Mandiri: 163-000-1855-793
-
-a.n Ibnu Maksum
 
 ## SPONSORS
 
