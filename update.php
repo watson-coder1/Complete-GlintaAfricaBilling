@@ -1,9 +1,9 @@
 <?php
- 
+
 /**
- * PHP API Mikrotik Billing System (https://github.com/hotspotbilling/phpnuxbill/)
+ * PHP Mikrotik Billing (https://github.com/hotspotbilling/phpnuxbill/)
  *
- * This script is for updating SpeedRadius
+ * This script is for updating PHPNuxBill
  **/
 session_start();
 include "config.php";
