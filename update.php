@@ -48,8 +48,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/phpnuxbill.zip');
-$folder = pathFixer('system/cache/phpnuxbill-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/main.zip');
+$folder = pathFixer('system/cache/main-' . basename($update_url, ".zip") . '/');
 
 if (empty($step)) {
     $step++;
@@ -293,4 +293,4 @@ function deleteFolder($path)
     </div>
 </body>
 
-</html>
+</html> 
