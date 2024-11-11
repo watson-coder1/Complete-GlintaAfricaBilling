@@ -17,6 +17,7 @@ if (empty($update_url)) {
     $update_url = 'https://github.com/shabran01/SpeedRadius/archive/refs/heads/main.zip';
 }
 
+
 if(isset($_REQUEST['update_url']) && !empty($_REQUEST['update_url'])){
     $update_url = $_REQUEST['update_url'];
     $_SESSION['update_url'] = $update_url;
@@ -48,8 +49,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/main.zip');
-$folder = pathFixer('system/cache/main-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/SpeedRadius.zip');
+$folder = pathFixer('system/cache/SpeedRadius-' . basename($update_url, ".zip") . '/');
 
 if (empty($step)) {
     $step++;
@@ -293,4 +294,4 @@ function deleteFolder($path)
     </div>
 </body>
 
-</html> 
+</html>
