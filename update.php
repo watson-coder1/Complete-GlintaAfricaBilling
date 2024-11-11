@@ -14,7 +14,7 @@ if($db_password != null && ($db_pass == null || empty($db_pass))){
 }
 
 if (empty($update_url)) {
-    $update_url = 'https://github.com/hotspotbilling/phpnuxbill/archive/refs/heads/master.zip';
+    $update_url = 'https://github.com/shabran01/SpeedRadius/archive/refs/heads/main.zip';
 }
 
 if(isset($_REQUEST['update_url']) && !empty($_REQUEST['update_url'])){
@@ -48,8 +48,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/phpnuxbill.zip');
-$folder = pathFixer('system/cache/phpnuxbill-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/main.zip');
+$folder = pathFixer('system/cache/main-' . basename($update_url, ".zip") . '/');
 
 if (empty($step)) {
     $step++;
@@ -197,7 +197,7 @@ function deleteFolder($path)
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>PHPNuxBill Updater</title>
+    <title>SpeedRadius Updater</title>
     <link rel="shortcut icon" href="ui/ui/images/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
@@ -229,7 +229,7 @@ function deleteFolder($path)
     <div class="container">
         <section class="content-header">
             <h1 class="text-center">
-                Update PHPNuxBill
+                Update SpeedRadius
             </h1>
         </section>
 
@@ -278,7 +278,7 @@ function deleteFolder($path)
                             <div class="panel panel-success">
                                 <div class="panel-heading">Update Finished</div>
                                 <div class="panel-body">
-                                    PHPNuxBill has been updated to Version <b><?= $version ?></b>
+                                    SpeedRadius has been updated to Version <b><?= $version ?></b>
                                 </div>
                             </div>
                             <meta http-equiv="refresh" content="5; ./?_route=dashboard">
@@ -288,7 +288,7 @@ function deleteFolder($path)
             </div>
         </section>
         <footer class="footer text-center">
-            PHPNuxBill by <a href="https://github.com/hotspotbilling/phpnuxbill" rel="nofollow noreferrer noopener" target="_blank">iBNuX</a>
+            SpeedRadius by <a href="https://github.com/shabran01/SpeedRadius/" rel="nofollow noreferrer noopener" target="_blank">Shabran Kweyu</a>
         </footer>
     </div>
 </body>
