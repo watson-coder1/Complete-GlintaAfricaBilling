@@ -1,4 +1,4 @@
-[![ReadMeSupportPalestine](https://raw.githubusercontent.com/Safouene1/support-palestine-banner/master/banner-project.svg)](https://s.id/standwithpalestine)
+[![ReadMeSupportPalestine](https://speedcomwifi.co.ke/ui/theme/default/images/logo.png)
 
 # PHPNuxBill - PHP Mikrotik Billing
 
