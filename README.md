@@ -1,4 +1,4 @@
-[![ReadMeSupportPalestine](https://speedcomwifi.co.ke/ui/theme/default/images/logo.png)
+![ReadMeSupportPalestine](https://speedcomwifi.co.ke/ui/theme/default/images/logo.png)
 
 # PHPNuxBill - PHP Mikrotik Billing
 
