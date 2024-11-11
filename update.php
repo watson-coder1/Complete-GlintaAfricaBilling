@@ -48,8 +48,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/main.zip');
-$folder = pathFixer('system/cache/main-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/phpnuxbill.zip');
+$folder = pathFixer('system/cache/phpnuxbill-' . basename($update_url, ".zip") . '/');
 
 if (empty($step)) {
     $step++;
@@ -197,7 +197,7 @@ function deleteFolder($path)
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>SpeedRadius Updater</title>
+    <title>PHPNuxBill Updater</title>
     <link rel="shortcut icon" href="ui/ui/images/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
@@ -229,7 +229,7 @@ function deleteFolder($path)
     <div class="container">
         <section class="content-header">
             <h1 class="text-center">
-                Update SpeedRadius
+                Update PHPNuxBill
             </h1>
         </section>
 
@@ -278,7 +278,7 @@ function deleteFolder($path)
                             <div class="panel panel-success">
                                 <div class="panel-heading">Update Finished</div>
                                 <div class="panel-body">
-                                    SpeedRadius has been updated to Version <b><?= $version ?></b>
+                                    PHPNuxBill has been updated to Version <b><?= $version ?></b>
                                 </div>
                             </div>
                             <meta http-equiv="refresh" content="5; ./?_route=dashboard">
@@ -288,7 +288,7 @@ function deleteFolder($path)
             </div>
         </section>
         <footer class="footer text-center">
-            SpeedRadius by <a href="https://github.com/shabran01/SpeedRadius/" rel="nofollow noreferrer noopener" target="_blank">Shabran Kweyu</a>
+            PHPNuxBill by <a href="https://github.com/hotspotbilling/phpnuxbill" rel="nofollow noreferrer noopener" target="_blank">iBNuX</a>
         </footer>
     </div>
 </body>
