@@ -27,30 +27,30 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="form-group">
-                                        <label for="daraja_consumer_key">Consumer Key</label>
-                                        <input type="text" class="form-control" id="daraja_consumer_key" 
-                                               name="daraja_consumer_key" value="{$daraja_consumer_key}" required>
+                                        <label for="consumer_key">Consumer Key</label>
+                                        <input type="text" class="form-control" id="consumer_key" 
+                                               name="consumer_key" value="{$daraja_consumer_key}" required>
                                         <small class="help-block">Your M-Pesa Daraja Consumer Key from Safaricom</small>
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="daraja_consumer_secret">Consumer Secret</label>
-                                        <input type="password" class="form-control" id="daraja_consumer_secret" 
-                                               name="daraja_consumer_secret" value="{$daraja_consumer_secret}" required>
+                                        <label for="consumer_secret">Consumer Secret</label>
+                                        <input type="password" class="form-control" id="consumer_secret" 
+                                               name="consumer_secret" value="{$daraja_consumer_secret}" required>
                                         <small class="help-block">Your M-Pesa Daraja Consumer Secret</small>
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="daraja_business_shortcode">Business Short Code</label>
-                                        <input type="text" class="form-control" id="daraja_business_shortcode" 
-                                               name="daraja_business_shortcode" value="{$daraja_business_shortcode}" required>
+                                        <label for="shortcode">Business Short Code</label>
+                                        <input type="text" class="form-control" id="shortcode" 
+                                               name="shortcode" value="{$daraja_business_shortcode}" required>
                                         <small class="help-block">Your M-Pesa Business Short Code (Paybill/Till Number)</small>
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="daraja_passkey">Passkey</label>
-                                        <input type="password" class="form-control" id="daraja_passkey" 
-                                               name="daraja_passkey" value="{$daraja_passkey}" required>
+                                        <label for="passkey">Passkey</label>
+                                        <input type="password" class="form-control" id="passkey" 
+                                               name="passkey" value="{$daraja_passkey}" required>
                                         <small class="help-block">Your M-Pesa Online Passkey for STK Push</small>
                                     </div>
                                 </div>
@@ -64,8 +64,8 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="form-group">
-                                        <label for="daraja_environment">Environment</label>
-                                        <select class="form-control" id="daraja_environment" name="daraja_environment" required>
+                                        <label for="environment">Environment</label>
+                                        <select class="form-control" id="environment" name="environment" required>
                                             <option value="sandbox" {if $daraja_environment == 'sandbox'}selected{/if}>Sandbox (Testing)</option>
                                             <option value="production" {if $daraja_environment == 'production'}selected{/if}>Production (Live)</option>
                                         </select>
@@ -73,10 +73,10 @@
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="daraja_callback_url">Callback URL</label>
+                                        <label for="callback_url">Callback URL</label>
                                         <div class="input-group">
-                                            <input type="url" class="form-control" id="daraja_callback_url" 
-                                                   name="daraja_callback_url" value="{$daraja_callback_url}" required readonly>
+                                            <input type="url" class="form-control" id="callback_url" 
+                                                   name="callback_url" value="{$daraja_callback_url}" required>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="copyToClipboard('{$daraja_callback_url}')">
                                                     <i class="fa fa-copy"></i>
@@ -90,7 +90,7 @@
                                         <label for="daraja_timeout_url">Timeout URL</label>
                                         <div class="input-group">
                                             <input type="url" class="form-control" id="daraja_timeout_url" 
-                                                   name="daraja_timeout_url" value="{$daraja_timeout_url}" required readonly>
+                                                   name="daraja_timeout_url" value="{$daraja_timeout_url}" required>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="copyToClipboard('{$daraja_timeout_url}')">
                                                     <i class="fa fa-copy"></i>
@@ -98,6 +98,16 @@
                                             </span>
                                         </div>
                                         <small class="help-block">Timeout callback URL for failed transactions</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="enabled" value="1" 
+                                                       {if $daraja_status == 'Active'}checked{/if}>
+                                                Enable M-Pesa Daraja Gateway
+                                            </label>
+                                        </div>
                                     </div>
                                     
                                     <div class="form-group">
