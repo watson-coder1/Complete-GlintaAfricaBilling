@@ -68,8 +68,8 @@ if (isset($landingPages[$action])) {
     $ui->assign('_title', $pageTitle);
     $ui->assign('page_type', 'landing');
     $ui->assign('current_page', $action);
-    $ui->assign('app_url', 'https://glintaafrica.com');
-    $ui->assign('_url', 'https://glintaafrica.com/?_route=');
+    $ui->assign('app_url', 'http://localhost');
+    $ui->assign('_url', 'http://localhost/?_route=');
     
     // Add structured data for SEO
     $structuredData = [

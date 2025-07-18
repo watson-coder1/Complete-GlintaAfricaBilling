@@ -4,10 +4,14 @@
  *  by https://t.me/ibnux
  **/
 
-if(Admin::getID()){
+$adminId = Admin::getID();
+$userId = User::getID();
+
+if($adminId > 0){
     r2(U.'dashboard');
-}if(User::getID()){
+} elseif($userId > 0){
     r2(U.'home');
-}else{
-    r2(U.'login');
+} else {
+    // Redirect to landing page
+    r2(U.'landing/home-enhanced');
 }

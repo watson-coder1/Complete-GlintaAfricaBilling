@@ -73,10 +73,25 @@ if(!isset($_GET['_route'])) {
     // Routing Engine
     $req = _get('_route');
 }
+
+// Debug: Force default route when no route is specified
+if (empty($req) && empty($_GET['_route'])) {
+    $req = '';
+}
 $routes = explode('/', $req);
 $ui->assign('_routes', $routes);
 $handler = $routes[0];
 if ($handler == '') {
+    $handler = 'default';
+}
+
+// If no route is set, ensure we use the default controller
+if (empty($_GET['_route']) && empty($req)) {
+    $handler = 'default';
+}
+
+// Ensure default controller is used when no route is specified
+if (empty($_GET['_route']) && (empty($req) || $req === '')) {
     $handler = 'default';
 }
 
