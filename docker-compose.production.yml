@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: glinta-mysql-prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: glinta_billing
+      MYSQL_USER: glinta_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - glinta_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # PHP Web Application
+  web:
+    build: .
+    container_name: glinta-web-prod
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - APP_URL=https://glintaafrica.com
+      - DB_HOST=mysql
+      - DB_NAME=glinta_billing
+      - DB_USER=glinta_user
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      # M-Pesa Production Settings
+      - MPESA_ENV=production
+      - MPESA_CONSUMER_KEY=${MPESA_CONSUMER_KEY}
+      - MPESA_CONSUMER_SECRET=${MPESA_CONSUMER_SECRET}
+      - MPESA_BUSINESS_SHORTCODE=${MPESA_BUSINESS_SHORTCODE}
+      - MPESA_PASSKEY=${MPESA_PASSKEY}
+      - MPESA_CALLBACK_URL=https://glintaafrica.com/callback_mpesa.php
+      - MPESA_TIMEOUT_URL=https://glintaafrica.com/timeout_mpesa.php
+    volumes:
+      - ./:/var/www/html
+      - web_uploads:/var/www/html/system/uploads
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - glinta_network
+
+  # FreeRADIUS Server
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    container_name: glinta-radius-prod
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=glinta_billing
+      - DB_USER=glinta_user
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "1812:1812/udp"  # Authentication
+      - "1813:1813/udp"  # Accounting
+    volumes:
+      - ./radius-config:/etc/freeradius/3.0
+      - radius_logs:/var/log/freeradius
+    depends_on:
+      - mysql
+    networks:
+      - glinta_network
+
+  # phpMyAdmin (optional, for database management)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: glinta-phpmyadmin-prod
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      UPLOAD_LIMIT: 100M
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - glinta_network
+
+  # Redis Cache (optional, for performance)
+  redis:
+    image: redis:7-alpine
+    container_name: glinta-redis-prod
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - glinta_network
+
+volumes:
+  mysql_data:
+  web_uploads:
+  radius_logs:
+  redis_data:
+
+networks:
+  glinta_network:
+    driver: bridge
