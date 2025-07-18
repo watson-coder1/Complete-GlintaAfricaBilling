@@ -7,7 +7,14 @@
  * 0 7 * * * /usr/bin/php /var/www/system/cron_reminder.php
  **/
 
-include "../init.php";
+// Fix path for both direct execution and cron execution
+if (file_exists("../init.php")) {
+    include "../init.php";
+} else if (file_exists("/var/www/html/init.php")) {
+    include "/var/www/html/init.php";
+} else {
+    include "init.php";
+}
 
 $isCli = true;
 if (php_sapi_name() !== 'cli') {

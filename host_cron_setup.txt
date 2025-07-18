@@ -1,0 +1,9 @@
+# Setup cron jobs on host system (outside Docker)
+# Run: crontab -e
+# Then add these lines:
+
+# Expired Cronjob Every 5 Minutes [Recommended]
+*/5 * * * * docker exec glinta-billing-web /usr/local/bin/php /var/www/html/system/cron.php
+
+# Reminder Cronjob Every 7 AM  
+0 7 * * * docker exec glinta-billing-web /usr/local/bin/php /var/www/html/system/cron_reminder.php

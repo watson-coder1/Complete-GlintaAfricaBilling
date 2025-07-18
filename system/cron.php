@@ -1,6 +1,13 @@
 <?php
 
-include "../init.php";
+// Fix path for both direct execution and cron execution
+if (file_exists("../init.php")) {
+    include "../init.php";
+} else if (file_exists("/var/www/html/init.php")) {
+    include "/var/www/html/init.php";
+} else {
+    include "init.php";
+}
 $lockFile = "$CACHE_PATH/router_monitor.lock";
 
 if (!is_dir($CACHE_PATH)) {

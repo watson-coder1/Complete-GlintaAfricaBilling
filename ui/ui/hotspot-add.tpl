@@ -59,7 +59,7 @@
                         <label class="col-md-2 control-label">{Lang::T('Device')}
                             <a tabindex="0" class="btn btn-link btn-xs" role="button" data-toggle="popover"
                                 data-trigger="focus" data-container="body"
-                                data-content="This Device are the logic how PHPNuxBill Communicate with Mikrotik or other Devices">?</a>
+                                data-content="This Device are the logic how Glinta Africa Communicate with Mikrotik or other Devices">?</a>
                         </label>
                         <div class="col-md-6">
                             <select class="form-control" id="device" name="device">
