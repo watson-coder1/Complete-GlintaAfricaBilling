@@ -3,12 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Professional insights on ISP management, network operations, and telecommunications technology. Expert analysis of African internet infrastructure and business strategies.">
-    <meta name="keywords" content="ISP blog, network management, telecommunications, African internet, professional ISP solutions, enterprise network operations">
+    <title>ISP Blog & Insights - Expert Tips for African ISPs 📝</title>
+    <meta name="description" content="📡 Expert ISP insights & tutorials! Learn M-Pesa integration, RADIUS setup, network automation & African telecom trends. 50+ articles. Weekly updates 🚀">
+    <meta name="keywords" content="ISP blog Africa, network management articles Kenya, M-Pesa integration tutorials Tanzania, RADIUS authentication guides Uganda, ISP business tips Nigeria, telecom insights Ghana, internet service articles South Africa, network automation blog Zimbabwe, African ISP trends Ethiopia, billing system tutorials Rwanda, WiFi management guides Zambia, ISP expert analysis Botswana">
     <meta name="author" content="Glinta Africa">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="geo.region" content="AF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
     <link rel="canonical" href="https://glintaafrica.com/blog">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{$app_url}/ui/ui/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{$app_url}/ui/ui/images/favicon.ico">
@@ -612,6 +621,27 @@
             color: var(--accent);
         }
 
+        /* Enhanced Mobile Navigation */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+
         /* Hero section enhancements */
         .hero-stat-box {
             background: rgba(212,175,55,0.15);
@@ -934,22 +964,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -1049,6 +1079,26 @@ Real stories, proven strategies, and breakthrough moments from industry professi
         </div>
     </section>
 
+    <!-- Google AdSense - Mid-page Banner -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="5678901234"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Featured Post -->
     <section class="py-5">
         <div class="container">
@@ -1077,8 +1127,8 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">12 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/future-isp-africa" class="blog-link">
-                                Read Full Article <i class="fas fa-arrow-right"></i>
+                            <a href="{$app_url}/landing/blog-article?article=future-isp-africa" class="blog-link">
+                                Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -1112,7 +1162,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">8 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/radius-security-guide" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=radius-security" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1141,7 +1191,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">15 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/mpesa-integration-guide" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=mpesa-integration" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1169,7 +1219,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">12 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/network-analytics-influxdb-grafana" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=network-analytics" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1197,7 +1247,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">9 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/mikrotik-routeros-api-automation" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=mikrotik-automation" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1214,7 +1264,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                         </div>
                         <div class="blog-content">
                             <div class="blog-category">Industry Analysis</div>
-                            <h3 class="blog-title">African Telecommunications Market: 2025 Industry Report</h3>
+                            <h3 class="blog-title">Kenya Internet Market 2025: Growth Opportunities and Challenges</h3>
                             <p class="blog-excerpt">
                                 Comprehensive analysis of African telecommunications markets, regulatory environments, and growth opportunities for professional ISPs.
                             </p>
@@ -1225,7 +1275,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">20 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/kenya-internet-market-2025" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=kenya-internet-market" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1253,7 +1303,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                                 </div>
                                 <div class="blog-read-time">5 min read</div>
                             </div>
-                            <a href="{$app_url}/blog/future-isp-africa" class="blog-link">
+                            <a href="{$app_url}/landing/blog-article?article=future-isp-africa" class="blog-link">
                                 Read More <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
@@ -1422,6 +1472,26 @@ Real stories, proven strategies, and breakthrough moments from industry professi
         </div>
     </section>
 
+    <!-- Google AdSense - Footer Rectangle -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="5432109876"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -1450,7 +1520,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                         <a href="{$app_url}/features">Features</a>
                         <a href="{$app_url}/services">Services</a>
                         <a href="{$app_url}/pricing">Pricing</a>
-                        <a href="https://glintaafrica.com/admin" target="_blank">Dashboard</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
