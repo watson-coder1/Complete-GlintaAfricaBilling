@@ -1,5 +1,15 @@
 {include file="sections/header.tpl"}
 
+<link rel="stylesheet" href="{$_url}ui/ui/css/daraja-fix.css">
+<style>
+/* Force enable URL input fields */
+#callback_url, #timeout_url {
+    background-color: #ffffff !important;
+    cursor: text !important;
+    pointer-events: auto !important;
+}
+</style>
+
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
@@ -291,6 +301,41 @@ function copyToClipboard(text) {
     // Show feedback
     alert('Copied to clipboard: ' + text);
 }
+
+// Force remove readonly attributes when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Get callback URL field
+    var callbackField = document.getElementById('callback_url');
+    var timeoutField = document.getElementById('timeout_url');
+    
+    if (callbackField) {
+        callbackField.removeAttribute('readonly');
+        callbackField.removeAttribute('disabled');
+        callbackField.readOnly = false;
+        callbackField.disabled = false;
+        console.log('Callback URL field enabled');
+    }
+    
+    if (timeoutField) {
+        timeoutField.removeAttribute('readonly');
+        timeoutField.removeAttribute('disabled');
+        timeoutField.readOnly = false;
+        timeoutField.disabled = false;
+        console.log('Timeout URL field enabled');
+    }
+    
+    // Double-check after a short delay
+    setTimeout(function() {
+        if (callbackField) {
+            callbackField.removeAttribute('readonly');
+            callbackField.readOnly = false;
+        }
+        if (timeoutField) {
+            timeoutField.removeAttribute('readonly');
+            timeoutField.readOnly = false;
+        }
+    }, 500);
+});
 </script>
 
 {include file="sections/footer.tpl"}

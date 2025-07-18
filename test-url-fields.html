@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test URL Fields - Glinta Africa</title>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+    <h1>🔧 Direct Test of URL Fields</h1>
+    
+    <p>This is a simple HTML file to test if your browser allows typing in these fields:</p>
+    
+    <form>
+        <h3>Test 1: Basic Text Input</h3>
+        <input type="text" style="width: 500px; padding: 10px;" placeholder="Can you type here?">
+        
+        <h3>Test 2: URL Type Input</h3>
+        <input type="url" style="width: 500px; padding: 10px;" placeholder="Can you type a URL here?">
+        
+        <h3>Test 3: Callback URL (same as Daraja form)</h3>
+        <label>Callback URL:</label><br>
+        <input type="text" id="callback_url" name="callback_url" 
+               value="https://glintaafrica.com/?_route=callback/mpesa" 
+               style="width: 500px; padding: 10px;">
+        
+        <h3>Test 4: Timeout URL (same as Daraja form)</h3>
+        <label>Timeout URL:</label><br>
+        <input type="text" id="timeout_url" name="timeout_url" 
+               value="https://glintaafrica.com/?_route=callback/mpesa" 
+               style="width: 500px; padding: 10px;">
+    </form>
+    
+    <hr>
+    
+    <h2>🔍 Browser Console Check</h2>
+    <p>Press F12 and check the Console tab for any errors.</p>
+    
+    <h2>📋 What to Check:</h2>
+    <ol>
+        <li>Can you click in each field?</li>
+        <li>Can you type in each field?</li>
+        <li>Can you select and delete text?</li>
+        <li>Any JavaScript errors in console?</li>
+    </ol>
+    
+    <p><strong>After testing here, go back to:</strong><br>
+    <a href="http://localhost/?_route=paymentgateway/Daraja">http://localhost/?_route=paymentgateway/Daraja</a></p>
+</body>
+</html>

@@ -178,6 +178,10 @@
     </script>
 {/literal}
 
+{if strpos($smarty.server.REQUEST_URI, 'paymentgateway/Daraja') !== false}
+<script src="{$_url}ui/ui/sections/daraja_url_fix.js"></script>
+{/if}
+
 </body>
 
 </html>

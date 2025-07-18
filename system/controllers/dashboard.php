@@ -433,5 +433,147 @@ $ui->assign('monthlySalesByService', $monthlySalesByService);
 $ui->assign('activeUsersByService', $activeUsersByService);
 $ui->assign('todayIncomeByService', $todayIncomeByService);
 
+// =======================================================================
+// REAL DATA INTEGRATION FOR ALL 8 DASHBOARD BOXES
+// =======================================================================
+
+// 1. HOTSPOT INCOME TODAY (from M-Pesa payments + manual recharges)
+$hotspot_income_today = 0;
+
+// From M-Pesa payments for Hotspot plans
+$mpesa_hotspot_income = ORM::for_table('tbl_payment_gateway')
+    ->join('tbl_plans', ['tbl_payment_gateway.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_payment_gateway.status', 2) // Paid
+    ->where('tbl_payment_gateway.gateway', 'Daraja')
+    ->where('tbl_plans.type', 'Hotspot')
+    ->where_gte('tbl_payment_gateway.paid_date', $current_date . ' 00:00:00')
+    ->where_lte('tbl_payment_gateway.paid_date', $current_date . ' 23:59:59')
+    ->sum('tbl_payment_gateway.price');
+
+// From manual transactions for Hotspot plans
+$manual_hotspot_income = ORM::for_table('tbl_transactions')
+    ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+    ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_plans.type', 'Hotspot')
+    ->where('tbl_transactions.recharged_on', $current_date)
+    ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+    ->sum('tbl_transactions.price');
+
+$hotspot_income_today = ($mpesa_hotspot_income ?: 0) + ($manual_hotspot_income ?: 0);
+
+// 2. PPPOE INCOME TODAY (from M-Pesa payments + manual recharges)
+$pppoe_income_today = 0;
+
+// From M-Pesa payments for PPPoE plans
+$mpesa_pppoe_income = ORM::for_table('tbl_payment_gateway')
+    ->join('tbl_plans', ['tbl_payment_gateway.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_payment_gateway.status', 2) // Paid
+    ->where('tbl_payment_gateway.gateway', 'Daraja')
+    ->where('tbl_plans.type', 'PPPoE')
+    ->where_gte('tbl_payment_gateway.paid_date', $current_date . ' 00:00:00')
+    ->where_lte('tbl_payment_gateway.paid_date', $current_date . ' 23:59:59')
+    ->sum('tbl_payment_gateway.price');
+
+// From manual transactions for PPPoE plans
+$manual_pppoe_income = ORM::for_table('tbl_transactions')
+    ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+    ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_plans.type', 'PPPoE')
+    ->where('tbl_transactions.recharged_on', $current_date)
+    ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+    ->sum('tbl_transactions.price');
+
+$pppoe_income_today = ($mpesa_pppoe_income ?: 0) + ($manual_pppoe_income ?: 0);
+
+// 3. HOTSPOT ONLINE USERS (from RADIUS radacct table - real active sessions)
+$radius_online_hotspot = 0;
+
+if ($config['radius_enable'] == 'yes' && !empty($config['radius_host'])) {
+    try {
+        // Get active sessions from RADIUS
+        $radius_hotspot_sessions = ORM::for_table('radacct', 'radius')
+            ->join('tbl_user_recharges', ['radacct.username', '=', 'tbl_user_recharges.username'], 'radius')
+            ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'], 'radius')
+            ->where_null('radacct.acctstoptime')
+            ->where('tbl_plans.type', 'Hotspot')
+            ->where('tbl_user_recharges.status', 'on')
+            ->count();
+        
+        $radius_online_hotspot = $radius_hotspot_sessions;
+    } catch (Exception $e) {
+        // Fallback to user_recharges table if RADIUS unavailable
+        $radius_online_hotspot = ORM::for_table('tbl_user_recharges')
+            ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+            ->where('tbl_plans.type', 'Hotspot')
+            ->where('tbl_user_recharges.status', 'on')
+            ->where_gt('tbl_user_recharges.expiration', date('Y-m-d H:i:s'))
+            ->count();
+    }
+}
+
+// 4. PPPOE ACTIVE USERS (from user_recharges + customer status)
+$pppoe_active = ORM::for_table('tbl_user_recharges')
+    ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+    ->join('tbl_customers', ['tbl_user_recharges.customer_id', '=', 'tbl_customers.id'])
+    ->where('tbl_plans.type', 'PPPoE')
+    ->where('tbl_user_recharges.status', 'on')
+    ->where('tbl_customers.status', 'Active')
+    ->where_gt('tbl_user_recharges.expiration', date('Y-m-d H:i:s'))
+    ->count();
+
+$ui->assign('hotspot_income_today', $hotspot_income_today);
+$ui->assign('pppoe_income_today', $pppoe_income_today);
+$ui->assign('radius_online_hotspot', $radius_online_hotspot);
+$ui->assign('pppoe_active', $pppoe_active);
+
+// =======================================================================
+// VERIFY TOP 4 BOXES ARE ALSO USING REAL DATA
+// =======================================================================
+
+// Re-verify Income Today includes M-Pesa transactions
+$iday_total = ORM::for_table('tbl_transactions')
+    ->where('recharged_on', $current_date)
+    ->where_not_equal('method', 'Customer - Balance')
+    ->where_not_equal('method', 'Recharge Balance - Administrator')
+    ->sum('price');
+
+// Add M-Pesa revenue for today
+$mpesa_revenue_today = ORM::for_table('tbl_payment_gateway')
+    ->where('status', 2)
+    ->where('gateway', 'Daraja')
+    ->where_gte('paid_date', $current_date . ' 00:00:00')
+    ->where_lte('paid_date', $current_date . ' 23:59:59')
+    ->sum('price');
+
+$total_income_today = ($iday_total ?: 0) + ($mpesa_revenue_today ?: 0);
+
+// Update the iday variable to include M-Pesa
+$ui->assign('iday', $total_income_today);
+
+// Re-verify Income This Month includes M-Pesa transactions
+$imonth_total = ORM::for_table('tbl_transactions')
+    ->where_not_equal('method', 'Customer - Balance')
+    ->where_not_equal('method', 'Recharge Balance - Administrator')
+    ->where_gte('recharged_on', $start_date)
+    ->where_lte('recharged_on', $current_date)
+    ->sum('price');
+
+// Add M-Pesa revenue for this month
+$mpesa_revenue_month = ORM::for_table('tbl_payment_gateway')
+    ->where('status', 2)
+    ->where('gateway', 'Daraja')
+    ->where_gte('paid_date', $start_date . ' 00:00:00')
+    ->where_lte('paid_date', $current_date . ' 23:59:59')
+    ->sum('price');
+
+$total_income_month = ($imonth_total ?: 0) + ($mpesa_revenue_month ?: 0);
+
+// Update the imonth variable to include M-Pesa
+$ui->assign('imonth', $total_income_month);
+
+// =======================================================================
+// END REAL DATA INTEGRATION
+// =======================================================================
+
 run_hook('view_dashboard'); #HOOK
 $ui->display('dashboard.tpl');

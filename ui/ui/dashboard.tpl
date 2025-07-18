@@ -1,62 +1,166 @@
 {include file="sections/header.tpl"}
 
+<style>
+/* Dashboard Box Enhancements */
+.small-box {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    border-radius: 8px !important;
+    transition: transform 0.2s ease !important;
+}
+
+.small-box:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+}
+
+.small-box .inner h3 {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+.small-box .inner p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+.small-box .icon {
+    transition: transform 0.2s ease !important;
+}
+
+.small-box:hover .icon {
+    transform: scale(1.1) !important;
+}
+
+/* Force color overrides */
+.bg-aqua { background-color: #00c0ef !important; }
+.bg-green { background-color: #00a65a !important; }
+.bg-yellow { background-color: #f39c12 !important; }
+.bg-red { background-color: #dd4b39 !important; }
+.bg-blue { background-color: #3c8dbc !important; }
+.bg-purple { background-color: #9b59b6 !important; }
+</style>
+
 <div class="row">
     {if in_array($_admin['user_type'],['SuperAdmin','Admin', 'Report'])}
         <div class="col-lg-3 col-xs-6">
-            <div class="small-box bg-aqua">
+            <div class="small-box bg-aqua" style="background-color: #00c0ef !important; min-height: 120px; padding: 20px;">
                 <div class="inner">
-                    <h4 class="text-bold" style="font-size: large;"><sup>{$_c['currency_code']}</sup>
-                        {number_format($iday,0,$_c['dec_point'],$_c['thousands_sep'])}</h4>
+                    <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;"><sup style="font-size: 20px;">{$_c['currency_code']}</sup>
+                        {number_format($iday,0,$_c['dec_point'],$_c['thousands_sep'])}</h3>
                 </div>
-                <div class="icon">
+                <div class="icon" style="font-size: 70px; opacity: 0.8;">
                     <i class="ion ion-clock"></i>
                 </div>
-                <a href="{$_url}reports/by-date" class="small-box-footer">{Lang::T('Income Today')}</a>
+                <a href="{$_url}reports/by-date" class="small-box-footer" style="font-size: 16px; font-weight: 600; color: #fff !important; background-color: rgba(0,0,0,0.2);">{Lang::T('Income Today')}</a>
             </div>
         </div>
         <div class="col-lg-3 col-xs-6">
-            <div class="small-box bg-green">
+            <div class="small-box bg-green" style="background-color: #00a65a !important; min-height: 120px; padding: 20px;">
                 <div class="inner">
-                    <h4 class="text-bold" style="font-size: large;"><sup>{$_c['currency_code']}</sup>
-                        {number_format($imonth,0,$_c['dec_point'],$_c['thousands_sep'])}</h4>
+                    <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;"><sup style="font-size: 20px;">{$_c['currency_code']}</sup>
+                        {number_format($imonth,0,$_c['dec_point'],$_c['thousands_sep'])}</h3>
                 </div>
-                <div class="icon">
+                <div class="icon" style="font-size: 70px; opacity: 0.8;">
                     <i class="ion ion-android-calendar"></i>
                 </div>
-                <a href="{$_url}reports/by-period" class="small-box-footer">{Lang::T('Income This Month')}</a>
+                <a href="{$_url}reports/by-period" class="small-box-footer" style="font-size: 16px; font-weight: 600; color: #fff !important; background-color: rgba(0,0,0,0.2);">{Lang::T('Income This Month')}</a>
             </div>
         </div>
     {/if}
     <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-yellow">
+        <div class="small-box bg-yellow" style="background-color: #f39c12 !important; min-height: 120px; padding: 20px;">
             <div class="inner">
-                <h4 class="text-bold" style="font-size: large;">{$u_act}/{$u_all-$u_act}</h4>
+                <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;">{$u_act}/{$u_all-$u_act}</h3>
             </div>
-            <div class="icon">
+            <div class="icon" style="font-size: 70px; opacity: 0.8;">
                 <i class="ion ion-person"></i>
             </div>
-            <a href="{$_url}plan/list" class="small-box-footer">{Lang::T('Active')}/{Lang::T('Expired')}</a>
+            <a href="{$_url}plan/list" class="small-box-footer" style="font-size: 16px; font-weight: 600; color: #fff !important; background-color: rgba(0,0,0,0.2);">{Lang::T('Active')}/{Lang::T('Expired')}</a>
         </div>
     </div>
     <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-red">
+        <div class="small-box bg-red" style="background-color: #dd4b39 !important; min-height: 120px; padding: 20px;">
             <div class="inner">
-                <h4 class="text-bold" style="font-size: large;">{$c_all}</h4>
+                <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;">{$c_all}</h3>
             </div>
-            <div class="icon">
+            <div class="icon" style="font-size: 70px; opacity: 0.8;">
                 <i class="ion ion-android-people"></i>
             </div>
-            <a href="{$_url}customers/list" class="small-box-footer">{Lang::T('Customers')}</a>
+            <a href="{$_url}customers/list" class="small-box-footer" style="font-size: 16px; font-weight: 600; color: #fff !important; background-color: rgba(0,0,0,0.2);">{Lang::T('Customers')}</a>
         </div>
     </div>
 </div>
+
+<!-- Service Analytics Section - Compact Layout -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <h3 class="box-title" style="font-size: 20px; font-weight: 600;">Service Analytics - Real Data</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-success btn-sm" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <!-- Service Stats Row -->
+                    <div class="col-md-3">
+                        <div class="small-box bg-green" onclick="window.location.href='{$_url}reports/by-date'" style="cursor: pointer; background-color: #00a65a !important; min-height: 110px; padding: 15px;">
+                            <div class="inner">
+                                <h3 style="font-size: 32px; font-weight: 800; color: #fff !important; margin-bottom: 8px;">{$_c['currency_code']}. {number_format($hotspot_income_today,0,$_c['dec_point'],$_c['thousands_sep'])}</h3>
+                                <p style="font-size: 18px; font-weight: 600; color: #fff !important; margin: 0;">Hotspot Income</p>
+                            </div>
+                            <div class="icon" style="font-size: 60px; opacity: 0.8;">
+                                <i class="fa fa-wifi"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small-box bg-blue" onclick="window.location.href='{$_url}reports/by-date'" style="cursor: pointer; background-color: #3c8dbc !important; min-height: 110px; padding: 15px;">
+                            <div class="inner">
+                                <h3 style="font-size: 32px; font-weight: 800; color: #fff !important; margin-bottom: 8px;">{$_c['currency_code']}. {number_format($pppoe_income_today,0,$_c['dec_point'],$_c['thousands_sep'])}</h3>
+                                <p style="font-size: 18px; font-weight: 600; color: #fff !important; margin: 0;">PPPoE Income</p>
+                            </div>
+                            <div class="icon" style="font-size: 60px; opacity: 0.8;">
+                                <i class="fa fa-globe"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small-box bg-yellow" onclick="window.location.href='{$_url}plan/list'" style="cursor: pointer; background-color: #f39c12 !important; min-height: 110px; padding: 15px;">
+                            <div class="inner">
+                                <h3 style="font-size: 32px; font-weight: 800; color: #fff !important; margin-bottom: 8px;">{$radius_online_hotspot}</h3>
+                                <p style="font-size: 18px; font-weight: 600; color: #fff !important; margin: 0;">Hotspot Online</p>
+                            </div>
+                            <div class="icon" style="font-size: 60px; opacity: 0.8;">
+                                <i class="fa fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small-box bg-purple" onclick="window.location.href='{$_url}plan/list'" style="cursor: pointer; background-color: #9b59b6 !important; min-height: 110px; padding: 15px;">
+                            <div class="inner">
+                                <h3 style="font-size: 32px; font-weight: 800; color: #fff !important; margin-bottom: 8px;">{$pppoe_active}</h3>
+                                <p style="font-size: 18px; font-weight: 600; color: #fff !important; margin: 0;">PPPoE Active</p>
+                            </div>
+                            <div class="icon" style="font-size: 60px; opacity: 0.8;">
+                                <i class="fa fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <ol class="breadcrumb">
     <li>{Lang::dateFormat($start_date)}</li>
     <li>{Lang::dateFormat($current_date)}</li>
     {if $_c['enable_balance'] == 'yes' && in_array($_admin['user_type'],['SuperAdmin','Admin', 'Report'])}
-        <li onclick="window.location.href = '{$_url}customers&search=&order=balance&filter=Active&orderby=desc'" style="cursor: pointer;">
-            {Lang::T('Customer Balance')} <sup>{$_c['currency_code']}</sup>
-            <b>{number_format($cb,0,$_c['dec_point'],$_c['thousands_sep'])}</b>
+        <li onclick="window.location.href = '{$_url}customers/list?search=&order=balance&filter=Active&orderby=desc'" style="cursor: pointer; font-size: 16px; font-weight: 500;">
+            {Lang::T('Customer Balance')} <sup style="font-size: 14px;">{$_c['currency_code']}</sup>
+            <b style="font-size: 18px;">{number_format($cb,0,$_c['dec_point'],$_c['thousands_sep'])}</b>
         </li>
     {/if}
 </ol>
@@ -69,7 +173,7 @@
                 <div class="box-header">
                     <i class="fa fa-th"></i>
 
-                    <h3 class="box-title">{Lang::T('Monthly Registered Customers')}</h3>
+                    <h3 class="box-title" style="font-size: 20px; font-weight: 600;">{Lang::T('Monthly Registered Customers')}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -90,7 +194,7 @@
                 <div class="box-header">
                     <i class="fa fa-inbox"></i>
 
-                    <h3 class="box-title">{Lang::T('Total Monthly Sales')}</h3>
+                    <h3 class="box-title" style="font-size: 20px; font-weight: 600;">{Lang::T('Total Monthly Sales')}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -255,20 +359,21 @@
     {if $_c['hide_mrc'] != 'yes'}
         {literal}
             document.addEventListener("DOMContentLoaded", function() {
-                var counts = JSON.parse('{/literal}{$monthlyRegistered|json_encode}{literal}');
+                var monthlyRegisteredByService = JSON.parse('{/literal}{$monthlyRegisteredByService|json_encode}{literal}');
 
                 var monthNames = [
                     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
                 ];
 
-                var labels = [];
-                var data = [];
+                var labels = monthNames;
+                var hotspotData = [];
+                var pppoeData = [];
 
-                for (var i = 1; i <= 12; i++) {
-                    var month = counts.find(count => count.date === i);
-                    labels.push(month ? monthNames[i - 1] : monthNames[i - 1].substring(0, 3));
-                    data.push(month ? month.count : 0);
+                // Extract data for each service type
+                for (var i = 0; i < 12; i++) {
+                    hotspotData.push(monthlyRegisteredByService.hotspot[i] ? monthlyRegisteredByService.hotspot[i].count : 0);
+                    pppoeData.push(monthlyRegisteredByService.pppoe[i] ? monthlyRegisteredByService.pppoe[i].count : 0);
                 }
 
                 var ctx = document.getElementById('chart').getContext('2d');
@@ -277,10 +382,16 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Registered Members',
-                            data: data,
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
-                            borderColor: 'rgba(0, 0, 255, 0.7)',
+                            label: 'Hotspot Customers',
+                            data: hotspotData,
+                            backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'PPPoE Customers',
+                            data: pppoeData,
+                            backgroundColor: 'rgba(40, 167, 69, 0.6)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
                             borderWidth: 1
                         }]
                     },
@@ -297,6 +408,12 @@
                                 grid: {
                                     color: 'rgba(0, 0, 0, 0.1)'
                                 }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
                             }
                         }
                     }
@@ -307,20 +424,21 @@
     {if $_c['hide_tmc'] != 'yes'}
         {literal}
             document.addEventListener("DOMContentLoaded", function() {
-                var monthlySales = JSON.parse('{/literal}{$monthlySales|json_encode}{literal}');
+                var monthlySalesByService = JSON.parse('{/literal}{$monthlySalesByService|json_encode}{literal}');
 
                 var monthNames = [
                     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
                 ];
 
-                var labels = [];
-                var data = [];
+                var labels = monthNames;
+                var hotspotSalesData = [];
+                var pppoeSalesData = [];
 
-                for (var i = 1; i <= 12; i++) {
-                    var month = findMonthData(monthlySales, i);
-                    labels.push(month ? monthNames[i - 1] : monthNames[i - 1].substring(0, 3));
-                    data.push(month ? month.totalSales : 0);
+                // Extract data for each service type
+                for (var i = 0; i < 12; i++) {
+                    hotspotSalesData.push(monthlySalesByService.hotspot[i] ? monthlySalesByService.hotspot[i].totalSales : 0);
+                    pppoeSalesData.push(monthlySalesByService.pppoe[i] ? monthlySalesByService.pppoe[i].totalSales : 0);
                 }
 
                 var ctx = document.getElementById('salesChart').getContext('2d');
@@ -329,10 +447,16 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Monthly Sales',
-                            data: data,
-                            backgroundColor: 'rgba(2, 10, 242)', // Customize the background color
-                            borderColor: 'rgba(255, 99, 132, 1)', // Customize the border color
+                            label: 'Hotspot Sales',
+                            data: hotspotSalesData,
+                            backgroundColor: 'rgba(255, 193, 7, 0.6)', // Yellow for Hotspot
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'PPPoE Sales',
+                            data: pppoeSalesData,
+                            backgroundColor: 'rgba(220, 53, 69, 0.6)', // Red for PPPoE
+                            borderColor: 'rgba(220, 53, 69, 1)',
                             borderWidth: 1
                         }]
                     },
@@ -350,19 +474,16 @@
                                     color: 'rgba(0, 0, 0, 0.1)'
                                 }
                             }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
                         }
                     }
                 });
             });
-
-            function findMonthData(monthlySales, month) {
-                for (var i = 0; i < monthlySales.length; i++) {
-                    if (monthlySales[i].month === month) {
-                        return monthlySales[i];
-                    }
-                }
-                return null;
-            }
         {/literal}
     {/if}
     {if $_c['hide_aui'] != 'yes'}
@@ -414,7 +535,9 @@
             });
         {/literal}
     {/if}
+    
 </script>
+
 {if $_c['new_version_notify'] != 'disable'}
     <script>
         window.addEventListener('DOMContentLoaded', function() {

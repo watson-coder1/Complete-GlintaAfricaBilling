@@ -1,0 +1,24 @@
+/* Force enable Daraja URL fields */
+#callback_url,
+#timeout_url,
+input[name="callback_url"],
+input[name="timeout_url"] {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    background-color: #ffffff !important;
+    cursor: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Remove any disabled styling */
+#callback_url:disabled,
+#timeout_url:disabled,
+#callback_url[readonly],
+#timeout_url[readonly] {
+    opacity: 1 !important;
+    background-color: #ffffff !important;
+    cursor: text !important;
+}

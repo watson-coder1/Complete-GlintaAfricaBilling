@@ -290,7 +290,7 @@
             if (window.location.protocol == "https:" && navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
             } else {
-                setupMap(51.505, -0.09);
+                setupMap(-1.2921, 36.8219);
             }
         }
 
