@@ -522,7 +522,7 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a class="btn btn-primary btn-sm" href="{$app_url}/index.php?_route=login">Login</a>
+                        <a class="btn btn-primary btn-sm" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -539,7 +539,7 @@
                         <p class="lead">Transform your business WiFi into a revenue stream. Trusted by hotels, restaurants, and cafes across Africa.</p>
                         <div class="mt-4">
                             <a href="https://wa.me/254711503023?text=Hi%20Glinta%20Africa,%20I%20want%20to%20learn%20more%20about%20your%20WiFi%20billing%20solutions" class="btn btn-primary btn-lg me-3" target="_blank">Get Started</a>
-                            <a href="{$app_url}/index.php?_route=admin" class="btn btn-outline-light btn-lg" target="_blank">View Demo</a>
+                            <a href="{$app_url}/landing/contact" class="btn btn-outline-light btn-lg">Request Demo</a>
                         </div>
                     </div>
                 </div>

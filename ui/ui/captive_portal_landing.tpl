@@ -1008,7 +1008,7 @@
                 const btn = document.getElementById('purchaseBtn');
                 const btnText = document.getElementById('purchaseBtnText');
                 btn.disabled = false;
-                btnText.textContent = `💳 Pay KES ${price} with M-Pesa`;
+                btnText.textContent = '💳 Pay KES ' + price + ' with M-Pesa';
                 
                 // Add animation
                 btn.style.animation = 'none';
@@ -1086,8 +1086,8 @@
             
             // Create new alert
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.innerHTML = `${type === 'error' ? '❌' : '✅'} ${message}`;
+            alertDiv.className = 'alert alert-' + type;
+            alertDiv.innerHTML = (type === 'error' ? '❌' : '✅') + ' ' + message;
             
             // Insert at top of content area
             const contentArea = document.querySelector('.content-area');

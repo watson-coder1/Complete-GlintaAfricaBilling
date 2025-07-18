@@ -3,12 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Advanced features of Glinta Africa's enterprise ISP billing platform. Real-time monitoring, automated billing, mobile money integration, and comprehensive network management.">
-    <meta name="keywords" content="ISP features, billing automation, mobile money, network monitoring, customer portal, hotspot management, RADIUS integration, enterprise features">
+    <title>ISP Billing Features - Advanced Tools for African ISPs 🚀</title>
+    <meta name="description" content="✨ Discover powerful ISP billing features: Real-time monitoring, M-Pesa/Airtel Money, RADIUS auth, automated billing & 24/7 support. Transform your ISP! 🌐">
+    <meta name="keywords" content="ISP billing features Africa, M-Pesa integration features Kenya, Airtel Money billing Tanzania, RADIUS authentication Africa, network monitoring tools Uganda, automated billing features Nigeria, customer portal software Ghana, WiFi hotspot management South Africa, real-time ISP dashboard Zimbabwe, mobile money API integration Ethiopia, enterprise network features Rwanda, professional ISP tools Zambia">
     <meta name="author" content="Glinta Africa">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="geo.region" content="AF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
     <link rel="canonical" href="https://glintaafrica.com/features">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{$app_url}/ui/ui/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{$app_url}/ui/ui/images/favicon.ico">
@@ -568,6 +577,70 @@
             transform: translateX(2px);
         }
 
+        /* Enhanced Mobile Navigation */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 992px) {
+            /* Tablet styles */
+            .hero {
+                padding: 7rem 0 3rem;
+            }
+            
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.875rem; }
+            h3 { font-size: 1.375rem; }
+            
+            .display-2 { font-size: 2.5rem; }
+            
+            .feature-card {
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .feature-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .demo-card {
+                padding: 1.25rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .metric-item {
+                padding: 1.25rem;
+            }
+            
+            .code-demo {
+                font-size: 0.7rem;
+                padding: 0.75rem;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero {
@@ -583,6 +656,134 @@
             
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            /* Small mobile styles */
+            .hero {
+                padding: 5rem 0 2rem;
+                text-align: center;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .display-2 { 
+                font-size: 1.875rem; 
+                line-height: 1.3;
+            }
+            
+            .lead {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .feature-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .feature-title {
+                font-size: 1.125rem;
+            }
+            
+            .feature-description {
+                font-size: 0.8125rem;
+            }
+            
+            .feature-list li {
+                font-size: 0.8125rem;
+                padding: 0.375rem 0;
+            }
+            
+            .demo-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .demo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.875rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(1, 1fr);
+                gap: 0.75rem;
+            }
+            
+            .metric-item {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .metric-label {
+                font-size: 0.75rem;
+            }
+            
+            .code-demo {
+                font-size: 0.625rem;
+                padding: 0.5rem;
+                overflow-x: auto;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.875rem 1.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .badge {
+                font-size: 0.625rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .footer {
+                padding: 2.5rem 0 1rem;
+                text-align: center;
+            }
+            
+            .footer .col-lg-4,
+            .footer .col-lg-2 {
+                margin-bottom: 2rem;
+            }
+            
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+            
+            /* Hide complex animations on mobile */
+            .position-absolute {
+                display: none !important;
+            }
+            
+            /* Stack feature highlights */
+            .hero .row.g-3 .col-6 {
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Simplify canvas chart on mobile */
+            #metricsChart {
+                height: 200px !important;
             }
         }
     </style>
@@ -607,22 +808,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -718,8 +919,8 @@
                             
                             <!-- Animated Play Button -->
                             <div class="position-absolute top-50 start-50 translate-middle">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--gradient-gold); animation: pulse 2s infinite; cursor: pointer;" onclick="window.open('https://glintaafrica.com/admin', '_blank')">
-                                    <i class="fas fa-play text-dark"></i>
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--gradient-gold); animation: pulse 2s infinite; cursor: pointer;" onclick="window.location.href='{$app_url}/landing/contact'">
+                                    <i class="fas fa-phone text-dark"></i>
                                 </div>
                             </div>
                         </div>
@@ -992,6 +1193,26 @@ if ($response['success']) {
         </div>
     </section>
 
+    <!-- Google AdSense - Mid-page Banner -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="3456789012"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Integration Features -->
     <section class="py-5">
         <div class="container">
@@ -1143,9 +1364,29 @@ if ($response['success']) {
                 <div class="col-lg-8 mx-auto text-center">
                     <h2>Try Our Features</h2>
                     <p class="text-gray-600 mb-4">Experience all enterprise features with live dashboard access.</p>
-                    <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-primary btn-lg">
-                        <i class="fas fa-external-link-alt me-2"></i>Launch Demo Dashboard
+                    <a href="{$app_url}/landing/contact" class="btn btn-primary btn-lg">
+                        <i class="fas fa-phone me-2"></i>Contact Us
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google AdSense - Footer Rectangle -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="7654321098"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
             </div>
         </div>
@@ -1167,17 +1408,17 @@ if ($response['success']) {
                 <div class="col-lg-2 col-md-4">
                     <h6>Features</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Real-time Dashboard</a>
-                        <a href="{$app_url}/features">Automated Billing</a>
-                        <a href="{$app_url}/features">Mobile Money</a>
-                        <a href="{$app_url}/features">Network Automation</a>
+                        <a href="{$app_url}/landing/features">Real-time Dashboard</a>
+                        <a href="{$app_url}/landing/features">Automated Billing</a>
+                        <a href="{$app_url}/landing/features">Mobile Money</a>
+                        <a href="{$app_url}/landing/features">Network Automation</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/services">Services</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/services">Services</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
                         <a href="#demo-section">Demo</a>
                         <a href="#">API Docs</a>
                     </div>
@@ -1186,9 +1427,9 @@ if ($response['success']) {
                     <h6>Support</h6>
                     <div class="d-flex flex-column gap-2">
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/blog">Blog</a>
-                        <a href="{$app_url}/about">About</a>
-                        <a href="{$app_url}/contact">Contact</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
+                        <a href="{$app_url}/landing/about">About</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
                 <div class="col-lg-2">
@@ -1196,7 +1437,7 @@ if ($response['success']) {
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Email Support</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

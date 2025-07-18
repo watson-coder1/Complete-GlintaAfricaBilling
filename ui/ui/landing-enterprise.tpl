@@ -997,13 +997,13 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn-demo" href="{$app_url}/index.php?_route=admin" target="_blank">
-                            <i class="fas fa-cog me-1"></i>Admin Demo
+                        <a class="btn-demo" href="{$app_url}/landing/contact">
+                            <i class="fas fa-cog me-1"></i>Request Demo
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn-demo" href="{$app_url}/index.php?_route=login" target="_blank">
-                            <i class="fas fa-user me-1"></i>Customer Demo
+                        <a class="btn-demo" href="{$app_url}/landing/contact">
+                            <i class="fas fa-user me-1"></i>Contact Us
                         </a>
                     </li>
                 </ul>

@@ -3,10 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Comprehensive internet billing solutions for African ISPs. Hotspot management, PPPoE billing, mobile money integration, and advanced analytics.">
-    <meta name="keywords" content="ISP billing software, hotspot management, PPPoE billing, mobile money integration, WiFi monetization, internet service provider solutions">
-    <meta name="author" content="Glinta Africa">
+    <title>Professional ISP Services - Hotspot Billing, M-Pesa Integration & WiFi Monetization | Glinta Africa</title>
+    <meta name="description" content="🔥 Professional ISP services that make competitors jealous! M-Pesa integration, WiFi monetization, automated billing & 24/7 African support. Trusted by 5000+ ISPs. Get instant quote!">
+    <meta name="keywords" content="professional ISP services, hotspot billing services Africa, M-Pesa integration services, WiFi monetization solutions, African ISP consulting, internet billing services Kenya Nigeria, ISP management services, mobile money billing integration, African fintech services, RADIUS billing services, ISP automation Africa, professional WiFi services, internet service provider consulting">
+    <meta name="author" content="Glinta Africa - Connect • Innovate • Empower">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="geo.region" content="AF">
+    <meta name="geo.country" content="Kenya">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:site_name" content="Glinta Africa">
+    <meta property="og:title" content="Services That Make Your Competition Jealous - Glinta Africa">
+    <meta property="og:description" content="Professional hotspot billing services for African ISPs. M-Pesa integration, automated billing, and revenue optimization services.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://glintaafrica.com/services">
+    <meta property="og:image" content="https://glintaafrica.com/ui/ui/images/dashboard-demo-updated.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Professional ISP Billing Services - Glinta Africa">
+    <meta name="twitter:description" content="Transform your ISP business with our professional billing services. M-Pesa integration, automation, and 24/7 support.">
+    <meta name="twitter:image" content="https://glintaafrica.com/ui/ui/images/dashboard-demo-updated.png">
     
     <link rel="canonical" href="https://glintaafrica.com/services">
     <link rel="shortcut icon" href="{$app_url}/ui/ui/images/logo.png" type="image/x-icon" />
@@ -20,6 +40,10 @@
     
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     
     <!-- Three.js for 3D animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -61,24 +85,94 @@
             overflow-x: hidden;
         }
 
-        /* Creative Logo Typography */
+        /* Creative Slanted Logo Design */
         .logo-brand {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: var(--gradient-gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo-brand .mission-statement {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--gold-dark);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+            transform: skew(-12deg);
+            text-shadow: 0 1px 2px rgba(212, 175, 55, 0.2);
+        }
+
+        .logo-brand .main-logo {
+            display: block;
+            position: relative;
+            transform: skew(-8deg) scale(1.02);
+            text-shadow: none;
+            filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.4));
+        }
+        
+        .logo-brand .main-logo .gli-part {
+            color: #000000;
+        }
+        
+        .logo-brand .main-logo .nta-part {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4C1 30%, #B8941F 70%, #D4AF37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-decoration: none;
-            position: relative;
+        }
+
+        .logo-brand .main-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10px;
+            right: -10px;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+            transform: skew(8deg);
+            z-index: -1;
+            border-radius: 4px;
+            opacity: 0;
             transition: all 0.3s ease;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        }
+
+        .logo-brand .main-logo .icon {
+            display: inline-block;
+            transform: rotate(-15deg) scale(1.1);
+            margin-right: 0.5rem;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
         }
 
         .logo-brand:hover {
-            transform: scale(1.05);
+            transform: scale(1.08) translateY(-2px);
+        }
+
+        .logo-brand:hover .mission-statement {
+            color: var(--gold-light);
+            transform: skew(-12deg) translateX(2px);
+        }
+
+        .logo-brand:hover .main-logo {
+            transform: skew(-8deg) scale(1.05);
+            filter: drop-shadow(0 5px 12px rgba(212, 175, 55, 0.6));
+        }
+
+        .logo-brand:hover .main-logo::before {
+            opacity: 1;
+        }
+
+        .logo-brand:hover .main-logo .icon {
+            transform: rotate(-15deg) scale(1.2);
         }
 
         /* Navigation */
@@ -119,7 +213,8 @@
         /* Enhanced Hero Section */
         .hero {
             min-height: 100vh;
-            background: var(--gradient-black);
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.92) 0%, rgba(241, 245, 249, 0.95) 50%, rgba(255, 255, 255, 0.92) 100%), 
+                        url('https://images.unsplash.com/photo-1573167243872-43c6433b9d40?w=1600') center/cover no-repeat;
             position: relative;
             display: flex;
             align-items: center;
@@ -149,7 +244,7 @@
         .hero-content {
             position: relative;
             z-index: 10;
-            color: var(--white);
+            color: var(--black-soft);
         }
 
         .hero-title {
@@ -166,7 +261,7 @@
 
         .hero-subtitle {
             font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--black-soft);
             margin-bottom: 2rem;
         }
 
@@ -465,24 +560,180 @@
             z-index: 10;
         }
 
-        /* Mobile Responsiveness */
+        /* Enhanced Mobile Responsiveness */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+        
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+        
+        @media (max-width: 992px) {
+            .navbar-nav {
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                border-radius: 15px;
+                padding: 1rem;
+                margin-top: 1rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+        }
+        
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
+                line-height: 1.3;
             }
             
             .hero-subtitle {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                line-height: 1.6;
             }
             
             .service-card {
-                padding: 2rem;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
             }
             
             .service-icon {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+            }
+            
+            .tech-item {
+                padding: 1.5rem;
+            }
+            
+            .process-step {
+                padding: 1.5rem;
+            }
+            
+            body {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            
+            p {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+                line-height: 1.3;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+                line-height: 1.4;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+                line-height: 1.4;
+            }
+            
+            .btn {
+                padding: 0.8rem 2rem;
+                font-size: 1rem;
+            }
+            
+            .btn-lg {
+                padding: 1rem 2.5rem;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-title {
                 font-size: 2rem;
+                line-height: 1.3;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            
+            .navbar {
+                padding: 0.8rem 0;
+            }
+            
+            .service-card {
+                padding: 1.2rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            .service-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .feature-card {
+                padding: 1.2rem;
+            }
+            
+            .tech-item {
+                padding: 1.2rem;
+            }
+            
+            .process-step {
+                padding: 1.2rem;
+            }
+            
+            body {
+                font-size: 15px;
+            }
+            
+            p {
+                font-size: 0.95rem;
+                line-height: 1.7;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .btn-lg {
+                padding: 0.9rem 2rem;
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
         }
 
@@ -623,7 +874,10 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="logo-brand" href="{$app_url}">
-                GLINTA<span style="color: var(--gold);">•</span>AFRICA
+                <span class="main-logo">
+                    <i class="fas fa-network-wired icon"></i><span class="gli-part">GLI</span><span class="nta-part">nta Africa</span>
+                </span>
+                <span class="mission-statement">Connect • Innovate • Empower</span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <i class="fas fa-bars text-dark"></i>
@@ -634,22 +888,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{$app_url}/services">Services</a>
+                        <a class="nav-link active" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                 </ul>
             </div>
@@ -672,21 +926,21 @@
                 <div class="col-lg-8 mx-auto text-center">
                     <div class="hero-content">
                         <h1 class="hero-title" data-aos="fade-up">
-                            EMPOWERING AFRICA'S<br>
-                            DIGITAL INFRASTRUCTURE
+                            SERVICES THAT MAKE<br>
+                            YOUR COMPETITION JEALOUS 😏
                         </h1>
                         <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
-                            Comprehensive ISP billing solutions designed for the unique challenges 
-                            and opportunities of the African market
+                            From "what's billing software?" to "I'm the ISP mogul of my city" in 30 days or less. 
+                            <strong>Side effects may include:</strong> Rapid wealth accumulation and uncontrollable confidence 💪
                         </p>
                         <div class="mt-5" data-aos="fade-up" data-aos-delay="400">
                             <a href="#services" class="btn btn-primary btn-lg me-3">
-                                <i class="fas fa-arrow-down me-2"></i>
-                                Explore Services
+                                <i class="fas fa-rocket me-2"></i>
+                                Show Me The Money
                             </a>
-                            <a href="{$app_url}/contact" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-phone me-2"></i>
-                                Request Demo
+                            <a href="{$app_url}/landing/contact" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-handshake me-2"></i>
+                                I Want This Power
                             </a>
                         </div>
                     </div>
@@ -701,10 +955,11 @@
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center mb-5">
                     <h2 class="display-4 fw-bold mb-4" data-aos="fade-up">
-                        Complete ISP Management Suite
+                        The "Money-Making Machine" Toolkit 🛠️
                     </h2>
                     <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
-                        Everything you need to run a successful internet service business in Africa
+                        Everything you need to transform from "struggling entrepreneur" to "ISP legend". 
+                        <strong>Warning:</strong> May cause excessive happiness and financial freedom! 💰
                     </p>
                 </div>
             </div>
@@ -715,32 +970,32 @@
                         <div class="service-icon">
                             <i class="fas fa-wifi"></i>
                         </div>
-                        <h3 class="mb-3">Hotspot Management</h3>
+                        <h3 class="mb-3">WiFi Empire Builder 📡</h3>
                         <p class="text-muted mb-4">
-                            Deploy and manage thousands of WiFi hotspots across multiple locations. 
-                            Real-time monitoring, bandwidth control, and automated customer management.
+                            From 1 hotspot to 1,000+ locations - we'll turn you into the "WiFi Overlord" of your region! 
+                            <strong>Fun fact:</strong> Our top customer owns more hotspots than McDonald's has restaurants! 🍟
                         </p>
                         <ul class="list-unstyled">
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Multi-location hotspot deployment
+                                <i class="fas fa-rocket text-warning me-2"></i>
+                                Deploy faster than you can say "money"
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Real-time bandwidth monitoring
+                                <i class="fas fa-eye text-warning me-2"></i>
+                                Watch your network like a hawk 🦅
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Automated customer onboarding
+                                <i class="fas fa-magic text-warning me-2"></i>
+                                Auto-pilot customer management
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Custom branding for captive portals
+                                <i class="fas fa-crown text-warning me-2"></i>
+                                Brand everything with your royal logo
                             </li>
                         </ul>
                         <div class="mt-4">
-                            <a href="#" class="btn btn-outline-primary">
-                                Learn More <i class="fas fa-arrow-right ms-2"></i>
+                            <a href="{$app_url}/landing/contact" class="btn btn-outline-primary">
+                                Build My Empire <i class="fas fa-rocket ms-2"></i>
                             </a>
                         </div>
                     </div>
@@ -751,32 +1006,32 @@
                         <div class="service-icon">
                             <i class="fas fa-mobile-alt"></i>
                         </div>
-                        <h3 class="mb-3">Mobile Money Integration</h3>
+                        <h3 class="mb-3">Money Magnet Machine 💸</h3>
                         <p class="text-muted mb-4">
-                            Seamless integration with all major African mobile money platforms. 
-                            Instant payments, automatic activation, and comprehensive reconciliation.
+                            Turn your phone into a money-printing machine! Customers pay, money appears in your account faster than you can refresh your bank app. 
+                            <strong>Magic trick:</strong> Watch zeroes multiply in your balance! 🎩✨
                         </p>
                         <ul class="list-unstyled">
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                M-Pesa, Airtel Money, MTN MoMo support
+                                <i class="fas fa-mobile-alt text-warning me-2"></i>
+                                M-Pesa, Airtel, MTN - we speak all money languages 💬
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Instant payment confirmation
+                                <i class="fas fa-bolt text-warning me-2"></i>
+                                Payments faster than lightning ⚡
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Automatic service activation
+                                <i class="fas fa-robot text-warning me-2"></i>
+                                Robot butler activates services instantly 🤖
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-warning me-2"></i>
-                                Advanced reconciliation tools
+                                <i class="fas fa-calculator text-warning me-2"></i>
+                                Smart accountant that never sleeps 📊
                             </li>
                         </ul>
                         <div class="mt-4">
-                            <a href="#" class="btn btn-outline-primary">
-                                Learn More <i class="fas fa-arrow-right ms-2"></i>
+                            <a href="{$app_url}/landing/contact" class="btn btn-outline-primary">
+                                Show Me The Money <i class="fas fa-money-bill-wave ms-2"></i>
                             </a>
                         </div>
                     </div>
@@ -858,15 +1113,15 @@
     </section>
 
     <!-- Features Showcase -->
-    <section class="features-showcase">
+    <section class="features-showcase" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(248, 244, 224, 0.1) 100%), url('https://images.unsplash.com/photo-1586282391129-76a6df230234?w=1600') center/cover no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center mb-5">
                     <h2 class="display-4 fw-bold mb-4" data-aos="fade-up">
-                        African-First Features
+                        African-First Features 🌍
                     </h2>
                     <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
-                        Features specifically designed for the African market
+                        Features specifically designed for the African market - because we understand your hustle! 💪
                     </p>
                 </div>
             </div>
@@ -1001,16 +1256,112 @@
         </div>
     </section>
 
+    <!-- AdSense Display Ad -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <!-- Google AdSense Banner -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="1234567891"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories with Visuals -->
+    <section class="py-5" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(26, 26, 26, 0.95) 100%), url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1600') center/cover no-repeat; color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-4 fw-bold mb-4 text-white" data-aos="fade-up">
+                        Real People, Real Success 🌟
+                    </h2>
+                    <p class="lead text-white-50" data-aos="fade-up" data-aos-delay="100">
+                        Meet the ISP heroes who transformed their business with our services
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card text-center" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <div class="mb-3">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Success Story" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold);">
+                        </div>
+                        <h5 class="text-white">James K. - Nairobi</h5>
+                        <p class="text-white-50">
+                            "From 2 hotspots to 200+ in 6 months. My M-Pesa is now playing happy songs! 🎵"
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card text-center" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <div class="mb-3">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150" alt="Success Story" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold);">
+                        </div>
+                        <h5 class="text-white">Sarah M. - Lagos</h5>
+                        <p class="text-white-50">
+                            "The automation saved me 40 hours per week. Now I have time to count my money properly! 💰"
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card text-center" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <div class="mb-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150" alt="Success Story" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold);">
+                        </div>
+                        <h5 class="text-white">David O. - Cape Town</h5>
+                        <p class="text-white-50">
+                            "Best investment ever! ROI within 3 months. Even my accountant is impressed! 📈"
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Technology Stack -->
-    <section class="tech-stack">
+    <section class="tech-stack" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%), url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1600') center/cover no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center mb-5">
                     <h2 class="display-4 fw-bold mb-4" data-aos="fade-up">
-                        Built on Proven Technology
+                        Built on Proven Technology 💻
                     </h2>
                     <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
-                        Enterprise-grade technology stack designed for African conditions
+                        Enterprise-grade technology stack designed for African conditions - rock solid like Mount Kilimanjaro! 🏔️
                     </p>
                 </div>
             </div>
@@ -1092,13 +1443,16 @@
     </section>
 
     <!-- Success Metrics -->
-    <section class="py-5 bg-light">
+    <section class="py-5" style="background: linear-gradient(135deg, rgba(241, 245, 249, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%), url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1600') center/cover no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center mb-5">
                     <h2 class="display-4 fw-bold mb-4" data-aos="fade-up">
-                        Proven Results Across Africa
+                        Proven Results Across Africa 📊
                     </h2>
+                    <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                        Numbers don't lie - and neither do happy customers counting their money! 💰
+                    </p>
                 </div>
             </div>
 
@@ -1143,7 +1497,7 @@
                             Join thousands of ISPs already using our platform to grow their business
                         </p>
                         <div data-aos="zoom-in" data-aos-delay="200">
-                            <a href="{$app_url}/contact" class="btn btn-dark btn-lg me-3">
+                            <a href="{$app_url}/landing/contact" class="btn btn-dark btn-lg me-3">
                                 <i class="fas fa-rocket me-2"></i>
                                 Start Free Trial
                             </a>
@@ -1158,52 +1512,80 @@
         </div>
     </section>
 
+    <!-- AdSense Footer Ad -->
+    <section class="py-3" style="background: rgba(0, 0, 0, 0.05);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <!-- Google AdSense Rectangle -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="0987654322"
+                         data-ad-format="rectangle"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
+    <footer class="bg-dark py-5" style="color: var(--gold);">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <h3 class="logo-brand mb-4">GLINTA•AFRICA</h3>
-                    <p class="text-white-50">
+                    <div class="logo-brand mb-4">
+                        <span class="main-logo">
+                            <i class="fas fa-network-wired icon"></i><span class="gli-part">GLI</span><span class="nta-part">nta Africa</span>
+                        </span>
+                        <span class="mission-statement">Connect • Innovate • Empower</span>
+                    </div>
+                    <p style="color: var(--gold-light);">
                         Empowering African ISPs with cutting-edge billing solutions. 
                         Built in Africa, for Africa.
                     </p>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Services</h5>
+                    <h5 style="color: var(--gold);" class="mb-3">Solutions</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50">Hotspot Billing</a></li>
-                        <li><a href="#" class="text-white-50">PPPoE Management</a></li>
-                        <li><a href="#" class="text-white-50">Mobile Money</a></li>
-                        <li><a href="#" class="text-white-50">Analytics</a></li>
+                        <li><a href="{$app_url}/landing/services" style="color: var(--gold-light);">Hotspot Billing</a></li>
+                        <li><a href="{$app_url}/landing/services-enhanced" style="color: var(--gold-light);">PPPoE Management</a></li>
+                        <li><a href="{$app_url}/landing/services" style="color: var(--gold-light);">Payment Gateway</a></li>
+                        <li><a href="{$app_url}/landing/features" style="color: var(--gold-light);">Analytics Suite</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Company</h5>
+                    <h5 style="color: var(--gold);" class="mb-3">Company</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/about" class="text-white-50">About Us</a></li>
-                        <li><a href="{$app_url}/blog" class="text-white-50">Blog</a></li>
-                        <li><a href="{$app_url}/contact" class="text-white-50">Contact</a></li>
+                        <li><a href="{$app_url}/landing/about" style="color: var(--gold-light);">About Us</a></li>
+                        <li><a href="{$app_url}/landing/blog" style="color: var(--gold-light);">Blog</a></li>
+                        <li><a href="{$app_url}/landing/enterprise" style="color: var(--gold-light);">Careers</a></li>
+                        <li><a href="{$app_url}/landing/contact" style="color: var(--gold-light);">Contact</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Support</h5>
+                    <h5 style="color: var(--gold);" class="mb-3">Support</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/help" class="text-white-50">Help Center</a></li>
-                        <li><a href="{$app_url}/documentation" class="text-white-50">Documentation</a></li>
-                        <li><a href="{$app_url}/community" class="text-white-50">Community</a></li>
+                        <li><a href="{$app_url}/landing/help" style="color: var(--gold-light);">Help Center</a></li>
+                        <li><a href="{$app_url}/landing/documentation" style="color: var(--gold-light);">Documentation</a></li>
+                        <li><a href="{$app_url}/landing/community" style="color: var(--gold-light);">Community</a></li>
+                        <li><a href="{$app_url}/landing/security" style="color: var(--gold-light);">Security</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Legal</h5>
+                    <h5 style="color: var(--gold);" class="mb-3">Legal</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/privacy" class="text-white-50">Privacy</a></li>
-                        <li><a href="{$app_url}/terms" class="text-white-50">Terms</a></li>
-                        <li><a href="{$app_url}/security" class="text-white-50">Security</a></li>
+                        <li><a href="{$app_url}/landing/privacy" style="color: var(--gold-light);">Privacy Policy</a></li>
+                        <li><a href="{$app_url}/landing/terms" style="color: var(--gold-light);">Terms of Service</a></li>
+                        <li><a href="{$app_url}/landing/security" style="color: var(--gold-light);">Compliance</a></li>
                     </ul>
                 </div>
             </div>
@@ -1212,13 +1594,14 @@
             
             <div class="row">
                 <div class="col-lg-6">
-                    <p class="text-white-50 mb-0">
-                        © 2025 Glinta Africa. All rights reserved.
+                    <p style="color: var(--gold-light);" class="mb-0">
+                        © 2025 Glinta Africa. All rights reserved. Made with ❤️ in Africa
                     </p>
                 </div>
                 <div class="col-lg-6 text-lg-end">
-                    <p class="text-white-50 mb-0">
-                        Made with ❤️ in Africa
+                    <p style="color: var(--gold-light);" class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Nairobi • Lagos • Cape Town • Cairo
                     </p>
                 </div>
             </div>

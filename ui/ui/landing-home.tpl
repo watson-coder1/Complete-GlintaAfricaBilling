@@ -878,7 +878,7 @@
                             
                             <!-- Animated Play Button -->
                             <div class="position-absolute top-50 start-50 translate-middle" style="animation: bounce 2s infinite;">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: var(--gradient-gold); cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.3);" onclick="window.open('https://glintaafrica.com/admin', '_blank')">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: var(--gradient-gold); cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.3);" onclick="window.location.href='{$app_url}/landing/contact'">
                                     <i class="fas fa-play text-dark" style="font-size: 1.5rem; margin-left: 5px;"></i>
                                 </div>
                             </div>
@@ -1014,8 +1014,8 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-primary btn-lg" style="animation: wiggle 2s ease-in-out infinite;" onmouseover="this.innerHTML='<i class=\"fas fa-rocket me-2\"></i>🎉 Let\'s Gooo!'" onmouseout="this.innerHTML='<i class=\"fas fa-external-link-alt me-2\"></i>🎮 Enter the Matrix'">
-                            <i class="fas fa-external-link-alt me-2"></i>🎮 Enter the Matrix
+                        <a href="{$app_url}/landing/contact" class="btn btn-primary btn-lg" style="animation: wiggle 2s ease-in-out infinite;" onmouseover="this.innerHTML='<i class=\"fas fa-rocket me-2\"></i>🎉 Let\'s Gooo!'" onmouseout="this.innerHTML='<i class=\"fas fa-handshake me-2\"></i>💬 Contact Us'">
+                            <i class="fas fa-handshake me-2"></i>💬 Contact Us
                         </a>
                         
                         <style>

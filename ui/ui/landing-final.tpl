@@ -1061,10 +1061,10 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a href="{$app_url}/index.php?_route=admin" class="btn btn-outline" 
-                               style="border-color: var(--gold); color: var(--gold);" target="_blank">
+                            <a href="{$app_url}/landing/contact" class="btn btn-outline" 
+                               style="border-color: var(--gold); color: var(--gold);">
                                 <i class="fas fa-desktop me-2"></i>
-                                Try Demo
+                                Request Demo
                             </a>
                         </div>
                     </div>

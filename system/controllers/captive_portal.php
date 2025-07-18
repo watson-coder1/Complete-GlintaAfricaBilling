@@ -6,14 +6,19 @@
  * Integrated with existing system (tbl_plans, RadiusManager, M-Pesa)
  */
 
-// Debug logging for all portal requests
-$debugInfo = "=== Captive Portal Request " . date('Y-m-d H:i:s') . " ===\n";
-$debugInfo .= "Route: " . ($routes['1'] ?? 'landing') . "\n";
-$debugInfo .= "Method: " . $_SERVER['REQUEST_METHOD'] . "\n";
-$debugInfo .= "GET: " . json_encode($_GET) . "\n";
-$debugInfo .= "POST: " . json_encode($_POST) . "\n";
-$debugInfo .= "User Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown') . "\n";
-file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', $debugInfo . "\n", FILE_APPEND);
+// Debug logging for all portal requests (with safe path handling)
+try {
+    $debugPath = isset($UPLOAD_PATH) ? $UPLOAD_PATH : sys_get_temp_dir();
+    $debugInfo = "=== Captive Portal Request " . date('Y-m-d H:i:s') . " ===\n";
+    $debugInfo .= "Route: " . ($routes['1'] ?? 'landing') . "\n";
+    $debugInfo .= "Method: " . $_SERVER['REQUEST_METHOD'] . "\n";
+    $debugInfo .= "GET: " . json_encode($_GET) . "\n";
+    $debugInfo .= "POST: " . json_encode($_POST) . "\n";
+    $debugInfo .= "User Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown') . "\n";
+    file_put_contents($debugPath . '/captive_portal_debug.log', $debugInfo . "\n", FILE_APPEND);
+} catch (Exception $e) {
+    // Silent fail for debug logging
+}
 
 switch ($routes['1']) {
     case 'landing':

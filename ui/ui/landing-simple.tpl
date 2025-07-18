@@ -131,7 +131,7 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-gold ml-2" href="{$app_url}/index.php?_route=login">Login</a>
+                        <a class="nav-link btn btn-gold ml-2" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -146,7 +146,7 @@
                     <h1>Enterprise Hotspot Billing Solutions</h1>
                     <p>Transform your WiFi business with Africa's most advanced hotspot billing system.</p>
                     <a href="https://wa.me/254711503023?text=Hi%20Glinta%20Africa,%20I%20want%20to%20start%20a%20free%20trial" class="btn-gold" target="_blank">Start Free Trial</a>
-                    <a href="{$app_url}/index.php?_route=admin" class="btn-gold" target="_blank">Admin Demo</a>
+                    <a href="{$app_url}/landing/contact" class="btn-gold">Request Demo</a>
                 </div>
             </div>
         </div>

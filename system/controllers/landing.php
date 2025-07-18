@@ -9,15 +9,15 @@ $action = $routes['1'] ?? 'home-enhanced';
 
 // Map of routes to template files
 $landingPages = [
-    'home' => 'landing-home.tpl',
+    'home' => 'landing-home-enhanced.tpl',
     'home-enhanced' => 'landing-home-enhanced.tpl',
     'about' => 'landing-about.tpl',
-    'services' => 'landing-services.tpl',
+    'services' => 'landing-services-enhanced.tpl',
     'services-enhanced' => 'landing-services-enhanced.tpl',
     'features' => 'landing-features.tpl',
     'pricing' => 'landing-pricing.tpl',
     'enterprise' => 'landing-enterprise.tpl',
-    'professional' => 'landing-professional.tpl',
+    'professional' => 'landing-professional-real.tpl',
     'professional-real' => 'landing-professional-real.tpl',
     'contact' => 'landing-contact.tpl',
     'help' => 'landing-help.tpl',
@@ -68,8 +68,8 @@ if (isset($landingPages[$action])) {
     $ui->assign('_title', $pageTitle);
     $ui->assign('page_type', 'landing');
     $ui->assign('current_page', $action);
-    $ui->assign('app_url', 'http://localhost');
-    $ui->assign('_url', 'http://localhost/?_route=');
+    $ui->assign('app_url', APP_URL);
+    $ui->assign('_url', APP_URL . '/?_route=');
     
     // Add structured data for SEO
     $structuredData = [
@@ -103,7 +103,7 @@ if (isset($landingPages[$action])) {
     
 } else {
     // Page not found - redirect to home
-    header('Location: https://glintaafrica.com/?_route=home-enhanced');
+    header('Location: ' . APP_URL . '/?_route=landing/home-enhanced');
     exit;
 }
 

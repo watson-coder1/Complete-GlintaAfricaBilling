@@ -3,12 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Contact Glinta Africa for professional ISP billing solutions. Get technical support, pricing information, or demo access for enterprise telecommunications.">
-    <meta name="keywords" content="contact ISP billing, Glinta Africa support, professional ISP solutions, enterprise telecommunications, technical support">
+    <title>Contact Glinta Africa - Get ISP Support & Demo Access 📩</title>
+    <meta name="description" content="📞 Contact Glinta Africa for ISP billing solutions! 24/7 support via WhatsApp +254711503023, email & live chat. Free demo access. Response in 15 mins! ✨">
+    <meta name="keywords" content="contact ISP billing Africa, Glinta Africa support Kenya, ISP technical support Tanzania, billing software contact Uganda, WhatsApp support Nigeria, email support Ghana, ISP demo access South Africa, technical assistance Zimbabwe, customer support Ethiopia, ISP help desk Rwanda, billing support Zambia, African ISP contact center">
     <meta name="author" content="Glinta Africa">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="geo.region" content="AF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
     <link rel="canonical" href="https://glintaafrica.com/contact">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{$app_url}/ui/ui/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{$app_url}/ui/ui/images/favicon.ico">
@@ -527,6 +536,56 @@
             transform: translateX(2px);
         }
 
+        /* Enhanced Mobile Navigation */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 992px) {
+            /* Tablet styles */
+            .hero {
+                padding: 7rem 0 3rem;
+            }
+            
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.875rem; }
+            h3 { font-size: 1.375rem; }
+            
+            .display-2 { font-size: 2.5rem; }
+            
+            .contact-card {
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .contact-form {
+                padding: 2.25rem;
+            }
+            
+            .contact-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.25rem;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero {
@@ -538,6 +597,113 @@
             
             .contact-form {
                 padding: 2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            /* Small mobile styles */
+            .hero {
+                padding: 5rem 0 2rem;
+                text-align: center;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .display-2 { 
+                font-size: 1.875rem; 
+                line-height: 1.3;
+            }
+            
+            .lead {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .contact-card {
+                padding: 1.5rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .contact-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .contact-title {
+                font-size: 1.125rem;
+            }
+            
+            .contact-info {
+                font-size: 0.8125rem;
+            }
+            
+            .contact-form {
+                padding: 1.75rem;
+            }
+            
+            .form-label {
+                font-size: 0.8125rem;
+            }
+            
+            .form-control {
+                padding: 0.625rem 0.875rem;
+                font-size: 0.875rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.875rem 1.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .btn-contact {
+                width: 100%;
+                padding: 0.875rem 1.5rem;
+            }
+            
+            /* Response time bar adjustments */
+            .progress {
+                height: 6px;
+            }
+            
+            /* Hero stats adjustments */
+            .hero .row.g-3 .col-4 {
+                margin-bottom: 0.5rem;
+            }
+            
+            .footer {
+                padding: 2.5rem 0 1rem;
+                text-align: center;
+            }
+            
+            .footer .col-lg-4,
+            .footer .col-lg-2 {
+                margin-bottom: 2rem;
+            }
+            
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+            
+            /* Hide complex animations on mobile */
+            .position-absolute {
+                display: none !important;
+            }
+            
+            /* Form row adjustments */
+            .contact-form .row .col-md-6 {
+                margin-bottom: 0.5rem;
             }
         }
     </style>
@@ -562,22 +728,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -708,6 +874,26 @@ No phone trees, no "have you tried turning it off and on again?", just real huma
                     <div class="mt-4 p-3 rounded" style="background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(44,82,130,0.1) 100%); border-left: 4px solid var(--gold);">
                         <p class="mb-0 text-sm"><em>"They fixed our billing issues faster than you can say M-Pesa!" - Happy ISP Owner 🎉</em></p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google AdSense - Mid-page Banner -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="4567890123"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
             </div>
         </div>
@@ -865,14 +1051,34 @@ No phone trees, no "have you tried turning it off and on again?", just real huma
                             Access the full admin dashboard to explore customer management, billing analytics, network monitoring, and mobile money integration features.
                         </p>
                         <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
-                            <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-primary">
-                                <i class="fas fa-external-link-alt me-2"></i>Launch Demo
+                            <a href="{$app_url}/landing/contact" class="btn btn-primary">
+                                <i class="fas fa-phone me-2"></i>Contact Us
                             </a>
                             <a href="mailto:watsonwambugu@yahoo.com" class="btn btn-outline-primary">
                                 <i class="fas fa-envelope me-2"></i>Request Demo
                             </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google AdSense - Footer Rectangle -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="6543210987"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
             </div>
         </div>
@@ -894,9 +1100,9 @@ No phone trees, no "have you tried turning it off and on again?", just real huma
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/services">Services</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/services">Services</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
                         <a href="#demo-section">Demo</a>
                     </div>
                 </div>
@@ -905,15 +1111,15 @@ No phone trees, no "have you tried turning it off and on again?", just real huma
                     <div class="d-flex flex-column gap-2">
                         <a href="#" onclick="window.open('mailto:watsonwambugu@yahoo.com')">Email Support</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/blog">Blog</a>
-                        <a href="{$app_url}/about">About</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
+                        <a href="{$app_url}/landing/about">About</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Company</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/about">About Us</a>
-                        <a href="{$app_url}/contact">Contact</a>
+                        <a href="{$app_url}/landing/about">About Us</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                         <a href="#" onclick="window.open('mailto:watsonwambugu@yahoo.com')">Careers</a>
                         <a href="#">Partners</a>
                     </div>
@@ -923,7 +1129,7 @@ No phone trees, no "have you tried turning it off and on again?", just real huma
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Technical Team</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

@@ -935,8 +935,8 @@ Advanced network management, automated billing, and seamless mobile money integr
                         </div>
                     </div>
                     
-                    <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-primary btn-lg">
-                        <i class="fas fa-external-link-alt me-2"></i>Launch Demo
+                    <a href="{$app_url}/landing/contact" class="btn btn-primary btn-lg">
+                        <i class="fas fa-phone me-2"></i>Contact Us
                     </a>
                 </div>
                 
@@ -1394,8 +1394,8 @@ Advanced network management, automated billing, and seamless mobile money integr
                         </div>
                     </div>
                     
-                    <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-lg px-5 py-3" style="background: var(--gradient-gold); color: #000; font-weight: 700; border-radius: 50px; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(212, 175, 55, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(212, 175, 55, 0.3)'">
-                        <i class="fas fa-external-link-alt me-2"></i>Launch Demo Dashboard
+                    <a href="{$app_url}/landing/contact" class="btn btn-lg px-5 py-3" style="background: var(--gradient-gold); color: #000; font-weight: 700; border-radius: 50px; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(212, 175, 55, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(212, 175, 55, 0.3)'">
+                        <i class="fas fa-phone me-2"></i>Contact Us
                     </a>
                     
                     <p style="color: #666; font-size: 0.9rem; margin-top: 1rem;">

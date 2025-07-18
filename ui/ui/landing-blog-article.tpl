@@ -362,16 +362,78 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 mx-auto">
-                    {if $article == 'future-isp-africa'}
+                    <!-- Article Headers for each article -->
+                    <div data-article="future-isp-africa" class="article-header-content">
                         <div class="article-meta">
                             <div class="article-category">ISP Business</div>
                             <div class="article-date">December 15, 2024</div>
                             <div class="article-read-time">5 min read</div>
                         </div>
-                        <h1 class="article-title">The Future of Internet Service Provision in Africa</h1>
+                        <h1 class="article-title">The Future of Internet Service Provision in Africa 🌍</h1>
                         <p class="article-excerpt">
                             Discover how African ISPs are revolutionizing internet access with innovative billing solutions, mobile money integration, and community-focused approaches that are transforming connectivity across the continent.
                         </p>
+                    </div>
+                    
+                    <div data-article="radius-security" class="article-header-content">
+                        <div class="article-meta">
+                            <div class="article-category">Security</div>
+                            <div class="article-date">January 10, 2025</div>
+                            <div class="article-read-time">8 min read</div>
+                        </div>
+                        <h1 class="article-title">RADIUS Security: Advanced Network Authentication 🔒</h1>
+                        <p class="article-excerpt">
+                            Comprehensive security implementation strategies for RADIUS authentication systems, including best practices for user management and network access control.
+                        </p>
+                    </div>
+                    
+                    <div data-article="mpesa-integration" class="article-header-content">
+                        <div class="article-meta">
+                            <div class="article-category">Technology Trends</div>
+                            <div class="article-date">December 28, 2024</div>
+                            <div class="article-read-time">15 min read</div>
+                        </div>
+                        <h1 class="article-title">M-Pesa Integration: Seamless Mobile Money Payment Processing 💰</h1>
+                        <p class="article-excerpt">
+                            Technical implementation guide for M-Pesa payment gateway integration, including API setup, callback handling, and automated service activation.
+                        </p>
+                    </div>
+                    
+                    <div data-article="network-analytics" class="article-header-content">
+                        <div class="article-meta">
+                            <div class="article-category">Enterprise Solutions</div>
+                            <div class="article-date">December 20, 2024</div>
+                            <div class="article-read-time">12 min read</div>
+                        </div>
+                        <h1 class="article-title">Network Analytics: InfluxDB and Grafana for ISP Monitoring 📊</h1>
+                        <p class="article-excerpt">
+                            Building enterprise-grade network monitoring dashboards with InfluxDB time-series data and Grafana visualization for professional ISP operations.
+                        </p>
+                    </div>
+                    
+                    <div data-article="mikrotik-automation" class="article-header-content">
+                        <div class="article-meta">
+                            <div class="article-category">Network Operations</div>
+                            <div class="article-date">December 15, 2024</div>
+                            <div class="article-read-time">9 min read</div>
+                        </div>
+                        <h1 class="article-title">Network Automation: Mikrotik RouterOS API Programming ⚙️</h1>
+                        <p class="article-excerpt">
+                            Advanced automation techniques for Mikrotik RouterOS using API programming for bulk user management and configuration deployment.
+                        </p>
+                    </div>
+                    
+                    <div data-article="kenya-internet-market" class="article-header-content">
+                        <div class="article-meta">
+                            <div class="article-category">Market Analysis</div>
+                            <div class="article-date">December 10, 2024</div>
+                            <div class="article-read-time">20 min read</div>
+                        </div>
+                        <h1 class="article-title">Kenya Internet Market 2025: Growth Opportunities and Challenges 🇰🇪</h1>
+                        <p class="article-excerpt">
+                            Kenya leads Africa in internet penetration. Learn how ISPs can capitalize on growing demand for reliable, affordable connectivity in urban and rural areas.
+                        </p>
+                    </div>
                     {elseif $article == 'kenya-internet-market-2025'}
                         <div class="article-meta">
                             <div class="article-category">Kenya Market</div>
@@ -483,14 +545,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    {if $article == 'future-isp-africa'}
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Internet Infrastructure Africa" class="article-image">
+                    <!-- Article Content for Future ISP Africa -->
+                    <div data-article="future-isp-africa">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Internet Infrastructure Africa - Satellite and Technology" class="article-image">
                         
                         <div class="article-body">
-                            <p>The African internet landscape is experiencing unprecedented transformation. With over 1.4 billion people and rapidly growing digital adoption, Africa presents the world's largest untapped internet market. Internet Service Providers (ISPs) across the continent are pioneering innovative approaches that go far beyond traditional connectivity models.</p>
+                            <p>The African internet landscape is experiencing unprecedented transformation. With over 1.4 billion people and rapidly growing digital adoption, Africa presents the world's largest untapped internet market. According to the <a href="https://www.itu.int/en/ITU-D/Statistics/Pages/stat/default.aspx" target="_blank" rel="noopener">International Telecommunication Union (ITU)</a>, African internet penetration has grown from 2% in 2005 to over 43% in 2024, representing the fastest growth rate globally.</p>
 
                             <h2>The African Advantage</h2>
-                            <p>Unlike mature markets constrained by legacy infrastructure, African ISPs have the unique opportunity to leapfrog outdated technologies. This advantage is most evident in countries like <a href="https://www.communications.gov.ke/" target="_blank">Kenya</a>, where mobile-first internet adoption has reached over 85% of the population.</p>
+                            <p>Unlike mature markets constrained by legacy infrastructure, African ISPs have the unique opportunity to leapfrog outdated technologies. This advantage is most evident in countries like <a href="https://www.communications.gov.ke/" target="_blank" rel="noopener">Kenya</a>, where mobile-first internet adoption has reached over 85% of the population. The <a href="https://www.worldbank.org/en/topic/digitaldevelopment" target="_blank" rel="noopener">World Bank's Digital Development initiative</a> identifies Africa as the world's fastest-growing digital economy.</p>
 
                             <p>Modern ISP management platforms like <a href="{$app_url}">Glinta Africa</a> are specifically designed for African market conditions, offering seamless integration with mobile money systems like M-Pesa, Airtel Money, and MTN Mobile Money. This integration has reduced payment friction by over 70% compared to traditional banking methods.</p>
 
@@ -520,14 +583,17 @@
 
                             <p>As the continent continues its rapid digital evolution, ISPs equipped with the right tools and community understanding will play a crucial role in connecting Africa to the global digital economy.</p>
                         </div>
-                    {elseif $article == 'kenya-internet-market-2025'}
-                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Kenya Internet Market" class="article-image">
+                    </div>
+
+                    <!-- Article Content for Kenya Internet Market -->
+                    <div data-article="kenya-internet-market">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Kenya Internet Market - Technology Hub Nairobi" class="article-image">
                         
                         <div class="article-body">
-                            <p>Kenya stands as East Africa's digital powerhouse, with internet penetration reaching 89.4% in 2024. As we approach 2025, the Kenyan market presents extraordinary opportunities for Internet Service Providers willing to innovate and adapt to local market conditions.</p>
+                            <p>Kenya stands as East Africa's digital powerhouse, with internet penetration reaching 89.4% in 2024 according to the <a href="https://ca.go.ke/industry/telecommunications/statistics/" target="_blank" rel="noopener">Communications Authority of Kenya</a>. As we approach 2025, the Kenyan market presents extraordinary opportunities for Internet Service Providers willing to innovate and adapt to local market conditions. The <a href="https://www.worldbank.org/en/country/kenya/overview" target="_blank" rel="noopener">World Bank</a> identifies Kenya as a regional leader in digital financial services and e-government initiatives.</p>
 
                             <h2>Market Dynamics and Growth Drivers</h2>
-                            <p>The <a href="https://ca.go.ke/" target="_blank">Communications Authority of Kenya</a> reports that data consumption has grown by 180% over the past three years. This explosive growth is driven by increased smartphone adoption, remote work culture, and the government's digital transformation agenda.</p>
+                            <p>The <a href="https://ca.go.ke/" target="_blank" rel="noopener">Communications Authority of Kenya</a> reports that data consumption has grown by 180% over the past three years. This explosive growth is driven by increased smartphone adoption, remote work culture, and the government's digital transformation agenda outlined in the <a href="https://www.ict.go.ke/" target="_blank" rel="noopener">Ministry of ICT's Digital Economy Blueprint</a>. According to <a href="https://www.gsma.com/mobileconomy/" target="_blank" rel="noopener">GSMA's Mobile Economy Report</a>, Kenya leads Africa in mobile internet adoption and digital service innovation.</p>
 
                             <p>Kenya's strategic position as a regional hub, combined with robust submarine cable infrastructure including the TEAMS and SEACOM cables, provides ISPs with excellent international connectivity options. This infrastructure advantage translates to lower bandwidth costs and better service quality.</p>
 
@@ -985,10 +1051,10 @@
                         <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Network Security Infrastructure" class="article-image">
                         
                         <div class="article-body">
-                            <p>Network security in Internet Service Provider (ISP) operations requires robust authentication mechanisms to protect infrastructure and customer data. RADIUS (Remote Authentication Dial-In User Service) servers serve as critical components in network access control, making their security paramount for operational integrity. This comprehensive guide examines advanced RADIUS security implementations and best practices for enterprise-grade ISP environments.</p>
+                            <p>Network security in Internet Service Provider (ISP) operations requires robust authentication mechanisms to protect infrastructure and customer data. RADIUS (Remote Authentication Dial-In User Service) servers serve as critical components in network access control, making their security paramount for operational integrity. Originally defined in <a href="https://tools.ietf.org/html/rfc2865" target="_blank" rel="noopener">RFC 2865</a> and enhanced through subsequent specifications, RADIUS has evolved into a cornerstone of enterprise network security architecture. This comprehensive guide examines advanced RADIUS security implementations and best practices for enterprise-grade ISP environments.</p>
 
                             <h2>The Critical Role of RADIUS Authentication Security</h2>
-                            <p>RADIUS servers function as the primary authentication gateway for network access, processing thousands of authentication requests daily in typical ISP environments. When compromised, these systems expose entire network infrastructures to unauthorized access, potentially affecting thousands of customers and compromising sensitive operational data. The <a href="https://www.cisa.gov/cybersecurity-best-practices" target="_blank" rel="noopener">Cybersecurity and Infrastructure Security Agency (CISA)</a> identifies network authentication as a fundamental security control in their cybersecurity framework.</p>
+                            <p>RADIUS servers function as the primary authentication gateway for network access, processing thousands of authentication requests daily in typical ISP environments. When compromised, these systems expose entire network infrastructures to unauthorized access, potentially affecting thousands of customers and compromising sensitive operational data. The <a href="https://www.cisa.gov/cybersecurity-best-practices" target="_blank" rel="noopener">Cybersecurity and Infrastructure Security Agency (CISA)</a> identifies network authentication as a fundamental security control in their cybersecurity framework. According to <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener">NIST's Cybersecurity Framework</a>, proper authentication mechanisms are critical for maintaining network integrity and customer trust.</p>
 
                             <p>Modern ISP management platforms like <a href="{$app_url}">Glinta Africa</a> implement enterprise-grade RADIUS security controls that align with industry standards defined in <a href="https://tools.ietf.org/html/rfc2865" target="_blank" rel="noopener">RFC 2865</a> and subsequent security enhancements. These implementations address common vulnerabilities while maintaining the performance requirements of high-volume commercial operations.</p>
 
@@ -1130,10 +1196,10 @@
                         <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Mobile Payment Technology Africa" class="article-image">
                         
                         <div class="article-body">
-                            <p>Mobile money integration represents a critical component of modern ISP billing infrastructure in African markets, enabling seamless payment processing and improving customer experience through familiar transaction mechanisms. M-Pesa, Kenya's dominant mobile money platform, has fundamentally transformed digital payment landscapes across East Africa and provides ISPs with robust APIs for billing system integration. This comprehensive guide examines technical implementation strategies and best practices for M-Pesa payment gateway integration.</p>
+                            <p>Mobile money integration represents a critical component of modern ISP billing infrastructure in African markets, enabling seamless payment processing and improving customer experience through familiar transaction mechanisms. M-Pesa, Kenya's dominant mobile money platform, has fundamentally transformed digital payment landscapes across East Africa and provides ISPs with robust APIs for billing system integration. According to <a href="https://www.safaricom.co.ke/personal/m-pesa" target="_blank" rel="noopener">Safaricom's official documentation</a>, M-Pesa processes over 1.7 billion transactions annually. This comprehensive guide examines technical implementation strategies and best practices for M-Pesa payment gateway integration.</p>
 
                             <h2>M-Pesa Market Impact and Technical Infrastructure</h2>
-                            <p>M-Pesa has achieved unprecedented scale in mobile financial services, processing billions of transactions annually and serving millions of active users across multiple African markets. According to <a href="https://www.gsma.com/mobilefordevelopment/" target="_blank" rel="noopener">GSMA's Mobile for Development initiative</a>, M-Pesa has processed over 12 billion transactions annually, representing a transaction volume exceeding $280 billion USD. This widespread adoption creates significant opportunities for ISPs to leverage existing customer payment behaviors and reduce transaction friction.</p>
+                            <p>M-Pesa has achieved unprecedented scale in mobile financial services, processing billions of transactions annually and serving millions of active users across multiple African markets. According to <a href="https://www.gsma.com/mobilefordevelopment/" target="_blank" rel="noopener">GSMA's Mobile for Development initiative</a>, M-Pesa has processed over 12 billion transactions annually, representing a transaction volume exceeding $280 billion USD. The <a href="https://www.centralbank.go.ke/" target="_blank" rel="noopener">Central Bank of Kenya</a> reports that mobile money accounts for over 75% of all digital transactions in the country. This widespread adoption creates significant opportunities for ISPs to leverage existing customer payment behaviors and reduce transaction friction.</p>
 
                             <p>Modern ISP management platforms like <a href="{$app_url}">Glinta Africa</a> provide comprehensive M-Pesa integration capabilities that streamline payment processing while maintaining security and compliance standards. These integrations enable real-time payment processing, automated service provisioning, and comprehensive transaction reconciliation essential for commercial ISP operations.</p>
 
@@ -1715,6 +1781,47 @@
             duration: 800,
             easing: 'ease-in-out',
             once: true
+        });
+
+        // Dynamic article content loading based on URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get article parameter from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('article');
+            
+            // Hide all article content initially
+            const allArticles = document.querySelectorAll('[data-article]');
+            allArticles.forEach(article => {
+                article.style.display = 'none';
+            });
+            
+            // Show the requested article or default article
+            if (articleId) {
+                const targetArticles = document.querySelectorAll(`[data-article="${articleId}"]`);
+                targetArticles.forEach(article => {
+                    article.style.display = 'block';
+                });
+            } else {
+                // Show default article if no parameter
+                const defaultArticles = document.querySelectorAll('[data-article="future-isp-africa"]');
+                defaultArticles.forEach(article => {
+                    article.style.display = 'block';
+                });
+            }
+            
+            // Update page title based on article
+            const articleTitles = {
+                'radius-security': 'RADIUS Security: Advanced Network Authentication - Glinta Africa Blog',
+                'mpesa-integration': 'M-Pesa Integration Guide for ISPs - Glinta Africa Blog',
+                'network-analytics': 'Network Analytics with InfluxDB & Grafana - Glinta Africa Blog',
+                'mikrotik-automation': 'Mikrotik RouterOS API Automation - Glinta Africa Blog',
+                'kenya-internet-market': 'Kenya Internet Market 2025 - Glinta Africa Blog',
+                'future-isp-africa': 'Future of ISP in Africa - Glinta Africa Blog'
+            };
+            
+            if (articleId && articleTitles[articleId]) {
+                document.title = articleTitles[articleId];
+            }
         });
     </script>
 </body>

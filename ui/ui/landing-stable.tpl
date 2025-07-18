@@ -337,10 +337,10 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn-demo" href="{$app_url}/index.php?_route=admin" target="_blank">Admin Demo</a>
+                        <a class="btn-demo" href="{$app_url}/landing/contact">Request Demo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn-demo" href="{$app_url}/index.php?_route=login" target="_blank">Customer Demo</a>
+                        <a class="btn-demo" href="{$app_url}/landing/contact">Contact Us</a>
                     </li>
                 </ul>
             </div>

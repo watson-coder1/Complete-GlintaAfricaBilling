@@ -3,12 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Professional ISP billing platform pricing. Enterprise-grade features with transparent pricing for African telecommunications. Custom solutions available.">
-    <meta name="keywords" content="ISP pricing, billing software cost, enterprise ISP solution, mobile money billing, professional network management pricing">
+    <title>ISP Billing Pricing - Affordable Plans for African ISPs 💰</title>
+    <meta name="description" content="💸 Transparent ISP billing pricing from $10/month! M-Pesa integration, RADIUS support & 24/7 assistance. Save 60% on IT costs. Free trial available 🎆">
+    <meta name="keywords" content="ISP billing pricing Africa, affordable ISP software Kenya, M-Pesa billing system cost, RADIUS server pricing Tanzania, internet billing plans Uganda, WiFi hotspot pricing Nigeria, telecom billing rates Ghana, ISP management pricing South Africa, billing automation cost Zimbabwe, network management pricing Ethiopia, enterprise ISP rates Rwanda, professional billing plans Zambia">
     <meta name="author" content="Glinta Africa">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="geo.region" content="AF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
     <link rel="canonical" href="https://glintaafrica.com/pricing">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{$app_url}/ui/ui/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{$app_url}/ui/ui/images/favicon.ico">
@@ -703,6 +712,63 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
         
+        /* Enhanced Mobile Navigation */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 992px) {
+            /* Tablet styles */
+            .hero {
+                padding: 7rem 0 3rem;
+            }
+            
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.875rem; }
+            h3 { font-size: 1.375rem; }
+            
+            .display-2 { font-size: 2.5rem; }
+            
+            .pricing-card {
+                padding: 2.25rem 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .pricing-price {
+                font-size: 2.25rem;
+            }
+            
+            .value-card {
+                padding: 1.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .roi-calculator {
+                padding: 1.75rem;
+            }
+            
+            .metric-item {
+                padding: 1.25rem;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero {
@@ -724,6 +790,134 @@
             
             .pricing-card:hover {
                 transform: translateY(-4px) scale(1.01);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            /* Small mobile styles */
+            .hero {
+                padding: 5rem 0 2rem;
+                text-align: center;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .display-2 { 
+                font-size: 1.875rem; 
+                line-height: 1.3;
+            }
+            
+            .lead {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .pricing-card {
+                padding: 2rem 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+                margin: 1rem 0;
+            }
+            
+            .pricing-title {
+                font-size: 1.25rem;
+            }
+            
+            .pricing-price {
+                font-size: 2rem;
+            }
+            
+            .pricing-features {
+                font-size: 0.8125rem;
+            }
+            
+            .pricing-features li {
+                padding: 0.625rem 0;
+            }
+            
+            .value-card {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .value-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .roi-calculator {
+                padding: 1.5rem;
+            }
+            
+            .roi-metric {
+                padding: 1rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .roi-value {
+                font-size: 1.5rem;
+            }
+            
+            .metric-item {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.875rem 1.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .btn-pricing {
+                width: 100%;
+                padding: 0.875rem 1rem;
+            }
+            
+            .category-btn {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.75rem;
+                margin: 0.125rem;
+            }
+            
+            .footer {
+                padding: 2.5rem 0 1rem;
+                text-align: center;
+            }
+            
+            .footer .col-lg-4,
+            .footer .col-lg-2 {
+                margin-bottom: 2rem;
+            }
+            
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+            
+            /* Hide complex animations on mobile */
+            .position-absolute {
+                display: none !important;
+            }
+            
+            /* Stack pricing comparison */
+            .row.g-3 .col-md-4 {
+                margin-bottom: 0.5rem;
             }
         }
     </style>
@@ -748,22 +942,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -1047,6 +1241,26 @@
                             <i class="fas fa-envelope me-2"></i>Contact Sales
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google AdSense - Mid-page Banner -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="2345678901"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
             </div>
         </div>
@@ -1347,8 +1561,8 @@
                         </div>
                     </div>
                     
-                    <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 8px; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(44,82,130,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                        <i class="fas fa-rocket me-2"></i>Launch Demo Dashboard
+                    <a href="{$app_url}/landing/contact" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 8px; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(44,82,130,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="fas fa-phone me-2"></i>Contact Us
                     </a>
                 </div>
                 
@@ -1366,8 +1580,8 @@
                             
                             <!-- Animated Play Button -->
                             <div class="position-absolute top-50 start-50 translate-middle">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: var(--gradient-gold); animation: pulse 2s infinite; cursor: pointer;" onclick="window.open('https://glintaafrica.com/admin', '_blank')">
-                                    <i class="fas fa-play text-dark fs-4"></i>
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: var(--gradient-gold); animation: pulse 2s infinite; cursor: pointer;" onclick="window.location.href='{$app_url}/landing/contact'">
+                                    <i class="fas fa-phone text-dark fs-4"></i>
                                 </div>
                             </div>
                         </div>
@@ -1390,6 +1604,26 @@
         </div>
     </section>
 
+    <!-- Google AdSense - Footer Rectangle -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="8765432109"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -1406,17 +1640,17 @@
                 <div class="col-lg-2 col-md-4">
                     <h6>Plans</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/pricing">Starter Plan</a>
-                        <a href="{$app_url}/pricing">Professional</a>
-                        <a href="{$app_url}/pricing">Enterprise</a>
-                        <a href="{$app_url}/pricing">Custom Solutions</a>
+                        <a href="{$app_url}/landing/pricing">Starter Plan</a>
+                        <a href="{$app_url}/landing/pricing">Professional</a>
+                        <a href="{$app_url}/landing/pricing">Enterprise</a>
+                        <a href="{$app_url}/landing/pricing">Custom Solutions</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/services">Services</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/services">Services</a>
                         <a href="#demo-section">Demo</a>
                         <a href="#">API Docs</a>
                     </div>
@@ -1425,9 +1659,9 @@
                     <h6>Support</h6>
                     <div class="d-flex flex-column gap-2">
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/blog">Blog</a>
-                        <a href="{$app_url}/about">About</a>
-                        <a href="{$app_url}/contact">Contact</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
+                        <a href="{$app_url}/landing/about">About</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
                 <div class="col-lg-2">
@@ -1435,7 +1669,7 @@
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Email Sales</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

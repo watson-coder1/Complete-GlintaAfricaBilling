@@ -3,12 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$_title}</title>
-    <meta name="description" content="Learn about Glinta Africa's mission to transform African telecommunications. Professional ISP billing solutions built for African markets with mobile money integration.">
-    <meta name="keywords" content="Glinta Africa, ISP solutions, African telecommunications, mobile money billing, professional network management, enterprise ISP platform">
+    <title>About Glinta Africa - ISP Billing Solutions for Africa 🌍</title>
+    <meta name="description" content="🚀 Discover Glinta Africa's mission to revolutionize African ISP operations with smart billing, M-Pesa integration & enterprise solutions. 500K+ users served!">
+    <meta name="keywords" content="Glinta Africa, African ISP billing software, M-Pesa integration Kenya, mobile money payment gateway Africa, ISP management system Tanzania, billing automation Uganda, RADIUS server Africa, enterprise telecom solutions Nigeria, internet service provider software Ghana, WiFi hotspot billing South Africa, automated ISP billing Zimbabwe, telecommunication solutions East Africa">
     <meta name="author" content="Glinta Africa">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="geo.region" content="AF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
     <link rel="canonical" href="https://glintaafrica.com/about">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906696382628802"
+            crossorigin="anonymous"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{$app_url}/ui/ui/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{$app_url}/ui/ui/images/favicon.ico">
@@ -589,6 +598,62 @@
             color: var(--accent);
         }
 
+        /* Enhanced Mobile Navigation */
+        .navbar-toggler {
+            border: none !important;
+            padding: 0.75rem !important;
+            background: rgba(212, 175, 55, 0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.5) !important;
+        }
+
+        .navbar-toggler .fas {
+            font-size: 1.3rem !important;
+            color: var(--black) !important;
+            font-weight: 900 !important;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 992px) {
+            /* Tablet styles */
+            .hero {
+                padding: 7rem 0 3rem;
+            }
+            
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.875rem; }
+            h3 { font-size: 1.375rem; }
+            
+            .display-2 { font-size: 2.5rem; }
+            
+            .stats-card {
+                padding: 1.75rem;
+            }
+            
+            .team-card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .timeline::before {
+                left: 3rem;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 6rem);
+                margin-left: 6rem !important;
+            }
+            
+            .timeline-badge {
+                left: 3rem;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero {
@@ -610,6 +675,108 @@
             .timeline-badge {
                 left: 2rem;
                 transform: translateX(-50%);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            /* Small mobile styles */
+            .hero {
+                padding: 5rem 0 2rem;
+                text-align: center;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .display-2 { 
+                font-size: 1.875rem; 
+                line-height: 1.3;
+            }
+            
+            .lead {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .stats-card {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+            
+            .value-card {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .team-card {
+                padding: 1.5rem;
+            }
+            
+            .timeline::before {
+                left: 1.5rem;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 3rem);
+                margin-left: 3rem !important;
+                padding: 1.5rem;
+            }
+            
+            .timeline-badge {
+                left: 1.5rem;
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.875rem 1.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .mission-card {
+                padding: 2rem;
+            }
+            
+            .mission-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .impact-number {
+                font-size: 1.5rem;
+            }
+            
+            .cta-section {
+                padding: 3rem 0;
+            }
+            
+            .footer {
+                padding: 2.5rem 0 1rem;
+                text-align: center;
+            }
+            
+            .footer .col-lg-4,
+            .footer .col-lg-2 {
+                margin-bottom: 2rem;
+            }
+            
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                text-align: center;
             }
         }
     </style>
@@ -634,26 +801,26 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a class="btn btn-primary" href="https://glintaafrica.com/admin" target="_blank">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        <a class="btn btn-primary" href="{$app_url}/landing/contact">
+                            <i class="fas fa-phone me-1"></i>Contact
                         </a>
                     </li>
                 </ul>
@@ -697,8 +864,8 @@ We actually understand that African ISPs need solutions that work with M-Pesa, n
                     </div>
                     
                     <div class="d-flex flex-column flex-md-row gap-3">
-                        <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-accent btn-lg px-4 py-3" style="animation: pulse 2s infinite;" onmouseover="this.style.transform='scale(1.05) rotate(1deg)'; this.style.boxShadow='0 10px 30px rgba(212,175,55,0.4)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'; this.style.boxShadow='none'">
-                            <i class="fas fa-rocket me-2"></i>🎮 Explore Platform
+                        <a href="{$app_url}/landing/contact" class="btn btn-accent btn-lg px-4 py-3" style="animation: pulse 2s infinite;" onmouseover="this.style.transform='scale(1.05) rotate(1deg)'; this.style.boxShadow='0 10px 30px rgba(212,175,55,0.4)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'; this.style.boxShadow='none'">
+                            <i class="fas fa-phone me-2"></i>📞 Contact Us
                         </a>
                         <a href="mailto:watsonwambugu@yahoo.com" class="btn btn-outline-primary btn-lg px-4 py-3" style="transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.innerHTML='<i class=\"fas fa-coffee me-2\"></i>☕ Let\'s Chat!'" onmouseout="this.style.background='transparent'; this.innerHTML='<i class=\"fas fa-envelope me-2\"></i>📧 Contact Us'">
                             <i class="fas fa-envelope me-2"></i>📧 Contact Us
@@ -767,6 +934,26 @@ We actually understand that African ISPs need solutions that work with M-Pesa, n
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         </style>
+    </section>
+
+    <!-- Google AdSense - Mid-page Banner -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="1234567890"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Mission Section -->
@@ -1003,10 +1190,30 @@ Let's chat about how we can make your ISP business actually fun to run! (Yes, th
                         </a>
                     </div>
                     <div class="mt-4">
-                        <a href="https://glintaafrica.com/admin" target="_blank" class="btn btn-outline-primary">
-                            <i class="fas fa-external-link-alt me-2"></i>Explore Platform
+                        <a href="{$app_url}/landing/contact" class="btn btn-outline-primary">
+                            <i class="fas fa-phone me-2"></i>Contact Us
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google AdSense - Footer Rectangle -->
+    <section class="py-3" style="background: rgba(248, 250, 252, 0.5);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="small text-muted mb-2">Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7906696382628802"
+                         data-ad-slot="9876543210"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 </div>
             </div>
         </div>
@@ -1028,8 +1235,8 @@ Let's chat about how we can make your ISP business actually fun to run! (Yes, th
                 <div class="col-lg-2 col-md-4">
                     <h6>Company</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/about">About Us</a>
-                        <a href="{$app_url}/blog">Blog</a>
+                        <a href="{$app_url}/landing/about">About Us</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
                         <a href="#">Careers</a>
                         <a href="#">Press</a>
                     </div>
@@ -1037,17 +1244,17 @@ Let's chat about how we can make your ISP business actually fun to run! (Yes, th
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/services">Services</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
-                        <a href="https://glintaafrica.com/admin" target="_blank">Dashboard</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/services">Services</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Support</h6>
                     <div class="d-flex flex-column gap-2">
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/contact">Contact</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                         <a href="#">API Reference</a>
                         <a href="#">System Status</a>
                     </div>
