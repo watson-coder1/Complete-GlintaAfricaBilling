@@ -231,22 +231,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                 </ul>
             </div>
@@ -431,7 +431,7 @@
             <div class="row g-4">
                 <div class="col-lg-3 col-md-6">
                     <h5>Company</h5>
-                    <a href="{$app_url}/about">About Us</a>
+                    <a href="{$app_url}/landing/about">About Us</a>
                     <a href="{$app_url}/careers">Careers</a>
                     <a href="{$app_url}/news">News & Press</a>
                     <a href="{$app_url}/investors">Investor Relations</a>
@@ -448,7 +448,7 @@
                     <a href="{$app_url}/help">Help Center</a>
                     <a href="{$app_url}/documentation">Documentation</a>
                     <a href="{$app_url}/community">Community Forum</a>
-                    <a href="{$app_url}/contact">Contact Support</a>
+                    <a href="{$app_url}/landing/contact">Contact Support</a>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h5>Legal</h5>

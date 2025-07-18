@@ -1264,7 +1264,7 @@ Let's chat about how we can make your ISP business actually fun to run! (Yes, th
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Technical Sales</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

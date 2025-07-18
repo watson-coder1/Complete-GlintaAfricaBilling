@@ -159,7 +159,7 @@
                     <div class="community-card text-center mt-4">
                         <h3>Join the Community</h3>
                         <p>Connect with fellow ISP operators, share experiences, and grow your business together.</p>
-                        <a href="{$app_url}/contact" class="btn btn-warning btn-lg">
+                        <a href="{$app_url}/landing/contact" class="btn btn-warning btn-lg">
                             <i class="fas fa-users me-2"></i>Join Forum
                         </a>
                         <p class="mt-3"><small>Free to join • 24/7 access • Mobile-friendly</small></p>

@@ -61,7 +61,7 @@
                         <div class="help-icon"><i class="fas fa-mobile-alt"></i></div>
                         <h4>Mobile Money Setup</h4>
                         <p>Configure M-Pesa, Airtel Money, and other mobile payment gateways for seamless customer payments.</p>
-                        <a href="{$app_url}/contact" class="btn btn-outline-warning">Get Support</a>
+                        <a href="{$app_url}/landing/contact" class="btn btn-outline-warning">Get Support</a>
                     </div>
                 </div>
                 <div class="col-md-4">

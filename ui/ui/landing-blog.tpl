@@ -1517,9 +1517,9 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/services">Services</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/services">Services</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
                         <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
@@ -1527,8 +1527,8 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                     <h6>Support</h6>
                     <div class="d-flex flex-column gap-2">
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/contact">Contact</a>
-                        <a href="{$app_url}/about">About</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
+                        <a href="{$app_url}/landing/about">About</a>
                         <a href="#">API Reference</a>
                     </div>
                 </div>
@@ -1537,7 +1537,7 @@ Real stories, proven strategies, and breakthrough moments from industry professi
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Technical Team</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

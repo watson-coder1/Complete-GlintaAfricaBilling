@@ -811,22 +811,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -1423,17 +1423,17 @@ Advanced network management, automated billing, and seamless mobile money integr
                 <div class="col-lg-2 col-md-4">
                     <h6>Services</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/services">RADIUS Server</a>
-                        <a href="{$app_url}/services">Mobile Money</a>
-                        <a href="{$app_url}/services">Network Automation</a>
-                        <a href="{$app_url}/services">Analytics</a>
+                        <a href="{$app_url}/landing/services">RADIUS Server</a>
+                        <a href="{$app_url}/landing/services">Mobile Money</a>
+                        <a href="{$app_url}/landing/services">Network Automation</a>
+                        <a href="{$app_url}/landing/services">Analytics</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
                         <a href="#demo-section">Demo</a>
                         <a href="#">API Docs</a>
                     </div>
@@ -1442,9 +1442,9 @@ Advanced network management, automated billing, and seamless mobile money integr
                     <h6>Support</h6>
                     <div class="d-flex flex-column gap-2">
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/blog">Blog</a>
-                        <a href="{$app_url}/about">About</a>
-                        <a href="{$app_url}/contact">Contact</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
+                        <a href="{$app_url}/landing/about">About</a>
+                        <a href="{$app_url}/landing/contact">Contact</a>
                     </div>
                 </div>
                 <div class="col-lg-2">
@@ -1452,7 +1452,7 @@ Advanced network management, automated billing, and seamless mobile money integr
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Email Support</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>

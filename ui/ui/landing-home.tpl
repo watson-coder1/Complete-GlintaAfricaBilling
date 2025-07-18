@@ -791,22 +791,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/about">About</a>
+                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
                     </li>
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="#demo-section">
@@ -858,7 +858,7 @@
                         <a href="#demo-section" class="btn btn-accent btn-lg px-4 py-3" style="position: relative; overflow: hidden; animation: pulse 2s infinite;" onmouseover="this.style.transform='scale(1.05) rotate(1deg)'; this.style.boxShadow='0 10px 30px rgba(212,175,55,0.4)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'; this.style.boxShadow='none'">
                             <i class="fas fa-rocket me-2"></i>🎮 Play with Demo!
                         </a>
-                        <a href="{$app_url}/contact" class="btn btn-outline-primary btn-lg px-4 py-3" style="transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.innerHTML='<i class=\"fas fa-coffee me-2\"></i>☕ Let\'s Chat!'" onmouseout="this.style.background='transparent'; this.innerHTML='<i class=\"fas fa-phone me-2\"></i>📞 Contact Sales'">
+                        <a href="{$app_url}/landing/contact" class="btn btn-outline-primary btn-lg px-4 py-3" style="transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.innerHTML='<i class=\"fas fa-coffee me-2\"></i>☕ Let\'s Chat!'" onmouseout="this.style.background='transparent'; this.innerHTML='<i class=\"fas fa-phone me-2\"></i>📞 Contact Sales'">
                             <i class="fas fa-phone me-2"></i>📞 Contact Sales
                         </a>
                     </div>
@@ -1186,8 +1186,8 @@ if ($payment->confirmed) {
                 <div class="col-lg-2 col-md-4">
                     <h6>Platform</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/features">Features</a>
-                        <a href="{$app_url}/pricing">Pricing</a>
+                        <a href="{$app_url}/landing/features">Features</a>
+                        <a href="{$app_url}/landing/pricing">Pricing</a>
                         <a href="#demo-section">Demo</a>
                         <a href="#">API Docs</a>
                     </div>
@@ -1195,18 +1195,18 @@ if ($payment->confirmed) {
                 <div class="col-lg-2 col-md-4">
                     <h6>Solutions</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/services">ISP Billing</a>
-                        <a href="{$app_url}/services">Hotspot WiFi</a>
-                        <a href="{$app_url}/services">Mobile Money</a>
-                        <a href="{$app_url}/services">RADIUS Server</a>
+                        <a href="{$app_url}/landing/services">ISP Billing</a>
+                        <a href="{$app_url}/landing/services">Hotspot WiFi</a>
+                        <a href="{$app_url}/landing/services">Mobile Money</a>
+                        <a href="{$app_url}/landing/services">RADIUS Server</a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h6>Resources</h6>
                     <div class="d-flex flex-column gap-2">
-                        <a href="{$app_url}/blog">Blog</a>
+                        <a href="{$app_url}/landing/blog">Blog</a>
                         <a href="#">Documentation</a>
-                        <a href="{$app_url}/about">About</a>
+                        <a href="{$app_url}/landing/about">About</a>
                         <a href="#">Support</a>
                     </div>
                 </div>
@@ -1215,7 +1215,7 @@ if ($payment->confirmed) {
                     <div class="d-flex flex-column gap-2">
                         <a href="mailto:watsonwambugu@yahoo.com">Email Support</a>
                         <a href="https://wa.me/254711503023" target="_blank">WhatsApp</a>
-                        <a href="{$app_url}/contact">Contact Form</a>
+                        <a href="{$app_url}/landing/contact">Contact Form</a>
                     </div>
                 </div>
             </div>
