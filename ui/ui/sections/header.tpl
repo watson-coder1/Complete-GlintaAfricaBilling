@@ -1393,10 +1393,6 @@
                                         href="{$_url}pages/Registration_Info">{Lang::T('Registration Info')}</a></li>
                                 <li {if $_routes[1] eq 'Payment_Info' }class="active" {/if}><a
                                         href="{$_url}pages/Payment_Info">{Lang::T('Payment Info')}</a></li>
-                                <li {if $_routes[1] eq 'Privacy_Policy' }class="active" {/if}><a
-                                        href="{$_url}pages/Privacy_Policy">{Lang::T('Privacy Policy')}</a></li>
-                                <li {if $_routes[1] eq 'Terms_and_Conditions' }class="active" {/if}><a
-                                        href="{$_url}pages/Terms_and_Conditions">{Lang::T('Terms and Conditions')}</a></li>
                                 {$_MENU_PAGES}
                             </ul>
                         </li>
@@ -1468,22 +1464,6 @@
                     {/if}
                     {$_MENU_AFTER_LOGS}
                     {if in_array($_admin['user_type'],['SuperAdmin','Admin'])}
-                        <li {if $_routes[1] eq 'docs' }class="active" {/if}>
-                            <a href="{if $_c['docs_clicked'] != 'yes'}{$_url}settings/docs{else}./docs/{/if}">
-                                <i class="ion ion-ios-bookmarks"></i>
-                                <span class="text">{Lang::T('Documentation')}</span>
-                                {if $_c['docs_clicked'] != 'yes'}
-                                    <span class="pull-right-container"><small
-                                            class="label pull-right bg-green">New</small></span>
-                                {/if}
-                            </a>
-                        </li>
-                        <li {if $_system_menu eq 'community' }class="active" {/if}>
-                            <a href="{$_url}community">
-                                <i class="ion ion-chatboxes"></i>
-                                <span class="text">Community</span>
-                            </a>
-                        </li>
                     {/if}
                     {$_MENU_AFTER_COMMUNITY}
                 </ul>

@@ -3,7 +3,7 @@
 /**
  * PHP Mikrotik Billing (https://github.com/hotspotbilling/phpnuxbill/)
  *
- * This script is for updating SpeedRadius
+ * This script is for updating the Billing System
  **/
 session_start();
 include "config.php";
@@ -14,7 +14,7 @@ if($db_password != null && ($db_pass == null || empty($db_pass))){
 }
 
 if (empty($update_url)) {
-    $update_url = 'https://github.com/shabran01/SpeedRadius/archive/refs/heads/main.zip';
+    // Update URL disabled - contact Watsons Developers for updates
 }
 
 
@@ -49,8 +49,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/SpeedRadius.zip');
-$folder = pathFixer('system/cache/SpeedRadius-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/billing-system.zip');
+$folder = pathFixer('system/cache/billing-system/');
 
 if (empty($step)) {
     $step++;
@@ -198,7 +198,7 @@ function deleteFolder($path)
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>SpeedRadius System Updater</title>
+    <title>Billing System Updater</title>
     <link rel="shortcut icon" href="ui/ui/images/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
@@ -230,7 +230,7 @@ function deleteFolder($path)
     <div class="container">
         <section class="content-header">
             <h1 class="text-center">
-                Update SpeedRadius
+                Update Billing System
             </h1>
         </section>
 
@@ -279,7 +279,7 @@ function deleteFolder($path)
                             <div class="panel panel-success">
                                 <div class="panel-heading">Update Finished</div>
                                 <div class="panel-body">
-                                    SpeedRadius has been updated to Version <b><?= $version ?></b>
+                                    Billing System has been updated to Version <b><?= $version ?></b>
                                 </div>
                             </div>
                             <meta http-equiv="refresh" content="5; ./?_route=dashboard">
@@ -289,7 +289,7 @@ function deleteFolder($path)
             </div>
         </section>
         <footer class="footer text-center">
-            SpeedRadius by <a href=" " rel="nofollow noreferrer noopener" target="_blank">Shabran Kweyu</a>
+            Developed by <a href="https://watsonsdevelopers.com" rel="nofollow noreferrer noopener" target="_blank">Watsons Developers</a> (watsonsdevelopers.com)
         </footer>
     </div>
 </body>

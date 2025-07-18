@@ -2,7 +2,7 @@
 
 /**
  *  PHP Mikrotik Billing (https://github.com/hotspotbilling/phpnuxbill/)
- *  by https://t.me/ibnux
+ *  by Watsons Developers (watsonsdevelopers.com)
  **/
 _admin();
 $ui->assign('_title', Lang::T('Hotspot Plans'));

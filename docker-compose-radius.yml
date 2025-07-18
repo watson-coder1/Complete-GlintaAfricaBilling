@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    container_name: freeradius-server
+    ports:
+      - "1812:1812/udp"  # RADIUS Authentication
+      - "1813:1813/udp"  # RADIUS Accounting
+    environment:
+      - RADIUS_SECRET=radius123
+    volumes:
+      - ./radius-logs:/var/log/freeradius
+    network_mode: bridge
+    restart: unless-stopped

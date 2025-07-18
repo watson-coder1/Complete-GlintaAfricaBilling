@@ -162,6 +162,63 @@ if (file_exists($cacheMRfile) && time() - filemtime($cacheMRfile) < 3600) {
     file_put_contents($cacheMRfile, json_encode($monthlyRegistered));
 }
 
+// Monthly Registered Customers by Service Type (Hotspot/PPPoE) - Real Data
+$cacheMRServicefile = $CACHE_PATH . File::pathFixer('/monthlyRegisteredByService.temp');
+//Cache for 1 hour
+if (file_exists($cacheMRServicefile) && time() - filemtime($cacheMRServicefile) < 3600) {
+    $monthlyRegisteredByService = json_decode(file_get_contents($cacheMRServicefile), true);
+} else {
+    // Hotspot Registrations
+    $hotspotResult = ORM::for_table('tbl_customers')
+        ->select_expr('MONTH(created_at)', 'month')
+        ->select_expr('COUNT(*)', 'count')
+        ->where('service_type', 'Hotspot')
+        ->where_raw('YEAR(created_at) = YEAR(NOW())')
+        ->group_by_expr('MONTH(created_at)')
+        ->find_many();
+
+    // PPPoE Registrations
+    $pppoeResult = ORM::for_table('tbl_customers')
+        ->select_expr('MONTH(created_at)', 'month')
+        ->select_expr('COUNT(*)', 'count')
+        ->where('service_type', 'PPPoE')
+        ->where_raw('YEAR(created_at) = YEAR(NOW())')
+        ->group_by_expr('MONTH(created_at)')
+        ->find_many();
+
+    // Initialize arrays for all 12 months
+    $monthlyRegisteredByService = [
+        'hotspot' => [],
+        'pppoe' => []
+    ];
+
+    // Fill hotspot data
+    $hotspotData = [];
+    foreach ($hotspotResult as $row) {
+        $hotspotData[$row->month] = $row->count;
+    }
+
+    // Fill pppoe data
+    $pppoeData = [];
+    foreach ($pppoeResult as $row) {
+        $pppoeData[$row->month] = $row->count;
+    }
+
+    // Create complete month arrays with zero defaults
+    for ($month = 1; $month <= 12; $month++) {
+        $monthlyRegisteredByService['hotspot'][] = [
+            'month' => $month,
+            'count' => isset($hotspotData[$month]) ? $hotspotData[$month] : 0
+        ];
+        $monthlyRegisteredByService['pppoe'][] = [
+            'month' => $month,
+            'count' => isset($pppoeData[$month]) ? $pppoeData[$month] : 0
+        ];
+    }
+
+    file_put_contents($cacheMRServicefile, json_encode($monthlyRegisteredByService));
+}
+
 $cacheMSfile = $CACHE_PATH . File::pathFixer('/monthlySales.temp');
 //Cache for 12 hours
 if (file_exists($cacheMSfile) && time() - filemtime($cacheMSfile) < 43200) {
@@ -209,6 +266,71 @@ if (file_exists($cacheMSfile) && time() - filemtime($cacheMSfile) < 43200) {
     file_put_contents($cacheMSfile, json_encode($monthlySales));
 }
 
+// Monthly Sales by Service Type (Hotspot/PPPoE) - Real Data from Transactions
+$cacheMSServicefile = $CACHE_PATH . File::pathFixer('/monthlySalesByService.temp');
+//Cache for 12 hours
+if (file_exists($cacheMSServicefile) && time() - filemtime($cacheMSServicefile) < 43200) {
+    $monthlySalesByService = json_decode(file_get_contents($cacheMSServicefile), true);
+} else {
+    // Hotspot Sales (Real transactions from M-Pesa/payments)
+    $hotspotSalesResult = ORM::for_table('tbl_transactions')
+        ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+        ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+        ->select_expr('MONTH(tbl_transactions.recharged_on)', 'month')
+        ->select_expr('SUM(tbl_transactions.price)', 'total')
+        ->where('tbl_plans.type', 'Hotspot')
+        ->where_raw('YEAR(tbl_transactions.recharged_on) = YEAR(NOW())')
+        ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+        ->where_not_equal('tbl_transactions.method', 'Recharge Balance - Administrator')
+        ->group_by_expr('MONTH(tbl_transactions.recharged_on)')
+        ->find_many();
+
+    // PPPoE Sales (Real transactions from M-Pesa/payments)
+    $pppoeSalesResult = ORM::for_table('tbl_transactions')
+        ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+        ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+        ->select_expr('MONTH(tbl_transactions.recharged_on)', 'month')
+        ->select_expr('SUM(tbl_transactions.price)', 'total')
+        ->where('tbl_plans.type', 'PPPOE')
+        ->where_raw('YEAR(tbl_transactions.recharged_on) = YEAR(NOW())')
+        ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+        ->where_not_equal('tbl_transactions.method', 'Recharge Balance - Administrator')
+        ->group_by_expr('MONTH(tbl_transactions.recharged_on)')
+        ->find_many();
+
+    // Initialize arrays
+    $monthlySalesByService = [
+        'hotspot' => [],
+        'pppoe' => []
+    ];
+
+    // Process hotspot sales data
+    $hotspotSalesData = [];
+    foreach ($hotspotSalesResult as $row) {
+        $hotspotSalesData[$row->month] = $row->total ? $row->total : 0;
+    }
+
+    // Process pppoe sales data
+    $pppoeSalesData = [];
+    foreach ($pppoeSalesResult as $row) {
+        $pppoeSalesData[$row->month] = $row->total ? $row->total : 0;
+    }
+
+    // Create complete month arrays with zero defaults
+    for ($month = 1; $month <= 12; $month++) {
+        $monthlySalesByService['hotspot'][] = [
+            'month' => $month,
+            'totalSales' => isset($hotspotSalesData[$month]) ? $hotspotSalesData[$month] : 0
+        ];
+        $monthlySalesByService['pppoe'][] = [
+            'month' => $month,
+            'totalSales' => isset($pppoeSalesData[$month]) ? $pppoeSalesData[$month] : 0
+        ];
+    }
+
+    file_put_contents($cacheMSServicefile, json_encode($monthlySalesByService));
+}
+
 if ($config['router_check']) {
     $routeroffs = ORM::for_table('tbl_routers')->selects(['id', 'name', 'last_seen'])->where('status', 'Offline')->where('enabled', '1')->order_by_desc('name')->find_array();
     $ui->assign('routeroffs', $routeroffs);
@@ -220,6 +342,82 @@ if (file_exists($timestampFile)) {
     $ui->assign('run_date', date('Y-m-d h:i:s A', $lastRunTime));
 }
 
+// Real-time Active Users by Service Type
+$cacheActiveUsersfile = $CACHE_PATH . File::pathFixer('/activeUsersByService.temp');
+//Cache for 5 minutes (real-time data)
+if (file_exists($cacheActiveUsersfile) && time() - filemtime($cacheActiveUsersfile) < 300) {
+    $activeUsersByService = json_decode(file_get_contents($cacheActiveUsersfile), true);
+} else {
+    $activeUsersByService = [
+        'hotspot_online' => 0,
+        'pppoe_active' => 0,
+        'hotspot_expired' => 0,
+        'pppoe_expired' => 0
+    ];
+
+    // Hotspot Online Users (from RADIUS radacct table - Real active sessions)
+    if ($config['radius_enable']) {
+        try {
+            $activeUsersByService['hotspot_online'] = ORM::for_table('radacct', 'radius')
+                ->where_null('acctstoptime')
+                ->count();
+        } catch (Exception $e) {
+            $activeUsersByService['hotspot_online'] = 0;
+        }
+    }
+
+    // PPPoE Active Users (from customer table - Real active subscriptions)
+    $activeUsersByService['pppoe_active'] = ORM::for_table('tbl_customers')
+        ->where('service_type', 'PPPoE')
+        ->where('status', 'Active')
+        ->count();
+
+    // Hotspot Expired Users (from user_recharges)
+    $activeUsersByService['hotspot_expired'] = ORM::for_table('tbl_user_recharges')
+        ->where('type', 'Hotspot')
+        ->where('status', 'off')
+        ->where_lt('expiration', date('Y-m-d'))
+        ->count();
+
+    // PPPoE Expired Users
+    $activeUsersByService['pppoe_expired'] = ORM::for_table('tbl_customers')
+        ->where('service_type', 'PPPoE')
+        ->where_in('status', ['Expired', 'Inactive'])
+        ->count();
+
+    file_put_contents($cacheActiveUsersfile, json_encode($activeUsersByService));
+}
+
+// Today's Income by Service Type (Real-time)
+$todayIncomeByService = [
+    'hotspot' => 0,
+    'pppoe' => 0
+];
+
+// Hotspot income today
+$hotspotIncomeToday = ORM::for_table('tbl_transactions')
+    ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+    ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_plans.type', 'Hotspot')
+    ->where('tbl_transactions.recharged_on', $current_date)
+    ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+    ->where_not_equal('tbl_transactions.method', 'Recharge Balance - Administrator')
+    ->sum('tbl_transactions.price');
+
+$todayIncomeByService['hotspot'] = $hotspotIncomeToday ?: 0;
+
+// PPPoE income today
+$pppoeIncomeToday = ORM::for_table('tbl_transactions')
+    ->join('tbl_user_recharges', ['tbl_transactions.invoice', '=', 'tbl_user_recharges.id'])
+    ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+    ->where('tbl_plans.type', 'PPPOE')
+    ->where('tbl_transactions.recharged_on', $current_date)
+    ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
+    ->where_not_equal('tbl_transactions.method', 'Recharge Balance - Administrator')
+    ->sum('tbl_transactions.price');
+
+$todayIncomeByService['pppoe'] = $pppoeIncomeToday ?: 0;
+
 // Assign the monthly sales data to Smarty
 $ui->assign('start_date', $start_date);
 $ui->assign('current_date', $current_date);
@@ -228,6 +426,12 @@ $ui->assign('xfooter', '');
 $ui->assign('monthlyRegistered', $monthlyRegistered);
 $ui->assign('stocks', $stocks);
 $ui->assign('plans', $plans);
+
+// Assign new service-specific analytics data
+$ui->assign('monthlyRegisteredByService', $monthlyRegisteredByService);
+$ui->assign('monthlySalesByService', $monthlySalesByService);
+$ui->assign('activeUsersByService', $activeUsersByService);
+$ui->assign('todayIncomeByService', $todayIncomeByService);
 
 run_hook('view_dashboard'); #HOOK
 $ui->display('dashboard.tpl');

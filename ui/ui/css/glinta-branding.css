@@ -1,0 +1,47 @@
+/* Glinta Africa Custom Branding */
+.footer-brand {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.developer-link {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.developer-link:hover {
+    color: #1e7e34;
+    text-decoration: underline;
+}
+
+.brand-logo {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Glinta Africa Header Branding */
+.navbar-brand {
+    font-weight: bold;
+    color: #007bff !important;
+}
+
+/* Admin Panel Header */
+.main-header .navbar-brand {
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+/* Login Page Branding */
+.login-logo {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-logo:hover {
+    color: #0056b3;
+    text-decoration: none;
+}

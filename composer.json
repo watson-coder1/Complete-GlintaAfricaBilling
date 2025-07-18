@@ -1,15 +1,15 @@
 {
-    "name": "hotspotbilling/phpnuxbill",
+    "name": "watsonsdevelopers/billing-system",
     "type": "template",
-    "description": "PHPNuxBill a Hotspot Billing Software.",
-    "keywords": ["template","PHPMixBill","PHPnuxBill","Mikrotik","Hotspot","Billing"],
-    "homepage": "https://github.com/hotspotbilling/phpnuxbill",
+    "description": "Professional Billing System with RADIUS Integration.",
+    "keywords": ["billing","radius","mikrotik","hotspot","system"],
+    "homepage": "https://watsonsdevelopers.com",
     "license": "MIT",
     "authors": [
         {
-            "name": "ibnux",
-            "email": "me@ibnux.net",
-            "homepage": "https://ibnux.net",
+            "name": "Watsons Developers",
+            "email": "info@watsonsdevelopers.com",
+            "homepage": "https://watsonsdevelopers.com",
             "role": "Developer"
         }
     ]

@@ -1,0 +1,11 @@
+Fri Jul 18 00:28:45 2025 : Warning: Shared secret for client localhost is short, and likely can be broken by an attacker.
+Fri Jul 18 00:28:45 2025 : Warning: Shared secret for client localhost_ipv6 is short, and likely can be broken by an attacker.
+Fri Jul 18 00:28:45 2025 : Info: Debug state unknown (cap_sys_ptrace capability not set)
+Fri Jul 18 00:28:45 2025 : Info: systemd watchdog is disabled
+Fri Jul 18 00:28:45 2025 : Info: Loaded virtual server <default>
+Fri Jul 18 00:28:45 2025 : Warning: Ignoring "sql" (see raddb/mods-available/README.rst)
+Fri Jul 18 00:28:45 2025 : Warning: Ignoring "ldap" (see raddb/mods-available/README.rst)
+Fri Jul 18 00:28:45 2025 : Info: Loaded virtual server default
+Fri Jul 18 00:28:45 2025 : Info:  # Skipping contents of 'if' as it is always 'false' -- /etc/freeradius/sites-enabled/inner-tunnel:366
+Fri Jul 18 00:28:45 2025 : Info: Loaded virtual server inner-tunnel
+Fri Jul 18 00:28:45 2025 : Info: Ready to process requests

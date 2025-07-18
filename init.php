@@ -1,8 +1,8 @@
 <?php
 
 /**
- *  PHP Mikrotik Billing (https://github.com/hotspotbilling/phpnuxbill/)
- *  by https://t.me/ibnux
+ *  Billing System with RADIUS Integration
+ *  by Watsons Developers (watsonsdevelopers.com)
  **/
 
 if (realpath(__FILE__) == realpath($_SERVER['SCRIPT_FILENAME'])) {

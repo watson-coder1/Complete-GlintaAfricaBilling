@@ -20,8 +20,30 @@ class Mikrotik
         if ($_app_stage == 'demo') {
             return null;
         }
+        
+        // Check if IP is empty or null
+        if (empty($ip) || is_null($ip) || trim($ip) === '') {
+            return null;
+        }
+        
+        // Check if user is empty or null
+        if (empty($user) || is_null($user) || trim($user) === '') {
+            return null;
+        }
+        
         $iport = explode(":", $ip);
-        return new RouterOS\Client($iport[0], $user, $pass, ($iport[1]) ? $iport[1] : null);
+        
+        // Check if IP address is valid after splitting
+        if (empty($iport[0]) || is_null($iport[0]) || trim($iport[0]) === '') {
+            return null;
+        }
+        
+        try {
+            return new RouterOS\Client($iport[0], $user, $pass, ($iport[1]) ? $iport[1] : null);
+        } catch (Exception $e) {
+            // Log error if needed and return null instead of throwing
+            return null;
+        }
     }
 
     public static function isUserLogin($client, $username)
