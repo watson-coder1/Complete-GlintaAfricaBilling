@@ -75,8 +75,8 @@
                                     <div class="form-group">
                                         <label for="callback_url">Callback URL</label>
                                         <div class="input-group">
-                                            <input type="url" class="form-control" id="callback_url" 
-                                                   name="callback_url" value="{$daraja_callback_url}" required>
+                                            <input type="text" class="form-control" id="callback_url" 
+                                                   name="callback_url" value="{$daraja_callback_url}">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="copyToClipboard('{$daraja_callback_url}')">
                                                     <i class="fa fa-copy"></i>
@@ -87,10 +87,10 @@
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="daraja_timeout_url">Timeout URL</label>
+                                        <label for="timeout_url">Timeout URL</label>
                                         <div class="input-group">
-                                            <input type="url" class="form-control" id="daraja_timeout_url" 
-                                                   name="daraja_timeout_url" value="{$daraja_timeout_url}" required>
+                                            <input type="text" class="form-control" id="timeout_url" 
+                                                   name="timeout_url" value="{$daraja_timeout_url}">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button" onclick="copyToClipboard('{$daraja_timeout_url}')">
                                                     <i class="fa fa-copy"></i>
