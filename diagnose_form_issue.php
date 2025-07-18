@@ -108,7 +108,7 @@ echo "<hr>";
 echo "<p><strong>Next Steps:</strong></p>";
 echo "<ol>";
 echo "<li>Test the form above - can you type in the fields?</li>";
-echo "<li>Check your actual Daraja form at: <a href='http://localhost/?_route=paymentgateway/Daraja' target='_blank'>http://localhost/?_route=paymentgateway/Daraja</a></li>";
+echo "<li>Check your actual Daraja form at: <a href='https://glintaafrica.com/?_route=paymentgateway/Daraja' target='_blank'>https://glintaafrica.com/?_route=paymentgateway/Daraja</a></li>";
 echo "<li>Report back what happens</li>";
 echo "</ol>";
 

@@ -83,5 +83,5 @@ foreach ($samplePlans as $planData) {
 }
 
 echo "\n✅ Captive Portal Setup Complete!\n";
-echo "Portal URL: http://localhost/?_route=captive_portal\n";
+echo "Portal URL: https://glintaafrica.com/?_route=captive_portal\n";
 ?>

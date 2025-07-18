@@ -5,7 +5,7 @@
  */
 
 // Database Configuration
-$db_host = 'localhost';
+$db_host = 'localhost'; // Production database server
 $db_port = '3306';
 $db_name = 'glinta_billing';
 $db_username = 'glinta_user';
@@ -26,7 +26,7 @@ $mpesa_config = [
 
 // RADIUS Configuration
 $radius_config = [
-    'host' => 'localhost',
+    'host' => 'localhost', // RADIUS database server
     'port' => '3306',
     'database' => 'radius',
     'username' => 'radius_user',

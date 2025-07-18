@@ -121,7 +121,7 @@
         </ol>
         
         <p><strong>Go back to Daraja form:</strong><br>
-        <a href="http://localhost/?_route=paymentgateway/Daraja">http://localhost/?_route=paymentgateway/Daraja</a></p>
+        <a href="https://glintaafrica.com/?_route=paymentgateway/Daraja">https://glintaafrica.com/?_route=paymentgateway/Daraja</a></p>
     </div>
 </body>
 </html>
