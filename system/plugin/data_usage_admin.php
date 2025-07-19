@@ -5,8 +5,8 @@ function data_usage_admin()
 {
     global $ui;
     _admin();
-    $ui->assign('_title', 'User Data Usage');
-    $ui->assign('_system_menu', '');
+    $ui->assign('_title', 'Data Usage');
+    $ui->assign('_system_menu', 'services');
     $admin = Admin::_info();
     $ui->assign('_admin', $admin);
     
@@ -14,58 +14,36 @@ function data_usage_admin()
     
     // Check if radius database tables exist
     if (!isRadiusTableExist('radacct')) {
-        echo "<div style=\"padding: 20px; font-family: Arial;\">
-        <h2>User Data Usage</h2>
-        <div style=\"background: #f0f8ff; padding: 15px; border-left: 4px solid #007cba;\">
-        <h3>No Data Available</h3>
-        <p>No data usage records found yet.</p>
-        <p>Data will appear here once users start accessing the internet through your system.</p>
-        </div>
-        </div>";
+        $ui->assign('has_data', false);
+        $ui->assign('search', $search);
+        $ui->assign('data', []);
+        $ui->assign('total', 0);
+        $ui->display('data_usage_admin.tpl');
         return;
     }
     
     $total = data_usage_admin_count_user_data($search);
     $data = data_usage_admin_fetch_user_data($search, 1, 50);
-
-    echo "<div style=\"padding: 20px; font-family: Arial;\">
-    <h2>User Data Usage</h2>
-    <form method=\"POST\" style=\"margin-bottom: 20px;\">
-        <input type=\"text\" name=\"q\" value=\"" . htmlspecialchars($search) . "\" placeholder=\"Search username\" style=\"padding: 8px; margin-right: 10px;\">
-        <button type=\"submit\" style=\"padding: 8px 15px;\">Search</button>
-    </form>";
-
-    if ($total == 0) {
-        echo "<div style=\"background: #f0f8ff; padding: 15px; border-left: 4px solid #007cba;\">
-        <h3>No Data Available</h3>
-        <p>No data usage records found yet.</p>
-        <p>Data will appear here once users start accessing the internet through your system.</p>
-        </div>";
-    } else {
-        echo "<p><strong>Total Records: " . $total . "</strong></p>
-        <table style=\"width: 100%; border-collapse: collapse;\">
-        <tr style=\"background: #f5f5f5;\">
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Username</th>
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Downloaded</th>
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Uploaded</th>
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Total Usage</th>
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Status</th>
-            <th style=\"border: 1px solid #ddd; padding: 10px;\">Date</th>
-        </tr>";
-        
-        foreach ($data as $row) {
-            echo "<tr>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . htmlspecialchars($row->username) . "</td>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . data_usage_admin_convert_bytes($row->acctinputoctets) . "</td>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . data_usage_admin_convert_bytes($row->acctoutputoctets) . "</td>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . data_usage_admin_convert_bytes($row->acctinputoctets + $row->acctoutputoctets) . "</td>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . (empty($row->acctstoptime) ? '<span style=\"color: green;\">Connected</span>' : '<span style=\"color: red;\">Disconnected</span>') . "</td>
-                <td style=\"border: 1px solid #ddd; padding: 8px;\">" . ($row->acctstarttime ?? 'N/A') . "</td>
-            </tr>";
-        }
-        echo "</table>";
+    
+    // Process data for display
+    $processed_data = [];
+    foreach ($data as $row) {
+        $processed_data[] = [
+            'username' => $row->username,
+            'downloaded' => data_usage_admin_convert_bytes($row->acctinputoctets),
+            'uploaded' => data_usage_admin_convert_bytes($row->acctoutputoctets),
+            'total' => data_usage_admin_convert_bytes($row->acctinputoctets + $row->acctoutputoctets),
+            'status' => empty($row->acctstoptime) ? 'Connected' : 'Disconnected',
+            'status_class' => empty($row->acctstoptime) ? 'success' : 'danger',
+            'date' => $row->acctstarttime ?? 'N/A'
+        ];
     }
-    echo "</div>";
+    
+    $ui->assign('has_data', $total > 0);
+    $ui->assign('search', $search);
+    $ui->assign('data', $processed_data);
+    $ui->assign('total', $total);
+    $ui->display('data_usage_admin.tpl');
 }
 
 function isRadiusTableExist($table_name)
