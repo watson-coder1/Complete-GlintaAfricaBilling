@@ -3,9 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Welcome to Glinta WiFi - Internet Access Activated</title>
+    <title>Welcome to Glinta WiFi - Internet Access Active</title>
     <link rel="shortcut icon" href="{$_url}/ui/ui/images/logo.png" type="image/x-icon" />
-    <meta http-equiv="refresh" content="10;url=https://google.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

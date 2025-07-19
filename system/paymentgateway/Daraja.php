@@ -146,3 +146,130 @@ function Daraja_process_payment($user, $plan, $trx)
         'redirect' => U . 'order/view/' . $d->id() . '/daraja'
     ];
 }
+
+/**
+ * Initiate STK Push for M-Pesa payment
+ */
+function Daraja_stk_push($phoneNumber, $amount, $accountReference, $transactionDesc)
+{
+    global $config, $UPLOAD_PATH;
+    
+    // Get configuration
+    $pg = ORM::for_table('tbl_pg')->where('gateway', 'Daraja')->find_one();
+    
+    if (!$pg || !$pg['status']) {
+        return ['success' => false, 'message' => 'Payment gateway not configured or disabled'];
+    }
+    
+    $pgData = json_decode($pg['pg_data'], true);
+    
+    // Get access token
+    $token = Daraja_get_access_token($pgData);
+    if (!$token) {
+        return ['success' => false, 'message' => 'Failed to authenticate with M-Pesa'];
+    }
+    
+    // Format phone number (remove leading 0 or +254)
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    if (substr($phoneNumber, 0, 1) == '0') {
+        $phoneNumber = '254' . substr($phoneNumber, 1);
+    } elseif (substr($phoneNumber, 0, 3) != '254') {
+        $phoneNumber = '254' . $phoneNumber;
+    }
+    
+    // Prepare STK Push request
+    $timestamp = date('YmdHis');
+    $password = base64_encode($pgData['shortcode'] . $pgData['passkey'] . $timestamp);
+    
+    $url = $pgData['environment'] == 'live'
+        ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+        : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+    
+    $data = [
+        'BusinessShortCode' => $pgData['shortcode'],
+        'Password' => $password,
+        'Timestamp' => $timestamp,
+        'TransactionType' => 'CustomerPayBillOnline',
+        'Amount' => intval($amount),
+        'PartyA' => $phoneNumber,
+        'PartyB' => $pgData['shortcode'],
+        'PhoneNumber' => $phoneNumber,
+        'CallBackURL' => $pgData['callback_url'] ?? (U . 'callback/daraja'),
+        'AccountReference' => substr($accountReference, 0, 12), // Max 12 characters
+        'TransactionDesc' => substr($transactionDesc, 0, 13)   // Max 13 characters
+    ];
+    
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $token,
+        'Content-Type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    // Log the request and response
+    if (isset($UPLOAD_PATH)) {
+        file_put_contents($UPLOAD_PATH . '/daraja_stk_push.log', 
+            date('Y-m-d H:i:s') . " Request: " . json_encode($data) . "\n" .
+            "Response: " . $response . "\n\n", FILE_APPEND);
+    }
+    
+    if ($httpCode == 200) {
+        $result = json_decode($response, true);
+        if (isset($result['ResponseCode']) && $result['ResponseCode'] == '0') {
+            return [
+                'success' => true,
+                'checkout_request_id' => $result['CheckoutRequestID'],
+                'merchant_request_id' => $result['MerchantRequestID'],
+                'response_code' => $result['ResponseCode'],
+                'response_description' => $result['ResponseDescription'],
+                'customer_message' => $result['CustomerMessage']
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => $result['ResponseDescription'] ?? 'STK Push failed'
+            ];
+        }
+    }
+    
+    return ['success' => false, 'message' => 'Failed to initiate payment. HTTP Code: ' . $httpCode];
+}
+
+/**
+ * Get OAuth access token from M-Pesa
+ */
+function Daraja_get_access_token($config)
+{
+    $url = $config['environment'] == 'live'
+        ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+        : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+    
+    $credentials = base64_encode($config['consumer_key'] . ':' . $config['consumer_secret']);
+    
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . $credentials]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($httpCode == 200) {
+        $result = json_decode($response, true);
+        if (isset($result['access_token'])) {
+            return $result['access_token'];
+        }
+    }
+    
+    return false;
+}
