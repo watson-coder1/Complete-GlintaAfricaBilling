@@ -8,9 +8,16 @@
 
 require_once 'init.php';
 
-// Check admin access
-if (!isset($_SESSION['aid']) || empty($_SESSION['aid'])) {
-    die('Admin access required');
+// Check admin access using the same method as other controllers
+try {
+    $admin = Admin::_info();
+    if (!$admin) {
+        header('Location: ' . U . 'login');
+        exit;
+    }
+} catch (Exception $e) {
+    header('Location: ' . U . 'login');
+    exit;
 }
 
 ?>
