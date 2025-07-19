@@ -139,7 +139,26 @@ try {
         unset($menus, $menu_registered);
         include($sys_render);
     } else {
-        r2(U . 'dashboard', 'e', 'not found');
+        // Handle invalid routes gracefully without notifications
+        // Common invalid routes: favicon.ico, robots.txt, etc.
+        $ignoredRoutes = ['favicon.ico', 'robots.txt', 'apple-touch-icon', 'manifest.json'];
+        $shouldIgnore = false;
+        
+        foreach ($ignoredRoutes as $ignored) {
+            if (strpos($handler, $ignored) !== false) {
+                $shouldIgnore = true;
+                break;
+            }
+        }
+        
+        if ($shouldIgnore) {
+            // Silently redirect without notification for browser resource requests
+            header('HTTP/1.0 404 Not Found');
+            exit;
+        } else {
+            // Only show notification for actual navigation attempts
+            r2(U . 'dashboard', 'e', 'Page not found');
+        }
     }
 } catch (Throwable $e) {
     Message::sendTelegram(
