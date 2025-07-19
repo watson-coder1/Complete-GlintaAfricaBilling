@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>{Lang::T('Login')} - {$_c['CompanyName']}</title>
+    <title>Admin Login - Glinta Africa</title>
     <link rel="shortcut icon" href="ui/ui/images/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
@@ -16,10 +16,10 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            {$_c['CompanyName']}
+            <b>Glinta</b>Africa
         </div>
         <div class="login-box-body">
-            <p class="login-box-msg">{Lang::T('Enter Admin Area')}</p>
+            <p class="login-box-msg">Enter Glinta Africa Admin Area</p>
             {if isset($notify)}
                 {$notify}
             {/if}
