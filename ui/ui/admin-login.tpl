@@ -84,7 +84,7 @@
             width: 90px;
             height: 90px;
             margin: 0 auto 25px;
-            background: #000000;
+            background: #FFFFFF;
             border: 2px solid #D4AF37;
             display: flex;
             align-items: center;
@@ -104,10 +104,9 @@
         }
 
         .login-logo img {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
-            filter: brightness(0) invert(1);
         }
 
         .company-name {
