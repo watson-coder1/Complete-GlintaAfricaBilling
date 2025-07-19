@@ -17,30 +17,33 @@
                     {/if}
                 </form>
 
-                {if !$has_data}
-                    <!-- No Data Available -->
-                    <div class="alert alert-info">
-                        <h4><i class="fa fa-info-circle"></i> No Data Available</h4>
-                        <p>No data usage records found yet.</p>
-                        <p>Data will appear here once users start accessing the internet through your system.</p>
-                    </div>
-                {else}
-                    <!-- Data Table -->
-                    <p><strong>Total Records: {$total}</strong></p>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
+                <!-- Data Table -->
+                <p><strong>Total Records: {$total}</strong></p>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Downloaded</th>
+                                <th>Uploaded</th>
+                                <th>Total Usage</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {if !$has_data}
                                 <tr>
-                                    <th>Username</th>
-                                    <th>Downloaded</th>
-                                    <th>Uploaded</th>
-                                    <th>Total Usage</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
+                                    <td colspan="6" class="text-center">
+                                        <div class="alert alert-info" style="margin: 20px 0;">
+                                            <h4><i class="fa fa-info-circle"></i> No Data Available</h4>
+                                            <p>No data usage records found yet.</p>
+                                            <p>Data will appear here once users start accessing the internet through your system.</p>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
+                            {else}
                                 {foreach $data as $row}
                                 <tr>
                                     <td>{$row.username}</td>
@@ -55,10 +58,10 @@
                                     <td>{$row.date}</td>
                                 </tr>
                                 {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                {/if}
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
                 
             </div>
         </div>
