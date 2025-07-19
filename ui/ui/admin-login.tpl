@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Admin Login - Glinta Africa</title>
-    <link rel="shortcut icon" href="ui/ui/images/favicon.ico" type="image/x-icon" />
-    <link rel="icon" type="image/png" sizes="32x32" href="ui/ui/images/favicon-32x32.png">
+    <link rel="shortcut icon" href="ui/ui/images/favicon.png" type="image/png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="ui/ui/images/favicon.png">
     <link rel="apple-touch-icon" href="ui/ui/images/favicon.png">
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
@@ -16,7 +16,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -24,121 +24,205 @@
             justify-content: center;
             margin: 0;
             padding: 20px;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 0;
-            width: 100%;
-            max-width: 400px;
+            position: relative;
             overflow: hidden;
         }
 
+        /* Professional gold gradient background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, #D4AF37 25%, transparent 25%),
+                linear-gradient(-45deg, #D4AF37 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #D4AF37 75%),
+                linear-gradient(-45deg, transparent 75%, #D4AF37 75%);
+            background-size: 30px 30px;
+            background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .login-container {
+            background: #0A0A0A;
+            border: 1px solid #D4AF37;
+            border-radius: 0;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+            padding: 0;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            z-index: 2;
+        }
+
         .login-header {
-            background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
-            color: white;
-            padding: 40px 30px 30px;
+            background: #000000;
+            border-bottom: 3px solid #D4AF37;
+            color: #D4AF37;
+            padding: 50px 40px 40px;
             text-align: center;
             position: relative;
         }
 
+        /* Gold accent line */
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+        }
+
         .login-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: white;
-            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 25px;
+            background: #000000;
+            border: 2px solid #D4AF37;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .login-logo::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 1px solid #D4AF37;
+            opacity: 0.5;
         }
 
         .login-logo img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
+            filter: brightness(0) invert(1);
         }
 
         .company-name {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 32px;
+            font-weight: 300;
             margin: 0 0 10px 0;
-            letter-spacing: -0.5px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #D4AF37;
         }
 
         .company-name .highlight {
-            color: #3498DB;
+            font-weight: 700;
         }
 
         .login-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
+            font-size: 13px;
             margin: 0;
-            font-weight: 300;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #8B7500;
         }
 
         .login-body {
-            padding: 40px 30px;
+            padding: 50px 40px;
+            background: #0A0A0A;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #D4AF37;
+            font-weight: 300;
+            font-size: 18px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             position: relative;
         }
 
         .form-control {
-            height: 50px;
-            border: 2px solid #E8ECF4;
-            border-radius: 12px;
-            padding: 15px 20px 15px 50px;
-            font-size: 16px;
+            height: 55px;
+            border: 1px solid #333333;
+            border-radius: 0;
+            padding: 15px 20px 15px 55px;
+            font-size: 15px;
             transition: all 0.3s ease;
-            background: #F8F9FA;
+            background: #000000;
+            color: #FFFFFF;
         }
 
         .form-control:focus {
-            border-color: #3498DB;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-            background: white;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 1px #D4AF37;
+            background: #000000;
             outline: none;
+            color: #FFFFFF;
         }
 
         .form-control::placeholder {
-            color: #8E9BAE;
-            font-weight: 400;
+            color: #666666;
+            font-weight: 300;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
         }
 
         .input-icon {
             position: absolute;
-            left: 18px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #8E9BAE;
-            font-size: 18px;
+            color: #D4AF37;
+            font-size: 16px;
             z-index: 10;
         }
 
         .login-btn {
-            background: linear-gradient(135deg, #3498DB 0%, #2C3E50 100%);
+            background: #D4AF37;
             border: none;
-            height: 50px;
-            border-radius: 12px;
-            font-size: 16px;
+            height: 55px;
+            border-radius: 0;
+            font-size: 14px;
             font-weight: 600;
-            color: white;
+            color: #000000;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             position: relative;
             overflow: hidden;
         }
 
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
-            background: linear-gradient(135deg, #2980B9 0%, #1A252F 100%);
+            background: #B8941F;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
         }
 
         .login-btn:active {
@@ -146,87 +230,102 @@
         }
 
         .alert {
-            border-radius: 12px;
-            border: none;
+            border-radius: 0;
+            border: 1px solid;
             padding: 15px 20px;
-            margin-bottom: 20px;
-            font-weight: 500;
+            margin-bottom: 25px;
+            font-weight: 400;
+            font-size: 14px;
         }
 
         .alert-danger {
-            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%);
-            color: white;
+            background: #1A0000;
+            border-color: #8B0000;
+            color: #FF6B6B;
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%);
-            color: white;
+            background: #001A00;
+            border-color: #228B22;
+            color: #90EE90;
+        }
+
+        .security-notice {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #1A1A1A;
+        }
+
+        .security-notice small {
+            color: #666666;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .security-notice i {
+            color: #D4AF37;
+            margin-right: 8px;
         }
 
         @media (max-width: 480px) {
             .login-container {
                 margin: 10px;
-                border-radius: 15px;
             }
             
             .login-header {
-                padding: 30px 20px 20px;
+                padding: 40px 30px 30px;
             }
             
             .login-body {
-                padding: 30px 20px;
+                padding: 40px 30px;
             }
             
             .company-name {
-                font-size: 24px;
+                font-size: 26px;
             }
         }
 
-        .background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .background-animation::before {
+        /* Professional corner accents */
+        .login-container::before,
+        .login-container::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: float 20s infinite linear;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #D4AF37;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
+        .login-container::before {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .login-container::after {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
         }
     </style>
 </head>
 
 <body>
-    <div class="background-animation"></div>
-    
     <div class="login-container">
         <div class="login-header">
             <div class="login-logo">
-                <img src="{$app_url}/ui/ui/images/logo.png" alt="Glinta Africa Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\'fas fa-wifi\' style=\'color: #3498DB; font-size: 30px;\'></i>';">
-            </div>
+                <img src="{$app_url}/ui/ui/images/glinta-logo.png" alt="Glinta Africa Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\'fas fa-wifi\' style=\'color: #D4AF37; font-size: 40px;\'></i>';">            </div>
             <h1 class="company-name">
-                <span class="highlight">Glinta</span>Africa
+                <span class="highlight">GLINTA</span>AFRICA
             </h1>
             <p class="login-subtitle">ISP Management System</p>
         </div>
         
         <div class="login-body">
-            <h3 style="text-align: center; margin-bottom: 30px; color: #2C3E50; font-weight: 600;">Admin Portal</h3>
+            <h3 class="login-title">Administrator Access</h3>
             
             {if isset($notify)}
                 {$notify}
@@ -237,24 +336,24 @@
                 
                 <div class="form-group">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" required class="form-control" name="username" placeholder="Enter your username">
+                    <input type="text" required class="form-control" name="username" placeholder="Username">
                 </div>
                 
                 <div class="form-group">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" required class="form-control" name="password" placeholder="Enter your password">
+                    <input type="password" required class="form-control" name="password" placeholder="Password">
                 </div>
                 
                 <button type="submit" class="btn login-btn btn-block">
                     <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
-                    Access Admin Panel
+                    LOGIN
                 </button>
             </form>
             
-            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E8ECF4;">
-                <small style="color: #8E9BAE;">
-                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i>
-                    Secure Admin Access
+            <div class="security-notice">
+                <small>
+                    <i class="fas fa-shield-alt"></i>
+                    SECURE ADMINISTRATION PORTAL
                 </small>
             </div>
         </div>
