@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Admin Login - Glinta Africa</title>
-    <link rel="shortcut icon" href="ui/ui/images/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="ui/ui/images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" type="image/png" sizes="32x32" href="ui/ui/images/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="ui/ui/images/favicon.png">
 
     <link rel="stylesheet" href="ui/ui/styles/bootstrap.min.css">
     <link rel="stylesheet" href="ui/ui/styles/modern-AdminLTE.min.css">
