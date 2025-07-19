@@ -12,6 +12,6 @@ if($adminId > 0){
 } elseif($userId > 0){
     r2(U.'home');
 } else {
-    // Redirect to customer login
-    r2(U.'login');
+    // Show landing page for visitors
+    r2(U.'landing/home-enhanced');
 }

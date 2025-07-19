@@ -1145,22 +1145,22 @@
                         <a class="nav-link" href="{$app_url}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/services">Services</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/features">Features</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/pricing">Pricing</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/about">About</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/contact">Contact</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{$app_url}/landing/blog">Blog</a>
+                        <a class="nav-link" href="{$app_url}/?_route=landing/blog">Blog</a>
                     </li>
                 </ul>
             </div>
@@ -1221,7 +1221,7 @@
                                 <i class="fas fa-desktop me-2"></i>
                                 See The Magic In Action
                             </a>
-                            <a href="{$app_url}/landing/contact" class="btn btn-outline-light btn-lg mb-3">
+                            <a href="{$app_url}/?_route=landing/contact" class="btn btn-outline-light btn-lg mb-3">
                                 <i class="fas fa-handshake me-2"></i>
                                 Let's Make Money Together
                             </a>
@@ -1552,11 +1552,11 @@
                         </div>
                         
                         <div class="mt-5">
-                            <a href="{$app_url}/landing/contact" class="btn btn-primary btn-lg me-3">
+                            <a href="{$app_url}/?_route=landing/contact" class="btn btn-primary btn-lg me-3">
                                 <i class="fas fa-desktop me-2"></i>
                                 Request Demo
                             </a>
-                            <a href="{$app_url}/landing/contact" class="btn btn-outline-primary btn-lg">
+                            <a href="{$app_url}/?_route=landing/contact" class="btn btn-outline-primary btn-lg">
                                 <i class="fas fa-user me-2"></i>
                                 Contact Us
                             </a>
@@ -1712,7 +1712,7 @@
                         Join the digital revolution. Start your free trial today.
                     </p>
                     <div data-aos="zoom-in" data-aos-delay="200">
-                        <a href="{$app_url}/landing/contact" class="btn btn-dark btn-lg me-3">
+                        <a href="{$app_url}/?_route=landing/contact" class="btn btn-dark btn-lg me-3">
                             <i class="fas fa-rocket me-2"></i>
                             Start Free Trial
                         </a>
@@ -1773,39 +1773,39 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 style="color: var(--gold);" class="mb-3">Solutions</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/landing/services" style="color: var(--gold-light);">Hotspot Billing</a></li>
-                        <li><a href="{$app_url}/landing/services-enhanced" style="color: var(--gold-light);">PPPoE Management</a></li>
-                        <li><a href="{$app_url}/landing/services" style="color: var(--gold-light);">Payment Gateway</a></li>
-                        <li><a href="{$app_url}/landing/features" style="color: var(--gold-light);">Analytics Suite</a></li>
+                        <li><a href="{$app_url}/?_route=landing/services" style="color: var(--gold-light);">Hotspot Billing</a></li>
+                        <li><a href="{$app_url}/?_route=landing/services-enhanced" style="color: var(--gold-light);">PPPoE Management</a></li>
+                        <li><a href="{$app_url}/?_route=landing/services" style="color: var(--gold-light);">Payment Gateway</a></li>
+                        <li><a href="{$app_url}/?_route=landing/features" style="color: var(--gold-light);">Analytics Suite</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 style="color: var(--gold);" class="mb-3">Company</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/landing/about" style="color: var(--gold-light);">About Us</a></li>
-                        <li><a href="{$app_url}/landing/blog" style="color: var(--gold-light);">Blog</a></li>
-                        <li><a href="{$app_url}/landing/enterprise" style="color: var(--gold-light);">Careers</a></li>
-                        <li><a href="{$app_url}/landing/contact" style="color: var(--gold-light);">Contact</a></li>
+                        <li><a href="{$app_url}/?_route=landing/about" style="color: var(--gold-light);">About Us</a></li>
+                        <li><a href="{$app_url}/?_route=landing/blog" style="color: var(--gold-light);">Blog</a></li>
+                        <li><a href="{$app_url}/?_route=landing/enterprise" style="color: var(--gold-light);">Careers</a></li>
+                        <li><a href="{$app_url}/?_route=landing/contact" style="color: var(--gold-light);">Contact</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 style="color: var(--gold);" class="mb-3">Support</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/landing/help" style="color: var(--gold-light);">Help Center</a></li>
-                        <li><a href="{$app_url}/landing/documentation" style="color: var(--gold-light);">Documentation</a></li>
-                        <li><a href="{$app_url}/landing/community" style="color: var(--gold-light);">Community</a></li>
-                        <li><a href="{$app_url}/landing/security" style="color: var(--gold-light);">Security</a></li>
+                        <li><a href="{$app_url}/?_route=landing/help" style="color: var(--gold-light);">Help Center</a></li>
+                        <li><a href="{$app_url}/?_route=landing/documentation" style="color: var(--gold-light);">Documentation</a></li>
+                        <li><a href="{$app_url}/?_route=landing/community" style="color: var(--gold-light);">Community</a></li>
+                        <li><a href="{$app_url}/?_route=landing/security" style="color: var(--gold-light);">Security</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 style="color: var(--gold);" class="mb-3">Legal</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{$app_url}/landing/privacy" style="color: var(--gold-light);">Privacy Policy</a></li>
-                        <li><a href="{$app_url}/landing/terms" style="color: var(--gold-light);">Terms of Service</a></li>
-                        <li><a href="{$app_url}/landing/security" style="color: var(--gold-light);">Compliance</a></li>
+                        <li><a href="{$app_url}/?_route=landing/privacy" style="color: var(--gold-light);">Privacy Policy</a></li>
+                        <li><a href="{$app_url}/?_route=landing/terms" style="color: var(--gold-light);">Terms of Service</a></li>
+                        <li><a href="{$app_url}/?_route=landing/security" style="color: var(--gold-light);">Compliance</a></li>
                     </ul>
                 </div>
             </div>
