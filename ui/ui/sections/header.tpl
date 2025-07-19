@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="ui/ui/styles/sweetalert2.min.css" />
     <link rel="stylesheet" href="ui/ui/styles/plugins/pace.css" />
     <link rel="stylesheet" href="ui/ui/summernote/summernote.min.css" />
+    <link rel="stylesheet" href="ui/ui/styles/auto-fill-styles.css" />
     <script src="ui/ui/scripts/sweetalert2.all.min.js"></script>
     <style>
         /* New Customize Interface Start Here */

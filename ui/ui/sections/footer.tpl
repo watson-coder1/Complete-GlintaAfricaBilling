@@ -13,6 +13,9 @@
 <script src="ui/ui/summernote/summernote.min.js"></script>
 <script src="ui/ui/scripts/custom.js"></script>
 
+<!-- Auto-Fill System for Form Data Preservation -->
+<script src="ui/ui/scripts/auto-fill-system.js"></script>
+
 <script>
     document.getElementById('openSearch').addEventListener('click', function () {
         document.getElementById('searchOverlay').style.display = 'flex';

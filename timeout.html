@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Timeout - Glinta Africa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            margin: 20px;
+        }
+        .icon {
+            font-size: 4rem;
+            color: #f39c12;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .tips {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .tips h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .tips ul {
+            color: #7f8c8d;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">⏱️</div>
+        <h1>Request Timeout</h1>
+        <div class="message">
+            <p>Your request took longer than expected to process. This doesn't mean your changes were lost!</p>
+            <p><strong>Your content is likely saved</strong> - the timeout happened during the response, not the save operation.</p>
+        </div>
+        
+        <div class="actions">
+            <a href="javascript:history.back()" class="btn btn-primary">Go Back & Check</a>
+            <a href="javascript:location.reload()" class="btn btn-secondary">Refresh Page</a>
+        </div>
+        
+        <div class="tips">
+            <h3>What you can do:</h3>
+            <ul>
+                <li><strong>Go back</strong> to the edit page - your content is probably there and saved</li>
+                <li><strong>Check the page</strong> you were editing to see if changes were applied</li>
+                <li><strong>Try saving again</strong> if needed - the enhanced save system will handle it better</li>
+                <li><strong>Use Ctrl+S</strong> for quicker saves with our enhanced save feature</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect back after 10 seconds if user doesn't act
+        setTimeout(function() {
+            if (confirm('Auto-redirect: Go back to the previous page?')) {
+                history.back();
+            }
+        }, 10000);
+
+        // If there's saved content in localStorage, show option to restore
+        const savedContent = localStorage.getItem('lastSaveContent');
+        if (savedContent) {
+            const restoreDiv = document.createElement('div');
+            restoreDiv.innerHTML = `
+                <div class="tips" style="background: #d5f4e6; border-left: 4px solid #27ae60;">
+                    <h3>💾 Content Recovery Available</h3>
+                    <p>We found some content that was being edited. Would you like to restore it?</p>
+                    <button onclick="restoreContent()" class="btn btn-primary">Restore Content</button>
+                </div>
+            `;
+            document.querySelector('.container').appendChild(restoreDiv);
+        }
+
+        function restoreContent() {
+            const content = localStorage.getItem('lastSaveContent');
+            if (content) {
+                // Copy to clipboard
+                navigator.clipboard.writeText(content).then(function() {
+                    alert('Content copied to clipboard! You can paste it when you go back to the editor.');
+                    history.back();
+                });
+            }
+        }
+    </script>
+</body>
+</html>

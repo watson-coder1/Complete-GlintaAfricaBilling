@@ -1,0 +1,290 @@
+/**
+ * Auto-Fill System Styles
+ * Visual indicators and UI components for the auto-fill functionality
+ */
+
+/* Auto-fill status indicators */
+.auto-fill-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 5px;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.auto-fill-indicator.unsaved {
+    background: #f39c12 !important;
+    animation: pulse-orange 2s infinite;
+}
+
+.auto-fill-indicator.saved {
+    background: #27ae60 !important;
+    animation: pulse-green 1s ease-in-out;
+}
+
+.auto-fill-indicator.restored {
+    background: #3498db !important;
+    animation: pulse-blue 1s ease-in-out;
+}
+
+/* Pulse animations for indicators */
+@keyframes pulse-orange {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+@keyframes pulse-green {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse-blue {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Form field highlighting for restored content */
+.form-control.auto-fill-restored {
+    border-color: #3498db;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 0 3px rgba(52, 152, 219, 0.1);
+    animation: restored-highlight 2s ease-in-out;
+}
+
+@keyframes restored-highlight {
+    0% { background-color: rgba(52, 152, 219, 0.1); }
+    100% { background-color: transparent; }
+}
+
+/* Auto-fill control panel */
+#autoFillControlPanel {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    border: 1px solid #e1e8ed;
+    background: #fff;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+#autoFillControlPanel:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+#autoFillControlPanel .btn {
+    border: none;
+    background: none;
+    color: #657786;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+#autoFillControlPanel .btn:hover {
+    background: #f7f9fa;
+    color: #1da1f2;
+}
+
+/* Auto-fill notifications */
+.auto-fill-notification {
+    border-radius: 6px;
+    border: none;
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.auto-fill-restoration-notification {
+    animation: slideInRight 0.3s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced form styling for auto-fill enabled forms */
+.auto-fill-enabled .form-group {
+    position: relative;
+}
+
+.auto-fill-enabled .form-control:focus + .auto-fill-indicator {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Auto-fill status badge */
+.auto-fill-status-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #27ae60;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Restoration notification improvements */
+.auto-fill-restoration-notification .btn {
+    font-size: 12px;
+    padding: 4px 8px;
+    margin: 2px;
+}
+
+.auto-fill-restoration-notification .fa {
+    margin-right: 4px;
+}
+
+/* Form field grouping for better visual organization */
+.auto-fill-field-group {
+    border-left: 3px solid #ecf0f1;
+    padding-left: 10px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.auto-fill-field-group.has-unsaved {
+    border-left-color: #f39c12;
+}
+
+.auto-fill-field-group.has-saved {
+    border-left-color: #27ae60;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    #autoFillControlPanel {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        min-width: auto;
+        font-size: 11px;
+    }
+    
+    .auto-fill-restoration-notification {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .auto-fill-notification {
+        top: 50px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+/* Dark theme support */
+.dark-theme #autoFillControlPanel {
+    background: #2c3e50;
+    border-color: #34495e;
+    color: #ecf0f1;
+}
+
+.dark-theme .auto-fill-restoration-notification {
+    background: #34495e;
+    border-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+.dark-theme .auto-fill-notification {
+    background: #34495e;
+    border-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+/* Print styles - hide auto-fill elements */
+@media print {
+    #autoFillControlPanel,
+    .auto-fill-indicator,
+    .auto-fill-notification,
+    .auto-fill-restoration-notification {
+        display: none !important;
+    }
+}
+
+/* Accessibility improvements */
+.auto-fill-indicator[aria-label] {
+    cursor: help;
+}
+
+.auto-fill-indicator:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* Loading state for auto-fill operations */
+.auto-fill-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.auto-fill-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Enhanced tooltips for auto-fill indicators */
+.auto-fill-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c3e50;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.auto-fill-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #2c3e50;
+}
+
+.auto-fill-indicator:hover .auto-fill-tooltip {
+    opacity: 1;
+}

@@ -27,9 +27,23 @@
                             </div>
                             <br>
                         {/if}
-                        <button type="submit" class="btn btn-primary btn-block">{Lang::T('Save')}</button>
+                        <div class="btn-group btn-group-justified" role="group">
+                            <div class="btn-group" role="group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> {Lang::T('Save')}
+                                </button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="autoSaveToggle" class="btn btn-default" title="Toggle Auto-Save">
+                                    <i class="fa fa-clock-o"></i> Auto-Save: <span id="autoSaveStatus">ON</span>
+                                </button>
+                            </div>
+                        </div>
                         <br>
-                        <p class="help-block">{Lang::T('Sometimes you need to refresh 3 times until content change')}</p>
+                        <div class="alert alert-info" style="margin-top: 10px;">
+                            <i class="fa fa-info-circle"></i> 
+                            <strong>Enhanced Save:</strong> Auto-save every 30s • Retry on timeout • Progress indicators • Content backup
+                        </div>
                         <input type="text" class="form-control" onclick="this.select()" readonly
                             value="{$app_url}/{$PAGES_PATH}/{$PageFile}.html">
                     </div>
@@ -65,10 +79,54 @@
         {/if}
     </div>
 </form>
+<!-- Include Enhanced Save Script -->
+<script src="{$app_url}/ui/ui/scripts/enhanced-save.js"></script>
+
 {literal}
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
             $('#summernote').summernote();
+            
+            // Setup auto-save toggle
+            let autoSaveEnabled = true;
+            const autoSaveToggle = document.getElementById('autoSaveToggle');
+            const autoSaveStatus = document.getElementById('autoSaveStatus');
+            
+            if (autoSaveToggle) {
+                autoSaveToggle.addEventListener('click', function() {
+                    autoSaveEnabled = !autoSaveEnabled;
+                    autoSaveStatus.textContent = autoSaveEnabled ? 'ON' : 'OFF';
+                    this.className = autoSaveEnabled ? 'btn btn-success' : 'btn btn-default';
+                    
+                    // Store preference
+                    localStorage.setItem('autoSaveEnabled', autoSaveEnabled);
+                });
+                
+                // Load saved preference
+                const savedPreference = localStorage.getItem('autoSaveEnabled');
+                if (savedPreference !== null) {
+                    autoSaveEnabled = savedPreference === 'true';
+                    autoSaveStatus.textContent = autoSaveEnabled ? 'ON' : 'OFF';
+                    autoSaveToggle.className = autoSaveEnabled ? 'btn btn-success' : 'btn btn-default';
+                }
+            }
+            
+            // Add save status indicator
+            const saveIndicator = document.createElement('div');
+            saveIndicator.id = 'saveStatusIndicator';
+            saveIndicator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 8px 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                z-index: 1000;
+                display: none;
+            `;
+            document.body.appendChild(saveIndicator);
         });
 
         function selectTemplate(f) {
@@ -76,6 +134,23 @@
             $('#template_name').val(children[0].innerHTML)
             $('#summernote').summernote('code', children[1].innerHTML);
             window.scrollTo(0, 0);
+        }
+        
+        // Add keyboard shortcut hint
+        function showKeyboardShortcuts() {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Keyboard Shortcuts',
+                    html: `
+                        <div style="text-align: left;">
+                            <p><kbd>Ctrl+S</kbd> - Save content</p>
+                            <p><kbd>Ctrl+Shift+S</kbd> - Save and continue editing</p>
+                            <p>Auto-save occurs every 30 seconds when enabled</p>
+                        </div>
+                    `,
+                    icon: 'info'
+                });
+            }
         }
     </script>
 {/literal}
