@@ -203,8 +203,30 @@
                     </span>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button class="btn btn-success" onclick="return ask(this, 'Continue the Hotspot Package creation process?')" type="submit">{Lang::T('Save Changes')}</button>
-                            Or <a href="{$_url}services/hotspot">{Lang::T('Cancel')}</a>
+                            <button id="savePackageBtn" class="btn btn-success btn-lg" type="submit">
+                                <span id="saveButtonText">
+                                    <i class="fa fa-save"></i> {Lang::T('Save Changes')}
+                                </span>
+                                <span id="saveButtonLoading" style="display: none;">
+                                    <i class="fa fa-spinner fa-spin"></i> Saving Package...
+                                </span>
+                            </button>
+                            <div class="save-progress" id="saveProgressContainer" style="display: none; margin-top: 10px;">
+                                <div class="progress">
+                                    <div id="packageSaveProgress" class="progress-bar progress-bar-striped active" 
+                                         role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small id="saveProgressText" class="text-muted">Preparing to save...</small>
+                            </div>
+                            <div class="form-actions-info" style="margin-top: 10px;">
+                                <small class="text-muted">
+                                    <i class="fa fa-info-circle"></i> 
+                                    Package will be saved with enhanced error handling. Auto-save keeps your progress.
+                                </small>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                Or <a href="{$_url}services/hotspot" class="btn btn-link">{Lang::T('Cancel')}</a>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -228,8 +250,213 @@
         $("#expired_date").removeClass('hidden');
     }
     document.addEventListener("DOMContentLoaded", function(event) {
-        prePaid()
-    })
+        prePaid();
+        
+        // Enhanced save handling for hotspot package form
+        initializePackageSaveHandling();
+    });
+
+    function initializePackageSaveHandling() {
+        const form = document.querySelector('form.form-horizontal');
+        const saveBtn = document.getElementById('savePackageBtn');
+        const saveText = document.getElementById('saveButtonText');
+        const saveLoading = document.getElementById('saveButtonLoading');
+        const progressContainer = document.getElementById('saveProgressContainer');
+        const progressBar = document.getElementById('packageSaveProgress');
+        const progressText = document.getElementById('saveProgressText');
+        
+        if (!form || !saveBtn) return;
+
+        // Override form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields first
+            if (!validatePackageForm()) {
+                return false;
+            }
+            
+            // Show confirmation dialog
+            if (!confirm('Continue the Hotspot Package creation process?')) {
+                return false;
+            }
+            
+            // Start enhanced save process
+            startPackageSave();
+        });
+
+        function validatePackageForm() {
+            const packageName = document.getElementById('name');
+            const bandwidth = document.getElementById('id_bw');
+            const router = document.getElementById('routers');
+            const price = document.querySelector('input[name="price"]');
+            
+            if (!packageName.value.trim()) {
+                alert('Please enter a package name');
+                packageName.focus();
+                return false;
+            }
+            
+            if (!bandwidth.value) {
+                alert('Please select a bandwidth');
+                bandwidth.focus();
+                return false;
+            }
+            
+            if (!router.disabled && !router.value) {
+                alert('Please select a router');
+                router.focus();
+                return false;
+            }
+            
+            if (!price.value || parseFloat(price.value) <= 0) {
+                alert('Please enter a valid price');
+                price.focus();
+                return false;
+            }
+            
+            return true;
+        }
+
+        function startPackageSave() {
+            // Update button state
+            saveBtn.disabled = true;
+            saveBtn.classList.add('btn-loading');
+            saveText.style.display = 'none';
+            saveLoading.style.display = 'inline';
+            
+            // Show progress container
+            progressContainer.style.display = 'block';
+            progressText.textContent = 'Validating package data...';
+            updateProgress(10);
+            
+            // Prepare form data
+            const formData = new FormData(form);
+            
+            // Create timeout handler (45 seconds)
+            const timeoutHandler = setTimeout(() => {
+                handleSaveTimeout();
+            }, 45000);
+            
+            // Update progress periodically
+            let currentProgress = 10;
+            const progressUpdater = setInterval(() => {
+                if (currentProgress < 85) {
+                    currentProgress += 5;
+                    updateProgress(currentProgress);
+                    
+                    if (currentProgress <= 30) {
+                        progressText.textContent = 'Creating package configuration...';
+                    } else if (currentProgress <= 60) {
+                        progressText.textContent = 'Saving to database...';
+                    } else {
+                        progressText.textContent = 'Finalizing package setup...';
+                    }
+                }
+            }, 1000);
+
+            // Submit the form
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                clearTimeout(timeoutHandler);
+                clearInterval(progressUpdater);
+                
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            })
+            .then(data => {
+                updateProgress(100);
+                progressText.textContent = 'Package saved successfully!';
+                
+                setTimeout(() => {
+                    // Check for redirect or success
+                    if (data.includes('success') || data.includes('hotspot')) {
+                        window.location.href = '{$_url}services/hotspot';
+                    } else if (data.includes('error')) {
+                        throw new Error('Server returned error response');
+                    } else {
+                        // Reload the page to show result
+                        window.location.reload();
+                    }
+                }, 1000);
+            })
+            .catch(error => {
+                clearTimeout(timeoutHandler);
+                clearInterval(progressUpdater);
+                handleSaveError(error.message);
+            });
+        }
+
+        function handleSaveTimeout() {
+            progressText.textContent = 'Save taking longer than expected...';
+            progressBar.classList.add('progress-bar-warning');
+            
+            // Show options to user
+            const options = confirm(
+                'The save is taking longer than usual. This might be due to server load.\n\n' +
+                'Click OK to continue waiting, or Cancel to try again.'
+            );
+            
+            if (!options) {
+                // User wants to try again
+                resetSaveState();
+            } else {
+                // Continue waiting, extend timeout
+                setTimeout(() => {
+                    if (saveBtn.disabled) {
+                        handleSaveError('Operation timed out. Please try again.');
+                    }
+                }, 30000);
+            }
+        }
+
+        function handleSaveError(errorMessage) {
+            console.error('Package save error:', errorMessage);
+            
+            updateProgress(0);
+            progressBar.classList.add('progress-bar-danger');
+            progressText.textContent = 'Save failed: ' + errorMessage;
+            
+            // Show user options
+            setTimeout(() => {
+                const retry = confirm(
+                    'Failed to save the package.\n\n' +
+                    'Error: ' + errorMessage + '\n\n' +
+                    'Would you like to try again?'
+                );
+                
+                if (retry) {
+                    resetSaveState();
+                    // Auto-retry after a moment
+                    setTimeout(startPackageSave, 2000);
+                } else {
+                    resetSaveState();
+                }
+            }, 2000);
+        }
+
+        function resetSaveState() {
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('btn-loading');
+            saveText.style.display = 'inline';
+            saveLoading.style.display = 'none';
+            progressContainer.style.display = 'none';
+            progressBar.classList.remove('progress-bar-warning', 'progress-bar-danger');
+            progressBar.classList.add('progress-bar-striped', 'active');
+        }
+
+        function updateProgress(percentage) {
+            progressBar.style.width = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+        }
+    }
 </script>
 {if $_c['radius_enable']}
     {literal}

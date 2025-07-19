@@ -288,3 +288,112 @@
 .auto-fill-indicator:hover .auto-fill-tooltip {
     opacity: 1;
 }
+
+/* Enhanced save button styles */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+/* Save progress container */
+.save-progress {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.save-progress .progress {
+    height: 8px;
+    margin-bottom: 5px;
+    background-color: #e9ecef;
+}
+
+.save-progress .progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Form actions info */
+.form-actions-info {
+    background: #e7f3ff;
+    border: 1px solid #b8daff;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+/* Enhanced button states */
+.btn-success.btn-loading {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+/* Spinning icon animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Progress bar color variations */
+.progress-bar-warning {
+    background-color: #ffc107;
+}
+
+.progress-bar-danger {
+    background-color: #dc3545;
+}
+
+/* Package save specific styles */
+#savePackageBtn {
+    min-width: 160px;
+    transition: all 0.3s ease;
+}
+
+#savePackageBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Auto-fill integration for package forms */
+.form-horizontal .auto-fill-indicator {
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.form-horizontal .form-group {
+    position: relative;
+}
+
+/* Responsive adjustments for save progress */
+@media (max-width: 768px) {
+    .save-progress {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+    
+    #savePackageBtn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .form-actions-info {
+        margin-left: -15px;
+        margin-right: -15px;
+        border-radius: 0;
+    }
+}
