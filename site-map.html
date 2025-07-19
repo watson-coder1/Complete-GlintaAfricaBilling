@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glinta Africa - Site Navigation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #D4AF37; border-bottom: 2px solid #D4AF37; padding-bottom: 10px; }
+        .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .link-card { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #D4AF37; }
+        .link-card a { text-decoration: none; color: #333; font-weight: bold; }
+        .link-card a:hover { color: #D4AF37; }
+        .customer-login { background: #007bff; color: white; text-align: center; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .customer-login a { color: white; text-decoration: none; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Glinta Africa - Navigation Hub</h1>
+    
+    <div class="customer-login">
+        <a href="/index.php?_route=login">🔐 Customer Login Portal</a>
+    </div>
+    
+    <div class="section">
+        <h2>📄 Main Pages</h2>
+        <div class="links">
+            <div class="link-card">
+                <a href="/index.php?_route=landing/home-enhanced">🏠 Home</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/about">ℹ️ About Us</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/services">🛠️ Services</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/pricing">💰 Pricing</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/contact">📞 Contact</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/features">⭐ Features</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>🏢 Business Solutions</h2>
+        <div class="links">
+            <div class="link-card">
+                <a href="/index.php?_route=landing/enterprise">🏢 Enterprise</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/professional">👔 Professional</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>📚 Support & Resources</h2>
+        <div class="links">
+            <div class="link-card">
+                <a href="/index.php?_route=landing/blog">📝 Blog</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/help">❓ Help & Support</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/documentation">📖 Documentation</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/community">👥 Community</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>🔒 Legal & Security</h2>
+        <div class="links">
+            <div class="link-card">
+                <a href="/index.php?_route=landing/privacy">🔐 Privacy Policy</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/terms">📋 Terms of Service</a>
+            </div>
+            <div class="link-card">
+                <a href="/index.php?_route=landing/security">🛡️ Security</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>⚙️ Admin Access</h2>
+        <div class="links">
+            <div class="link-card">
+                <a href="/index.php?_route=admin">🔧 Admin Login</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer style="margin-top: 50px; text-align: center; color: #666;">
+        <p>All links lead to working pages. This navigation exists due to nginx proxy configuration.</p>
+        <p>&copy; 2024 Glinta Africa - Transforming Internet Access Across Africa</p>
+    </footer>
+</body>
+</html>
