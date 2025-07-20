@@ -273,3 +273,53 @@ function Daraja_get_access_token($config)
     
     return false;
 }
+
+/**
+ * Class-based wrapper for Daraja payment gateway
+ * Used by captive portal and other components that need OOP interface
+ */
+class Daraja
+{
+    private $config;
+    
+    public function __construct()
+    {
+        $this->loadConfig();
+    }
+    
+    private function loadConfig()
+    {
+        $pg = ORM::for_table('tbl_pg')->where('gateway', 'Daraja')->find_one();
+        
+        if ($pg && $pg->status) {
+            $this->config = json_decode($pg->pg_data, true);
+        } else {
+            $this->config = null;
+        }
+    }
+    
+    public function send_request($params)
+    {
+        if (!$this->config) {
+            return ['success' => false, 'message' => 'Payment gateway not configured or disabled'];
+        }
+        
+        $phoneNumber = $params['phone_number'] ?? '';
+        $amount = $params['amount'] ?? 0;
+        $accountReference = $params['invoice'] ?? '';
+        $transactionDesc = $params['description'] ?? 'Payment';
+        
+        // Use the existing function
+        return Daraja_stk_push($phoneNumber, $amount, $accountReference, $transactionDesc);
+    }
+    
+    public function isEnabled()
+    {
+        return $this->config !== null;
+    }
+    
+    public function getConfig()
+    {
+        return $this->config;
+    }
+}

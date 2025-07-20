@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="3;url=https://glintaafrica.com/?_route=captive_portal">
+    <title>Glinta Africa - Connecting You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* African map background */
+        .africa-map {
+            position: absolute;
+            width: 400px;
+            height: 450px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            opacity: 0.08;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            clip-path: polygon(
+                50% 0%, 65% 5%, 75% 10%, 80% 18%, 
+                85% 25%, 88% 35%, 90% 45%, 88% 55%, 
+                85% 65%, 80% 75%, 72% 82%, 65% 88%, 
+                55% 92%, 45% 95%, 35% 92%, 25% 85%, 
+                18% 75%, 12% 65%, 8% 50%, 10% 35%, 
+                15% 25%, 25% 15%, 35% 8%, 45% 3%
+            );
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        /* Traditional pattern overlay */
+        .pattern-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 40px, #FFD700 40px, #FFD700 42px),
+                repeating-linear-gradient(-45deg, transparent, transparent 40px, #FFA500 40px, #FFA500 42px),
+                repeating-linear-gradient(90deg, transparent, transparent 80px, #FF6347 80px, #FF6347 81px);
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+            max-width: 600px;
+        }
+        
+        /* Logo with animation */
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2.5rem;
+        }
+        
+        .logo {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(145deg, #FFD700, #FFA500, #FF6347);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: 900;
+            color: #0a0a0a;
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.4),
+                inset 0 0 20px rgba(0, 0, 0, 0.2);
+            animation: pulse 2.5s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s ease-in-out infinite;
+        }
+        
+        /* Orbiting elements */
+        .orbit {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 15s linear infinite;
+        }
+        
+        .orbit-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .orbit-dot:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+        .orbit-dot:nth-child(2) { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .orbit-dot:nth-child(3) { left: 0; top: 50%; transform: translateY(-50%); }
+        .orbit-dot:nth-child(4) { right: 0; top: 50%; transform: translateY(-50%); }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s ease infinite;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            color: #FFA500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        /* Loading animation */
+        .loader-section {
+            margin: 2rem 0;
+        }
+        
+        .progress-wrapper {
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FF6347);
+            border-radius: 3px;
+            animation: loadProgress 3s ease-out forwards;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Wave animation bars */
+        .wave-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            height: 40px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .wave-bar {
+            width: 6px;
+            background: linear-gradient(to top, #FFD700, #FFA500);
+            border-radius: 3px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 30px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 25px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 35px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 40px; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 35px; }
+        .wave-bar:nth-child(7) { animation-delay: 0.6s; height: 25px; }
+        .wave-bar:nth-child(8) { animation-delay: 0.7s; height: 30px; }
+        .wave-bar:nth-child(9) { animation-delay: 0.8s; height: 20px; }
+        
+        .status {
+            color: #FFD700;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            min-height: 1.5rem;
+        }
+        
+        /* Features */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #999;
+            font-size: 0.95rem;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #0a0a0a;
+            font-weight: bold;
+        }
+        
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #FFD700;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 10s linear infinite;
+        }
+        
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 16s; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes loadProgress {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+            50% { transform: scaleY(1.2); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0) scale(0); }
+            50% { transform: translateY(-50vh) translateX(20px) scale(1); }
+            100% { transform: translateY(-100vh) translateX(-20px) scale(0); }
+        }
+        
+        @keyframes floatUp {
+            0% {
+                bottom: -10%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                bottom: 110%;
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .logo { width: 100px; height: 100px; font-size: 3rem; }
+            .features { gap: 1.5rem; }
+            .subtitle { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="africa-map"></div>
+    <div class="pattern-overlay"></div>
+    
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <div class="container">
+        <div class="logo-wrapper">
+            <div class="orbit">
+                <div class="orbit-dot"></div>
+                <div class="orbit-dot"></div>
+                <div class="orbit-dot"></div>
+                <div class="orbit-dot"></div>
+            </div>
+            <div class="logo">GA</div>
+        </div>
+        
+        <p class="tagline">Ubuntu • Unity • Progress</p>
+        <h1>Glinta Africa</h1>
+        <p class="subtitle">Empowering Digital Connectivity Across the Continent</p>
+        
+        <div class="loader-section">
+            <div class="wave-loader">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+            
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <p class="status">Preparing your secure connection...</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <span>Lightning Fast</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <span>Secure & Safe</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💳</div>
+                <span>Easy Payment</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Dynamic status messages
+        const messages = [
+            'Preparing your secure connection...',
+            'Connecting to Glinta Africa network...',
+            'Almost ready to go online...',
+            'Launching payment portal...'
+        ];
+        
+        let messageIndex = 0;
+        const statusElement = document.querySelector('.status');
+        
+        // Update status message every 750ms
+        setInterval(() => {
+            messageIndex = (messageIndex + 1) % messages.length;
+            statusElement.style.opacity = '0';
+            setTimeout(() => {
+                statusElement.textContent = messages[messageIndex];
+                statusElement.style.opacity = '1';
+            }, 200);
+        }, 750);
+        
+        // Add smooth transition for status
+        statusElement.style.transition = 'opacity 0.2s ease';
+        
+        // Redirect after 3 seconds
+        setTimeout(function() {
+            window.location.href = 'https://glintaafrica.com/?_route=captive_portal';
+        }, 3000);
+    </script>
+</body>
+</html>
