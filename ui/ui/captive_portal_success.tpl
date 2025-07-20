@@ -366,8 +366,9 @@
         
         .nav-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
+            max-width: 100%;
         }
         
         .nav-btn {
@@ -673,15 +674,39 @@
         
         <!-- Navigation Section -->
         <div class="navigation-section">
-            <h3 class="nav-title">🌟 Start Browsing</h3>
+            <h3 class="nav-title">🌟 Choose Your Platform</h3>
             <div class="nav-buttons">
                 <a href="https://google.com" class="nav-btn primary" target="_blank">
-                    <span>🔍</span>
-                    <span>Search Google</span>
+                    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" style="height: 20px;">
+                    <span>Search</span>
                 </a>
                 <a href="https://youtube.com" class="nav-btn secondary" target="_blank">
-                    <span>📺</span>
-                    <span>Watch YouTube</span>
+                    <img src="https://www.youtube.com/s/desktop/f506bd45/img/favicon_32x32.png" alt="YouTube" style="height: 20px;">
+                    <span>YouTube</span>
+                </a>
+                <a href="https://facebook.com" class="nav-btn" style="background: linear-gradient(135deg, #1877F2, #42A5F5); color: white;" target="_blank">
+                    <span>📘</span>
+                    <span>Facebook</span>
+                </a>
+                <a href="https://twitter.com" class="nav-btn" style="background: linear-gradient(135deg, #1DA1F2, #0D8BD9); color: white;" target="_blank">
+                    <span>🐦</span>
+                    <span>Twitter</span>
+                </a>
+                <a href="https://instagram.com" class="nav-btn" style="background: linear-gradient(135deg, #E4405F, #FFDC80); color: white;" target="_blank">
+                    <span>📸</span>
+                    <span>Instagram</span>
+                </a>
+                <a href="https://whatsapp.com" class="nav-btn" style="background: linear-gradient(135deg, #25D366, #128C7E); color: white;" target="_blank">
+                    <span>💬</span>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="https://tiktok.com" class="nav-btn" style="background: linear-gradient(135deg, #000000, #FF0050); color: white;" target="_blank">
+                    <span>🎵</span>
+                    <span>TikTok</span>
+                </a>
+                <a href="https://netflix.com" class="nav-btn" style="background: linear-gradient(135deg, #E50914, #B81D24); color: white;" target="_blank">
+                    <span>🎬</span>
+                    <span>Netflix</span>
                 </a>
             </div>
         </div>

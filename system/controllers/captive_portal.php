@@ -346,9 +346,9 @@ switch ($routes['1']) {
                 $checkoutRequestId = $callback['CheckoutRequestID'];
                 $resultCode = $callback['ResultCode'];
                 
-                // Find the payment record
+                // Find the payment record using checkout_request_id (not pg_url_payment)
                 $payment = ORM::for_table('tbl_payment_gateway')
-                    ->where('pg_url_payment', $checkoutRequestId)
+                    ->where('checkout_request_id', $checkoutRequestId)
                     ->find_one();
                     
                 if ($payment) {
