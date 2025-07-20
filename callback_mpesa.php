@@ -223,11 +223,17 @@ function activate_service_after_payment($payment)
         
         // Activate based on service type
         if ($plan->type == 'Hotspot') {
-            return activate_hotspot_service($customer, $plan, $recharge);
+            $activation_result = activate_hotspot_service($customer, $plan, $recharge);
+            _log("Hotspot activation result: " . ($activation_result ? 'SUCCESS' : 'FAILED'), 'M-Pesa', $customer->id);
+            return $activation_result;
         } elseif ($plan->type == 'PPPOE') {
-            return activate_pppoe_service($customer, $plan, $recharge);
+            $activation_result = activate_pppoe_service($customer, $plan, $recharge);
+            _log("PPPoE activation result: " . ($activation_result ? 'SUCCESS' : 'FAILED'), 'M-Pesa', $customer->id);
+            return $activation_result;
         }
         
+        // Default activation for other plan types
+        _log("Plan type '{$plan->type}' - marking as activated without specific service activation", 'M-Pesa', $customer->id);
         return true;
         
     } catch (Exception $e) {
@@ -237,49 +243,97 @@ function activate_service_after_payment($payment)
 }
 
 /**
- * Activate Hotspot service (RADIUS) - Enhanced with RadiusManager
+ * Activate Hotspot service (RADIUS) - Enhanced with MAC address authentication
  */
 function activate_hotspot_service($customer, $plan, $recharge)
 {
     global $config;
     
-    if (!$config['radius_enable']) {
-        _log('RADIUS not enabled, skipping hotspot activation', 'M-Pesa', $customer->id);
-        return false;
-    }
-    
     try {
-        // Load RadiusManager if not already loaded
-        if (!class_exists('RadiusManager')) {
-            require_once 'system/autoload/RadiusManager.php';
+        // Get customer's MAC address from portal session or use customer username as MAC
+        $mac_address = $customer->username; // In captive portal, username is the MAC address
+        
+        _log("Starting hotspot activation for MAC: {$mac_address}, Customer: {$customer->id}", 'M-Pesa', $customer->id);
+        
+        // Create RADIUS user with MAC address authentication
+        $radius_username = str_replace(':', '', strtolower($mac_address)); // Remove colons for username
+        $radius_password = substr(md5($mac_address . time()), 0, 8); // Generate password
+        
+        // Calculate expiration timestamp
+        $expiration_timestamp = strtotime($recharge->expiration . ' ' . $recharge->time);
+        
+        // Insert into radcheck for authentication
+        $radcheck = ORM::for_table('radcheck')->create();
+        $radcheck->username = $radius_username;
+        $radcheck->attribute = 'Cleartext-Password';
+        $radcheck->op = ':=';
+        $radcheck->value = $radius_password;
+        $radcheck->save();
+        
+        // Set Session-Timeout if plan has time limit
+        if ($plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
+            $session_timeout = ($plan->time_unit == 'Hrs') ? ($plan->time_limit * 3600) : ($plan->time_limit * 60);
+            
+            $radcheck_timeout = ORM::for_table('radcheck')->create();
+            $radcheck_timeout->username = $radius_username;
+            $radcheck_timeout->attribute = 'Session-Timeout';
+            $radcheck_timeout->op = ':=';
+            $radcheck_timeout->value = $session_timeout;
+            $radcheck_timeout->save();
         }
         
-        // Generate secure password
-        $password = RadiusManager::generatePassword(8);
+        // Set Expiration attribute
+        $radcheck_expiry = ORM::for_table('radcheck')->create();
+        $radcheck_expiry->username = $radius_username;
+        $radcheck_expiry->attribute = 'Expiration';
+        $radcheck_expiry->op = ':=';
+        $radcheck_expiry->value = date('M d Y H:i:s', $expiration_timestamp);
+        $radcheck_expiry->save();
         
-        // Calculate expiration time
-        $expiration_time = $recharge->expiration . ' ' . $recharge->time;
-        
-        // Create RADIUS user with full configuration
-        $result = RadiusManager::createHotspotUser(
-            $customer->username,
-            $password,
-            $plan,
-            $expiration_time
-        );
-        
-        if ($result['success']) {
-            _log("Hotspot service activated for user: {$customer->username}, Password: {$password}", 'M-Pesa', $customer->id);
+        // Set bandwidth limits if specified
+        if ($plan->typebp == 'Limited' && $plan->limit_type == 'Data_Limit') {
+            $data_limit_bytes = $plan->data_limit * 1024 * 1024; // Convert MB to bytes
             
-            // Store credentials for customer access
-            $customer->password = $password; // Store for customer to see
-            $customer->save();
-            
-            return true;
-        } else {
-            _log('RADIUS activation failed: ' . $result['message'], 'M-Pesa', $customer->id);
-            return false;
+            $radcheck_data = ORM::for_table('radcheck')->create();
+            $radcheck_data->username = $radius_username;
+            $radcheck_data->attribute = 'Max-Octets';
+            $radcheck_data->op = ':=';
+            $radcheck_data->value = $data_limit_bytes;
+            $radcheck_data->save();
         }
+        
+        // Create radreply for bandwidth control
+        if (!empty($plan->shared_rate)) {
+            $bandwidth_parts = explode('/', $plan->shared_rate);
+            if (count($bandwidth_parts) == 2) {
+                $download_rate = trim($bandwidth_parts[0]) . 'k';
+                $upload_rate = trim($bandwidth_parts[1]) . 'k';
+                
+                $radreply_down = ORM::for_table('radreply')->create();
+                $radreply_down->username = $radius_username;
+                $radreply_down->attribute = 'WISPr-Bandwidth-Max-Down';
+                $radreply_down->op = ':=';
+                $radreply_down->value = $download_rate;
+                $radreply_down->save();
+                
+                $radreply_up = ORM::for_table('radreply')->create();
+                $radreply_up->username = $radius_username;
+                $radreply_up->attribute = 'WISPr-Bandwidth-Max-Up';
+                $radreply_up->op = ':=';
+                $radreply_up->value = $upload_rate;
+                $radreply_up->save();
+            }
+        }
+        
+        _log("RADIUS user created successfully - Username: {$radius_username}, Password: {$radius_password}, Expires: " . date('Y-m-d H:i:s', $expiration_timestamp), 'M-Pesa', $customer->id);
+        
+        // Update customer record with RADIUS credentials
+        $customer->password = $radius_password;
+        $customer->service_type = 'Hotspot';
+        $customer->status = 'Active';
+        $customer->save();
+        
+        return true;
         
     } catch (Exception $e) {
         _log('RADIUS activation failed: ' . $e->getMessage(), 'M-Pesa', $customer->id);
