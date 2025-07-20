@@ -148,25 +148,42 @@ switch ($routes['1']) {
             $accountReference = 'PORTAL-' . substr($sessionId, -8);
             $transactionDesc = 'Glinta WiFi - ' . $plan->name_plan;
             
-            $stkResult = Daraja_stk_push($phoneNumber, $plan->price, $accountReference, $transactionDesc);
+            // Use the class-based approach
+            $daraja = new Daraja();
+            $stkResult = $daraja->send_request([
+                'phone_number' => $phoneNumber,
+                'amount' => $plan->price,
+                'invoice' => $accountReference,
+                'description' => $transactionDesc
+            ]);
             
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 "STK Push Result: " . json_encode($stkResult) . "\n", FILE_APPEND);
             
             if ($stkResult['success']) {
-                // Create payment gateway record
+                // Create payment gateway record with all required fields
                 $payment = ORM::for_table('tbl_payment_gateway')->create();
                 $payment->username = $session->mac_address;
                 $payment->gateway = 'Daraja';
+                $payment->gateway_trx_id = $stkResult['merchant_request_id'] ?? '';
                 $payment->plan_id = $planId;
                 $payment->plan_name = $plan->name_plan;
+                $payment->routers_id = 1; // Default router
+                $payment->routers = 'default';
                 $payment->price = $plan->price;
-                $payment->pg_url_payment = $stkResult['checkout_request_id'];
+                $payment->pg_url_payment = '';
                 $payment->payment_method = 'M-Pesa STK Push';
                 $payment->payment_channel = 'Captive Portal';
+                $payment->pg_request = json_encode([
+                    'phone_number' => $phoneNumber,
+                    'amount' => $plan->price,
+                    'account_reference' => $accountReference
+                ]);
+                $payment->expired_date = date('Y-m-d H:i:s', strtotime('+1 hour'));
                 $payment->created_date = date('Y-m-d H:i:s');
-                $payment->pg_paid_response = json_encode($stkResult);
+                $payment->trx_invoice = $accountReference;
                 $payment->status = 1; // Pending
+                $payment->checkout_request_id = $stkResult['checkout_request_id'];
                 $payment->save();
                 
                 // Update session with payment ID
@@ -214,10 +231,11 @@ switch ($routes['1']) {
         break;
         
     case 'status':
-        // Check payment and session status
+        // Check payment and session status (support both GET and POST)
         $sessionId = $routes['2'] ?? '';
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Handle both GET and POST requests
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['ajax'])) {
             // AJAX status check
             header('Content-Type: application/json');
             
