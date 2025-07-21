@@ -31,8 +31,14 @@ class RadiusManager
             $radcheck->value = $password;
             $radcheck->save();
             
-            // Remove Auth-Type Accept to require proper authentication
-            // Users must authenticate through RADIUS with valid credentials
+            // For MAC-based authentication, we still need Auth-Type Accept
+            // but only for users who have paid (this is created per paid user)
+            $authtype = ORM::for_table('radcheck', 'radius')->create();
+            $authtype->username = $username;
+            $authtype->attribute = 'Auth-Type';
+            $authtype->op = ':=';
+            $authtype->value = 'Accept';
+            $authtype->save();
             
             // Add simultaneous use limit
             $simultaneous = ORM::for_table('radcheck', 'radius')->create();
