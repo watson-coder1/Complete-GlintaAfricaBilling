@@ -113,9 +113,16 @@ switch ($routes['1']) {
                 $session->expires_at = date('Y-m-d H:i:s', strtotime('+2 hours'));
                 $session->status = 'pending';
                 $session->save();
+                
+                // Debug: Log successful session creation
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Session created successfully: $sessionId (MAC: $mac, IP: $ip)\n", FILE_APPEND);
+                    
             } catch (Exception $e) {
                 // If session creation fails, continue without saving (graceful degradation)
                 error_log("Portal session creation failed: " . $e->getMessage());
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Session creation FAILED: " . $e->getMessage() . "\n", FILE_APPEND);
             }
             
             // Get available packages from existing plans (Hotspot only)
