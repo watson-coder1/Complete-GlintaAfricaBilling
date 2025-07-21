@@ -30,21 +30,31 @@
             box-sizing: border-box;
         }
         
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, var(--kenya-black) 0%, #1a1a1a 25%, var(--kenya-green) 75%, var(--glinta-gold) 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: flex-start;
             justify-content: center;
             padding: 15px;
             padding-top: 20px;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow-x: hidden;
             overflow-y: auto;
             /* Prevent pull-to-refresh deformation */
-            overscroll-behavior-y: none;
+            overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
         
         /* Animated background */
@@ -825,6 +835,20 @@
         
         console.log('Payment monitoring started for session:', sessionId);
         
+        // Prevent pull-to-refresh on mobile
+        let startY = 0;
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].pageY;
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            const y = e.touches[0].pageY;
+            // Disable pull-to-refresh if swiping down at top of page
+            if (y > startY && window.scrollY === 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
         // Payment monitoring
         let checkCount = 0;
         const maxChecks = 400; // Check for 10 minutes (400 * 1.5 seconds)
@@ -867,16 +891,23 @@
                 },
                 body: JSON.stringify({ check: true })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Status response:', response.status, response.statusText);
+                return response.json();
+            })
             .then(data => {
+                console.log('Status data received:', data);
                 if (data.status === 'completed') {
+                    console.log('Payment completed! Redirecting to:', data.redirect);
                     showSuccess();
                     setTimeout(() => {
-                        window.location.href = data.redirect;
+                        window.location.href = data.redirect || '{$_url}captive_portal/success';
                     }, 3000);
                 } else if (data.status === 'error') {
+                    console.log('Payment error:', data.message);
                     showError(data.message);
                 } else {
+                    console.log('Payment still processing, status:', data.status);
                     // Continue checking if not maxed out
                     if (checkCount < maxChecks) {
                         setTimeout(checkPaymentStatus, 1500);
