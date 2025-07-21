@@ -844,6 +844,37 @@
         
         console.log('Payment monitoring started for session:', sessionId);
         
+        // Server-side logging function for debugging
+        function logToServer(message) {
+            try {
+                fetch('{$_url}captive_portal/debug_log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message,
+                        sessionId: sessionId,
+                        timestamp: new Date().toISOString()
+                    })
+                }).catch(e => console.error('Failed to log to server:', e));
+            } catch (e) {
+                console.error('logToServer error:', e);
+            }
+        }
+        
+        // Log that JavaScript started
+        logToServer('JS DEBUG: Payment monitoring JavaScript started successfully');
+        
+        // Validate session ID
+        if (!sessionId || sessionId === '' || sessionId === '{$session_id}') {
+            logToServer('JS DEBUG: CRITICAL ERROR - Session ID is missing or not rendered: "' + sessionId + '"');
+            alert('Session ID missing! Redirecting to portal...');
+            setTimeout(() => {
+                window.location.href = '{$_url}captive_portal';
+            }, 2000);
+        } else {
+            logToServer('JS DEBUG: Session ID validated successfully: ' + sessionId);
+        }
+        
         // Check if session is already completed (for refreshes)
         function quickStatusCheck() {
             console.log('Quick status check on page load...');
@@ -909,9 +940,11 @@
         function checkPaymentStatus() {
             checkCount++;
             console.log('Checking payment status, attempt:', checkCount);
+            logToServer('JS DEBUG: checkPaymentStatus called, attempt: ' + checkCount);
             
             const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
             console.log('Status URL:', statusUrl);
+            logToServer('JS DEBUG: About to fetch status from: ' + statusUrl);
             
             // Make AJAX request to check payment status with timeout
             const controller = new AbortController();
@@ -939,8 +972,10 @@
             })
             .then(data => {
                 console.log('Status data received:', data);
+                logToServer('JS DEBUG: Status response received: ' + JSON.stringify(data));
                 if (data.status === 'completed') {
                     console.log('Payment completed! Redirecting to:', data.redirect);
+                    logToServer('JS DEBUG: PAYMENT COMPLETED! Redirecting to: ' + data.redirect);
                     showSuccess();
                     setTimeout(() => {
                         window.location.href = data.redirect || '{$_url}captive_portal/success';
@@ -962,6 +997,7 @@
             .catch(error => {
                 clearTimeout(timeoutId);
                 console.log('Status check failed:', error);
+                logToServer('JS DEBUG: Status check FAILED: ' + error.message);
                 
                 // If it's an abort error (timeout), try again more aggressively
                 if (error.name === 'AbortError') {
