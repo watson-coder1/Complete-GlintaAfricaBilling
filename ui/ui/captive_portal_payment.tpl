@@ -811,10 +811,10 @@
         
         <!-- Action Buttons -->
         <div class="actions" id="actions">
-            <button class="btn btn-primary" onclick="window.location.href='{$_url}captive_portal/success/{$session->session_id}'">
+            <button class="btn btn-primary" onclick="window.location.href=baseUrl + 'captive_portal/success/' + sessionId">
                 Continue to WiFi
             </button>
-            <button class="btn btn-secondary" onclick="window.location.href='{$_url}captive_portal'">
+            <button class="btn btn-secondary" onclick="window.location.href=baseUrl + 'captive_portal'">
                 Back to Portal
             </button>
         </div>
@@ -894,7 +894,7 @@
         // Check if session is already completed (for refreshes)
         function quickStatusCheck() {
             console.log('Quick status check on page load...');
-            const statusUrl = '{$_url}captive_portal/status/' + sessionId;
+            const statusUrl = baseUrl + 'captive_portal/status/' + sessionId;
             
             fetch(statusUrl, {
                 method: 'POST',
@@ -906,7 +906,7 @@
                 console.log('Quick check result:', data);
                 if (data.status === 'completed') {
                     console.log('Session already completed! Redirecting...');
-                    window.location.href = data.redirect || '{$_url}captive_portal/success';
+                    window.location.href = data.redirect || (baseUrl + 'captive_portal/success');
                 }
             })
             .catch(error => {
@@ -996,7 +996,7 @@
                     logToServer('JS DEBUG: PAYMENT COMPLETED! Redirecting to: ' + data.redirect);
                     showSuccess();
                     setTimeout(() => {
-                        window.location.href = data.redirect || '{$_url}captive_portal/success';
+                        window.location.href = data.redirect || (baseUrl + 'captive_portal/success');
                     }, 3000);
                 } else if (data.status === 'error') {
                     console.log('Payment error:', data.message);
@@ -1163,7 +1163,7 @@
             const mac = '{$session->mac_address}';
             if (!mac) return;
             
-            const statusUrl = '{$_url}captive_portal/status/backup';
+            const statusUrl = baseUrl + 'captive_portal/status/backup';
             fetch(statusUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1175,7 +1175,7 @@
                     console.log('Backup check: Payment completed!');
                     showSuccess();
                     setTimeout(() => {
-                        window.location.href = data.redirect || '{$_url}captive_portal/success';
+                        window.location.href = data.redirect || (baseUrl + 'captive_portal/success');
                     }, 2000);
                 }
             })
