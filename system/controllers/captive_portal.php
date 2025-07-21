@@ -960,13 +960,17 @@ switch ($routes['1']) {
                             date('Y-m-d H:i:s') . ' - RADIUS User Creation Failed: ' . $result['message'] . PHP_EOL, FILE_APPEND);
                     }
                     
-                    // Always update session status to completed when payment is successful
+                        // Always update session status to completed when payment is successful
                     // regardless of RADIUS creation status
                     $session->status = 'completed';
                     $session->save();
                     
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - Session status updated to completed' . PHP_EOL, FILE_APPEND);
+                    
+                    // Also log to main debug log for tracking
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK: Session " . $session->session_id . " marked as completed\n", FILE_APPEND);
                 } catch (Exception $radiusError) {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - RADIUS Error: ' . $radiusError->getMessage() . PHP_EOL, FILE_APPEND);
@@ -977,6 +981,10 @@ switch ($routes['1']) {
                     
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - Session status updated to completed (despite RADIUS error)' . PHP_EOL, FILE_APPEND);
+                    
+                    // Also log to main debug log for tracking
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK: Session " . $session->session_id . " marked as completed (RADIUS error ignored)\n", FILE_APPEND);
                 }
                 
             } else {
