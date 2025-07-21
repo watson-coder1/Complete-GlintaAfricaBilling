@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
     <title>Welcome to Glinta WiFi - Internet Access Active</title>
     <link rel="shortcut icon" href="{$_url}/ui/ui/images/logo.png" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,6 +39,9 @@
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
+            /* Prevent pull-to-refresh deformation */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Celebration animation background */

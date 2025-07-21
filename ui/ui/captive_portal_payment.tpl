@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
     <title>Processing Payment - Glinta Africa WiFi</title>
     <link rel="shortcut icon" href="{$_url}/ui/ui/images/logo.png" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,9 +38,16 @@
             align-items: center;
             justify-content: center;
             padding: 15px;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow-x: hidden;
             overflow-y: auto;
+            /* Prevent pull-to-refresh deformation */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Animated background */
@@ -92,6 +102,9 @@
             z-index: 10;
             border: 2px solid rgba(255, 215, 0, 0.3);
             animation: container-entrance 0.8s ease-out;
+            /* Prevent container deformation */
+            min-width: 300px;
+            flex-shrink: 0;
         }
         
         @keyframes container-entrance {
