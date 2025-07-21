@@ -783,6 +783,12 @@ switch ($routes['1']) {
             $ui->assign('_title', 'Welcome to Glinta WiFi');
             $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
             
+            // Add MikroTik authentication variables
+            $ui->assign('mikrotik_login_url', 'http://192.168.88.1/login');
+            $ui->assign('username', $session->mac_address);
+            $ui->assign('password', $session->mac_address);
+            $ui->assign('destination', 'https://google.com');
+            
             // Add connection info for display
             $connectionInfo = [
                 'mac' => $session->mac_address,
