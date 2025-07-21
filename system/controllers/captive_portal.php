@@ -211,6 +211,12 @@ switch ($routes['1']) {
             }
             
             // Check session expiration
+            if ($session->expires_at === null) {
+                // Handle sessions with missing expiration - set default 2 hour expiration from creation time
+                $session->expires_at = date('Y-m-d H:i:s', strtotime($session->created_at . ' +2 hours'));
+                $session->save();
+            }
+            
             if (strtotime($session->expires_at) < time()) {
                 r2(U . 'captive_portal', 'e', 'Session has expired. Please start again.');
                 return;
