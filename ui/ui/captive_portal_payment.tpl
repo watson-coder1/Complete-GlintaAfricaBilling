@@ -35,18 +35,15 @@
             background: linear-gradient(135deg, var(--kenya-black) 0%, #1a1a1a 25%, var(--kenya-green) 75%, var(--glinta-gold) 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 15px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            padding-top: 20px;
+            position: relative;
             overflow-x: hidden;
             overflow-y: auto;
             /* Prevent pull-to-refresh deformation */
-            overscroll-behavior: none;
+            overscroll-behavior-y: none;
             -webkit-overflow-scrolling: touch;
         }
         
@@ -105,6 +102,7 @@
             /* Prevent container deformation */
             min-width: 300px;
             flex-shrink: 0;
+            margin: auto;
         }
         
         @keyframes container-entrance {
@@ -573,15 +571,18 @@
         @media (max-width: 768px) {
             body {
                 padding: 10px;
-                align-items: flex-start;
-                padding-top: 20px;
+                padding-top: 15px;
+                padding-bottom: 15px;
+                min-height: 100vh;
+                height: auto;
             }
             
             .payment-container {
-                padding: 30px 20px;
-                margin: 0;
+                padding: 25px 20px;
+                margin: 0 auto;
                 max-width: 100%;
                 border-radius: 20px;
+                min-height: auto;
             }
             
             .brand-logo {
@@ -614,8 +615,14 @@
         }
         
         @media (max-width: 480px) {
+            body {
+                padding: 8px;
+                padding-top: 10px;
+            }
+            
             .payment-container {
-                padding: 30px 20px;
+                padding: 20px 15px;
+                border-radius: 15px;
             }
             
             .package-details {
