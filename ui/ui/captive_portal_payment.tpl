@@ -814,8 +814,10 @@
     
     <script>
         // Session data from PHP
-        const sessionId = '{$session->session_id}';
-        const paymentId = '{$payment->id}';
+        const sessionId = '{$session_id}';
+        const paymentId = '{if $payment}{$payment->id}{else}null{/if}';
+        
+        console.log('Payment monitoring started for session:', sessionId);
         
         // Payment monitoring
         let checkCount = 0;
@@ -846,9 +848,13 @@
         
         function checkPaymentStatus() {
             checkCount++;
+            console.log('Checking payment status, attempt:', checkCount);
+            
+            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
+            console.log('Status URL:', statusUrl);
             
             // Make AJAX request to check payment status
-            fetch(window.location.origin + '{$_url}captive_portal/status/' + sessionId, {
+            fetch(statusUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
