@@ -20,8 +20,8 @@ class RadiusManager
         }
         
         try {
-            // Remove existing entries for this user
-            self::removeRadiusUser($username);
+            // Remove existing entries for this user (temporarily disabled for debugging)
+            // self::removeRadiusUser($username);
             
             // Create password entry
             $radcheck = ORM::for_table('radcheck', 'radius')->create();
