@@ -739,6 +739,23 @@ switch ($routes['1']) {
         }
         break;
         
+    case 'debug_log':
+        // Simple debug endpoint for JavaScript logging
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+            
+            if ($data && isset($data['message'])) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " JS DEBUG: " . $data['message'] . "\n", FILE_APPEND);
+            }
+            
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'logged']);
+            exit;
+        }
+        break;
+        
     case 'callback':
         // M-Pesa callback handler for captive portal payments
         header('Content-Type: application/json');

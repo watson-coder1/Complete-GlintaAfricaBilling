@@ -842,7 +842,24 @@
         const sessionId = '{$session_id}';
         const paymentId = '{if $payment}{$payment->id}{else}null{/if}';
         
+        // Debug: Log to server to check if JavaScript is running
+        fetch('{$_url}captive_portal/debug_log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: 'JavaScript started for session: ' + sessionId,
+                timestamp: new Date().toISOString()
+            })
+        }).catch(() => {});
+        
         console.log('Payment monitoring started for session:', sessionId);
+        
+        // Alert user if session ID is missing
+        if (!sessionId || sessionId === '' || sessionId === '{$session_id}') {
+            alert('ERROR: Session ID not loaded. Refreshing page...');
+            setTimeout(() => window.location.reload(), 1000);
+            return;
+        }
         
         // Check if session is already completed (for refreshes)
         function quickStatusCheck() {
@@ -1103,6 +1120,14 @@
             // Normal page load - start checking after 1 second for faster detection
             setTimeout(checkPaymentStatus, 1000);
         }
+        
+        // Fallback: Start polling immediately after 2 seconds regardless
+        setTimeout(() => {
+            if (checkCount === 0) {
+                console.log('Fallback: Starting payment status check...');
+                checkPaymentStatus();
+            }
+        }, 2000);
         
         // Add backup payment detection using MAC address (if session detection fails)
         function backupPaymentCheck() {
