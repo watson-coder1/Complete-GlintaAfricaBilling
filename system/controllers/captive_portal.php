@@ -383,14 +383,16 @@ switch ($routes['1']) {
         break;
         
     case 'status':
-        // Check payment and session status (support both GET and POST)
+        // Check payment and session status (support both GET and POST, including MAC-based)
         try {
             $sessionId = $routes['2'] ?? $_POST['session_id'] ?? $_GET['session_id'] ?? '';
+            $mac = $_POST['mac'] ?? $_GET['mac'] ?? '';
             
-            if (empty($sessionId)) {
+            // Allow MAC-based status checking for better reliability
+            if (empty($sessionId) && empty($mac)) {
                 if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['ajax'])) {
                     header('Content-Type: application/json');
-                    echo json_encode(['status' => 'error', 'message' => 'Session ID required']);
+                    echo json_encode(['status' => 'error', 'message' => 'Session ID or MAC address required']);
                     exit;
                 } else {
                     r2(U . 'captive_portal', 'e', 'Session ID required');
@@ -402,11 +404,45 @@ switch ($routes['1']) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['ajax'])) {
                 header('Content-Type: application/json');
                 
-                $session = ORM::for_table('tbl_portal_sessions')
-                    ->where('session_id', $sessionId)
-                    ->find_one();
+                $session = null;
+                
+                // Find session by ID or MAC address
+                if (!empty($sessionId)) {
+                    $session = ORM::for_table('tbl_portal_sessions')
+                        ->where('session_id', $sessionId)
+                        ->find_one();
+                } elseif (!empty($mac)) {
+                    // Find most recent session for this MAC
+                    $session = ORM::for_table('tbl_portal_sessions')
+                        ->where('mac_address', $mac)
+                        ->order_by_desc('created_at')
+                        ->find_one();
+                        
+                    if ($session) {
+                        $sessionId = $session->session_id;
+                    }
+                }
                     
                 if (!$session) {
+                    // Try direct MAC-based payment lookup for better reliability
+                    if (!empty($mac)) {
+                        $payment = ORM::for_table('tbl_payment_gateway')
+                            ->where('username', $mac)
+                            ->where('status', 2)
+                            ->where_gte('created_date', date('Y-m-d H:i:s', strtotime('-2 hours')))
+                            ->order_by_desc('id')
+                            ->find_one();
+
+                        if ($payment) {
+                            echo json_encode([
+                                'status' => 'completed',
+                                'message' => 'Payment successful! Internet access activated.',
+                                'redirect' => U . 'captive_portal/success/' . ($sessionId ?: 'success') . '?mac=' . urlencode($mac)
+                            ]);
+                            exit;
+                        }
+                    }
+                    
                     echo json_encode(['status' => 'error', 'message' => 'Session not found']);
                     exit;
                 }
@@ -416,6 +452,16 @@ switch ($routes['1']) {
                 if ($session->payment_id) {
                     $payment = ORM::for_table('tbl_payment_gateway')
                         ->where('id', $session->payment_id)
+                        ->find_one();
+                }
+                
+                // Also check for payments by MAC address (backup method)
+                if (!$payment || $payment->status != 2) {
+                    $payment = ORM::for_table('tbl_payment_gateway')
+                        ->where('username', $session->mac_address)
+                        ->where('status', 2)
+                        ->where_gte('created_date', date('Y-m-d H:i:s', strtotime('-2 hours')))
+                        ->order_by_desc('id')
                         ->find_one();
                 }
                 
