@@ -933,7 +933,7 @@
                 clearTimeout(timeoutId);
                 console.log('Status response:', response.status, response.statusText);
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`HTTP ${'${response.status}'}: ${'${response.statusText}'}`);
                 }
                 return response.json();
             })
