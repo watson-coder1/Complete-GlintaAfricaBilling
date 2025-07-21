@@ -869,8 +869,8 @@
         setTimeout(function() {
             console.log('Attempting MikroTik hotspot authentication...');
             
-            // Method 1: Try relative /login (MikroTik hotspot endpoint)
-            const loginUrl = '/login';
+            // Authentication URL for MikroTik hotspot (using your custom domain)
+            const loginUrl = 'http://glinta.africa/login';
             console.log('Login URL:', loginUrl);
             
             // Create form to submit to MikroTik hotspot login
