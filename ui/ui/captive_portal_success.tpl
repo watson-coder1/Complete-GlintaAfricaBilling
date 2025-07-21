@@ -915,6 +915,13 @@
             dstField.value = 'https://google.com';
             form.appendChild(dstField);
             
+            // Add popup field (required by some MikroTik configurations)
+            const popupField = document.createElement('input');
+            popupField.type = 'hidden';
+            popupField.name = 'popup';
+            popupField.value = 'true';
+            form.appendChild(popupField);
+            
             document.body.appendChild(form);
             
             // Debug all form fields before submission
