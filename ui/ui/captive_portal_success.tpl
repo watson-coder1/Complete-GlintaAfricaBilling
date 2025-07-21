@@ -32,9 +32,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
         
         /* Celebration animation background */
@@ -533,9 +534,17 @@
         
         /* Responsive design */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+            
             .success-container {
-                padding: 40px 25px;
-                margin: 10px;
+                padding: 30px 20px;
+                margin: 0;
+                max-width: 100%;
+                border-radius: 20px;
             }
             
             .success-icon {
