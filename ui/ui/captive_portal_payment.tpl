@@ -887,7 +887,7 @@
         // Check if session is already completed (for refreshes)
         function quickStatusCheck() {
             console.log('Quick status check on page load...');
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
+            const statusUrl = '{$_url}captive_portal/status/' + sessionId;
             
             fetch(statusUrl, {
                 method: 'POST',
@@ -951,9 +951,11 @@
             console.log('Checking payment status, attempt:', checkCount);
             logToServer('JS DEBUG: checkPaymentStatus called, attempt: ' + checkCount);
             
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
+            const baseUrl = '{$_url}';
+            const statusUrl = baseUrl + 'captive_portal/status/' + sessionId;
             console.log('Status URL:', statusUrl);
             logToServer('JS DEBUG: About to fetch status from: ' + statusUrl);
+            logToServer('JS DEBUG: Base URL is: ' + baseUrl);
             
             // Make AJAX request to check payment status with timeout
             const controller = new AbortController();
@@ -1154,7 +1156,7 @@
             const mac = '{$session->mac_address}';
             if (!mac) return;
             
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/backup';
+            const statusUrl = '{$_url}captive_portal/status/backup';
             fetch(statusUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
