@@ -858,6 +858,38 @@
                 timeLeft += 1;
             }
         });
+        
+        // MikroTik authentication form - auto-submit after 3 seconds to complete captive portal login
+        setTimeout(function() {
+            // Create hidden form to authenticate with MikroTik
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.protocol + '//' + window.location.hostname + '/login';
+            form.style.display = 'none';
+            
+            // Add required MikroTik login parameters
+            const username = document.createElement('input');
+            username.type = 'hidden';
+            username.name = 'username';
+            username.value = '{$session->mac_address}';
+            form.appendChild(username);
+            
+            const password = document.createElement('input');
+            password.type = 'hidden';
+            password.name = 'password';
+            password.value = '{$session->mac_address}';
+            form.appendChild(password);
+            
+            const dst = document.createElement('input');
+            dst.type = 'hidden';
+            dst.name = 'dst';
+            dst.value = 'https://google.com';
+            form.appendChild(dst);
+            
+            document.body.appendChild(form);
+            console.log('Submitting MikroTik authentication form...');
+            form.submit();
+        }, 3000); // Wait 3 seconds to let user see the success page
     </script>
 </body>
 </html>
