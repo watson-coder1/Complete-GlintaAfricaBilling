@@ -537,15 +537,8 @@ switch ($routes['1']) {
                         ->find_one();
                 }
                 
-                // Also check for payments by MAC address (backup method)
-                if (!$payment || $payment->status != 2) {
-                    $payment = ORM::for_table('tbl_payment_gateway')
-                        ->where('username', $session->mac_address)
-                        ->where('status', 2)
-                        ->where_gte('created_date', date('Y-m-d H:i:s', strtotime('-2 hours')))
-                        ->order_by_desc('id')
-                        ->find_one();
-                }
+                // Only check for payments specifically linked to this session
+                // Don't use MAC address backup check as it picks up old successful payments
                 
                 // Check for active user recharge (in case callback was processed)
                 $activeRecharge = ORM::for_table('tbl_user_recharges')
@@ -560,7 +553,11 @@ switch ($routes['1']) {
                     ", Payment status: " . ($payment ? $payment->status : 'none') . 
                     ", Active recharge: " . ($activeRecharge ? 'yes' : 'no') . "\n", FILE_APPEND);
                 
-                if ($activeRecharge || ($payment && $payment->status == 2) || $session->status === 'completed') {
+                // Only consider completed if:
+                // 1. There's an active recharge, OR
+                // 2. The payment linked to THIS session is successful (status 2), OR  
+                // 3. The session itself is marked as completed
+                if ($activeRecharge || ($payment && $payment->status == 2 && $payment->id == $session->payment_id) || $session->status === 'completed') {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                         date('Y-m-d H:i:s') . " Payment completed - sending success response\n", FILE_APPEND);
                     echo json_encode([
