@@ -863,7 +863,7 @@
         // Server-side logging function for debugging
         function logToServer(message) {
             try {
-                fetch('{$_url}captive_portal/debug_log', {
+                fetch(baseUrl + 'captive_portal/debug_log', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -885,7 +885,7 @@
             logToServer('JS DEBUG: CRITICAL ERROR - Session ID is missing or not rendered: "' + sessionId + '"');
             alert('Session ID missing! Redirecting to portal...');
             setTimeout(() => {
-                window.location.href = '{$_url}captive_portal';
+                window.location.href = baseUrl + 'captive_portal';
             }, 2000);
         } else {
             logToServer('JS DEBUG: Session ID validated successfully: ' + sessionId);
