@@ -867,17 +867,41 @@
         
         // Try different authentication approaches
         setTimeout(function() {
-            console.log('Redirecting to MikroTik for RADIUS authentication...');
+            console.log('Creating MikroTik authentication form...');
             
-            // Direct redirect to MikroTik login with GET parameters
             const macAddress = '{$session->mac_address}';
-            const loginUrl = `http://glinta.africa/login?username=${macAddress}&password=${macAddress}&dst=https://google.com`;
-            
-            console.log('Redirecting to:', loginUrl);
             console.log('MAC Address:', macAddress);
             
-            // Direct redirect - no form needed
-            window.location.href = loginUrl;
+            // Create form for POST authentication to MikroTik
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'http://glinta.africa/login';
+            
+            // Add username field
+            const usernameField = document.createElement('input');
+            usernameField.type = 'hidden';
+            usernameField.name = 'username';
+            usernameField.value = macAddress;
+            form.appendChild(usernameField);
+            
+            // Add password field  
+            const passwordField = document.createElement('input');
+            passwordField.type = 'hidden';
+            passwordField.name = 'password';
+            passwordField.value = macAddress;
+            form.appendChild(passwordField);
+            
+            // Add destination field
+            const dstField = document.createElement('input');
+            dstField.type = 'hidden';
+            dstField.name = 'dst';
+            dstField.value = 'https://google.com';
+            form.appendChild(dstField);
+            
+            document.body.appendChild(form);
+            
+            console.log('Submitting authentication form to MikroTik...');
+            form.submit();
             
         }, 5000); // Wait 5 seconds to see success message
     </script>
