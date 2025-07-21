@@ -262,10 +262,10 @@ class RadiusManager
     public static function processExpiredUsers()
     {
         try {
-            // Get expired user recharges
+            // Get expired user recharges (include time, not just date)
             $expired_recharges = ORM::for_table('tbl_user_recharges')
                 ->where('status', 'on')
-                ->where_lt('expiration', date('Y-m-d'))
+                ->where_lt('expiration', date('Y-m-d H:i:s'))
                 ->find_many();
             
             $processed = 0;
