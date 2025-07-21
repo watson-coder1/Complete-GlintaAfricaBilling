@@ -31,13 +31,13 @@ class RadiusManager
             $radcheck->value = $password;
             $radcheck->save();
             
-            // Add User-Password for CHAP compatibility
-            $userpass = ORM::for_table('radcheck', 'radius')->create();
-            $userpass->username = $username;
-            $userpass->attribute = 'User-Password';
-            $userpass->op = ':=';
-            $userpass->value = $password;
-            $userpass->save();
+            // Add Auth-Type for MAC authentication bypass
+            $authtype = ORM::for_table('radcheck', 'radius')->create();
+            $authtype->username = $username;
+            $authtype->attribute = 'Auth-Type';
+            $authtype->op = ':=';
+            $authtype->value = 'Accept';
+            $authtype->save();
             
             // Add simultaneous use limit
             $simultaneous = ORM::for_table('radcheck', 'radius')->create();
