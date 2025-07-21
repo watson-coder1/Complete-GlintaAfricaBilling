@@ -903,7 +903,7 @@
             loading.style.display = 'none';
             alert.className = 'status-alert error';
             alert.style.display = 'block';
-            alertText.innerHTML = `❌ <strong>Payment Failed:</strong> ${message}`;
+            alertText.innerHTML = `❌ <strong>Payment Failed:</strong> ${'${message}'}`;
             
             // Show actions
             actions.classList.add('show');
