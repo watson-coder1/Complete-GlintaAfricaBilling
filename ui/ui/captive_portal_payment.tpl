@@ -846,10 +846,16 @@
         </div>
     </div>
     
+    <!-- Hidden input to pass session data from PHP to JavaScript -->
+    <input type="hidden" id="hiddenSessionId" value="{$session_id}">
+    <input type="hidden" id="hiddenBaseUrl" value="{$_url}">
+    <input type="hidden" id="hiddenPaymentId" value="{if $payment}{$payment->id}{else}null{/if}">
+    
     <script>
-        // Session data from PHP
-        const sessionId = '{$session_id}';
-        const paymentId = '{if $payment}{$payment->id}{else}null{/if}';
+        // Get session data from hidden inputs (safer than direct Smarty variables in JS)
+        const sessionId = document.getElementById('hiddenSessionId').value;
+        const baseUrl = document.getElementById('hiddenBaseUrl').value;
+        const paymentId = document.getElementById('hiddenPaymentId').value;
         
         console.log('Payment monitoring started for session:', sessionId);
         
@@ -874,7 +880,7 @@
         logToServer('JS DEBUG: Payment monitoring JavaScript started successfully');
         
         // Validate session ID
-        if (!sessionId || sessionId === '' || sessionId === '{$session_id}') {
+        if (!sessionId || sessionId === '' || sessionId.includes('{') || sessionId.includes('$')) {
             logToServer('JS DEBUG: CRITICAL ERROR - Session ID is missing or not rendered: "' + sessionId + '"');
             alert('Session ID missing! Redirecting to portal...');
             setTimeout(() => {
@@ -951,7 +957,7 @@
             console.log('Checking payment status, attempt:', checkCount);
             logToServer('JS DEBUG: checkPaymentStatus called, attempt: ' + checkCount);
             
-            const baseUrl = '{$_url}';
+            const baseUrl = document.getElementById('hiddenBaseUrl').value;
             const statusUrl = baseUrl + 'captive_portal/status/' + sessionId;
             console.log('Status URL:', statusUrl);
             logToServer('JS DEBUG: About to fetch status from: ' + statusUrl);
