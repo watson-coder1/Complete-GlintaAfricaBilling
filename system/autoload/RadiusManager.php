@@ -20,8 +20,8 @@ class RadiusManager
         }
         
         try {
-            // Remove existing entries for this user (temporarily disabled for debugging)
-            // self::removeRadiusUser($username);
+            // Remove existing entries for this user
+            self::removeRadiusUser($username);
             
             // Create password entry for both CHAP and PAP authentication
             $radcheck = ORM::for_table('radcheck', 'radius')->create();
@@ -31,13 +31,8 @@ class RadiusManager
             $radcheck->value = $password;
             $radcheck->save();
             
-            // Add Auth-Type for MAC authentication bypass
-            $authtype = ORM::for_table('radcheck', 'radius')->create();
-            $authtype->username = $username;
-            $authtype->attribute = 'Auth-Type';
-            $authtype->op = ':=';
-            $authtype->value = 'Accept';
-            $authtype->save();
+            // Remove Auth-Type Accept to require proper authentication
+            // Users must authenticate through RADIUS with valid credentials
             
             // Add simultaneous use limit
             $simultaneous = ORM::for_table('radcheck', 'radius')->create();
