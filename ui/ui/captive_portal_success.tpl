@@ -878,7 +878,7 @@
             const macAddress = '{$session->mac_address}';
             const loginUrl = 'http://192.168.88.1/login';
             const destination = 'https://google.com';
-            const authPassword = '';
+            const authPassword = '{$password}'; // MAC address as password
             
             console.log('MAC Address:', macAddress);
             console.log('Login URL from PHP:', loginUrl);
@@ -896,11 +896,11 @@
             usernameField.value = macAddress;
             form.appendChild(usernameField);
             
-            // Add password field (empty for MAC authentication)
+            // Add password field (MAC address for MAC authentication)
             const passwordField = document.createElement('input');
             passwordField.type = 'hidden';
             passwordField.name = 'password';
-            passwordField.value = authPassword; // Empty for MAC auth
+            passwordField.value = authPassword; // MAC address for MAC auth
             form.appendChild(passwordField);
             
             // Add destination field
@@ -923,7 +923,7 @@
             console.log('=== MikroTik Authentication Form Debug ===');
             console.log('Form action:', form.action);
             console.log('Username (MAC):', usernameField.value);
-            console.log('Password (MAC):', passwordField.value); 
+            console.log('Password (MAC as password):', passwordField.value); 
             console.log('Destination:', dstField.value);
             console.log('Form HTML:', form.outerHTML);
             

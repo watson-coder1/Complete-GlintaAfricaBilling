@@ -783,7 +783,12 @@ switch ($routes['1']) {
             $ui->assign('_title', 'Welcome to Glinta WiFi');
             $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
             
-            // MikroTik authentication will be handled by JavaScript in the template
+            // Add MikroTik authentication variables for proper MAC-based auth
+            $ui->assign('mikrotik_login_url', 'http://192.168.88.1/login');
+            $ui->assign('username', $session->mac_address); // MAC as username
+            $ui->assign('password', $session->mac_address); // MAC as password (common for MAC auth)
+            $ui->assign('destination', 'https://google.com');
+            $ui->assign('popup', 'true');
             
             // Add connection info for display
             $connectionInfo = [
