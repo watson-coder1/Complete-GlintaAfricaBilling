@@ -46,7 +46,7 @@
             padding-top: 20px;
             overflow-x: hidden;
             overflow-y: auto;
-            /* Prevent pull-to-refresh deformation while allowing scroll */
+            /* Allow scrolling but prevent pull-to-refresh */
             overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
         }
@@ -882,7 +882,7 @@
         
         // Payment monitoring
         let checkCount = 0;
-        const maxChecks = 400; // Check for 10 minutes (400 * 1.5 seconds)
+        const maxChecks = 600; // Check for 10 minutes (600 * 1 second)
         let redirectTimeout;
         
         // Loading text rotation
@@ -939,9 +939,9 @@
                     showError(data.message);
                 } else {
                     console.log('Payment still processing, status:', data.status);
-                    // Continue checking if not maxed out
+                    // Continue checking if not maxed out - check every 1 second for faster detection
                     if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, 1500);
+                        setTimeout(checkPaymentStatus, 1000);
                     } else {
                         showTimeout();
                     }
@@ -950,7 +950,7 @@
             .catch(error => {
                 console.log('Status check failed:', error);
                 if (checkCount < maxChecks) {
-                    setTimeout(checkPaymentStatus, 2000);
+                    setTimeout(checkPaymentStatus, 1000);
                 } else {
                     showTimeout();
                 }
@@ -1060,8 +1060,8 @@
             console.log('Page was refreshed - checking payment status...');
             handlePageLoad();
         } else {
-            // Normal page load - start checking after 3 seconds
-            setTimeout(checkPaymentStatus, 3000);
+            // Normal page load - start checking after 1 second for faster detection
+            setTimeout(checkPaymentStatus, 1000);
         }
         
         // Check again when user returns to page (page focus)
