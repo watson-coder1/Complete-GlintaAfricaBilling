@@ -385,6 +385,10 @@ switch ($routes['1']) {
         try {
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " === PAYMENT CASE START ===\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Route: " . json_encode($routes) . "\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " URL: " . $_SERVER['REQUEST_URI'] . "\n", FILE_APPEND);
             
             $sessionId = $routes['2'] ?? '';
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
@@ -463,6 +467,13 @@ switch ($routes['1']) {
             // Handle AJAX status check
             if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['ajax'])) {
                 header('Content-Type: application/json');
+                header('Cache-Control: no-cache, no-store, must-revalidate');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+                
+                // Log status check for debugging
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Status check for session: $sessionId" . ($mac ? " / MAC: $mac" : "") . "\n", FILE_APPEND);
                 
                 $session = null;
                 
@@ -532,19 +543,31 @@ switch ($routes['1']) {
                     ->where_gt('expiration', date('Y-m-d H:i:s'))
                     ->find_one();
                 
-                if ($activeRecharge || ($payment && $payment->status == 2)) {
+                // Log current status for debugging
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Status check results - Session status: " . ($session->status ?? 'null') . 
+                    ", Payment status: " . ($payment ? $payment->status : 'none') . 
+                    ", Active recharge: " . ($activeRecharge ? 'yes' : 'no') . "\n", FILE_APPEND);
+                
+                if ($activeRecharge || ($payment && $payment->status == 2) || $session->status === 'completed') {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Payment completed - sending success response\n", FILE_APPEND);
                     echo json_encode([
                         'status' => 'completed',
                         'message' => 'Payment successful! Internet access activated.',
                         'redirect' => U . 'captive_portal/success/' . $sessionId
                     ]);
                 } elseif ($payment && $payment->status == 0) {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Payment failed - sending error response\n", FILE_APPEND);
                     echo json_encode([
                         'status' => 'failed',
                         'message' => 'Payment failed. Please try again.',
                         'redirect' => U . 'captive_portal'
                     ]);
                 } else {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Payment still pending\n", FILE_APPEND);
                     echo json_encode([
                         'status' => 'pending',
                         'message' => 'Waiting for payment confirmation...'
