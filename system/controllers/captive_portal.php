@@ -547,11 +547,23 @@ switch ($routes['1']) {
                     ->where_gt('expiration', date('Y-m-d H:i:s'))
                     ->find_one();
                 
-                // Log current status for debugging
+                // Log current status for debugging with more detail
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                     date('Y-m-d H:i:s') . " Status check results - Session status: " . ($session->status ?? 'null') . 
+                    ", Session payment_id: " . ($session->payment_id ?? 'null') .
+                    ", Payment found: " . ($payment ? 'yes' : 'no') .
+                    ", Payment ID: " . ($payment ? $payment->id() : 'none') .
                     ", Payment status: " . ($payment ? $payment->status : 'none') . 
+                    ", IDs match: " . ($payment && $payment->id() == $session->payment_id ? 'yes' : 'no') .
                     ", Active recharge: " . ($activeRecharge ? 'yes' : 'no') . "\n", FILE_APPEND);
+                
+                // If payment is successful but session not marked completed, update it
+                if ($payment && $payment->status == 2 && $payment->id == $session->payment_id && $session->status !== 'completed') {
+                    $session->status = 'completed';
+                    $session->save();
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Session status updated to completed based on payment status\n", FILE_APPEND);
+                }
                 
                 // Only consider completed if:
                 // 1. There's an active recharge, OR
@@ -560,10 +572,13 @@ switch ($routes['1']) {
                 if ($activeRecharge || ($payment && $payment->status == 2 && $payment->id == $session->payment_id) || $session->status === 'completed') {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                         date('Y-m-d H:i:s') . " Payment completed - sending success response\n", FILE_APPEND);
+                    $redirectUrl = U . 'captive_portal/success/' . $sessionId;
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Sending success response with redirect: " . $redirectUrl . "\n", FILE_APPEND);
                     echo json_encode([
                         'status' => 'completed',
                         'message' => 'Payment successful! Internet access activated.',
-                        'redirect' => U . 'captive_portal/success/' . $sessionId
+                        'redirect' => $redirectUrl
                     ]);
                 } elseif ($payment && $payment->status == 0) {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
