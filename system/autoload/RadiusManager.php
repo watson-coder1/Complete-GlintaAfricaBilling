@@ -23,13 +23,21 @@ class RadiusManager
             // Remove existing entries for this user (temporarily disabled for debugging)
             // self::removeRadiusUser($username);
             
-            // Create password entry
+            // Create password entry for both CHAP and PAP authentication
             $radcheck = ORM::for_table('radcheck', 'radius')->create();
             $radcheck->username = $username;
             $radcheck->attribute = 'Cleartext-Password';
             $radcheck->op = ':=';
             $radcheck->value = $password;
             $radcheck->save();
+            
+            // Add User-Password for CHAP compatibility
+            $userpass = ORM::for_table('radcheck', 'radius')->create();
+            $userpass->username = $username;
+            $userpass->attribute = 'User-Password';
+            $userpass->op = ':=';
+            $userpass->value = $password;
+            $userpass->save();
             
             // Add simultaneous use limit
             $simultaneous = ORM::for_table('radcheck', 'radius')->create();
