@@ -570,21 +570,20 @@
         /* Responsive design */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
-                padding-top: 15px;
-                padding-bottom: 15px;
-                min-height: 100vh;
-                height: auto;
+                padding: 8px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                display: flex;
                 justify-content: center;
                 align-items: flex-start;
             }
             
             .payment-container {
-                padding: 25px 20px;
-                margin: 0;
-                width: 100%;
-                max-width: 100%;
-                border-radius: 20px;
+                padding: 20px 15px;
+                margin: 0 auto;
+                width: calc(100% - 16px);
+                max-width: none;
+                border-radius: 15px;
                 min-height: auto;
                 box-sizing: border-box;
             }
@@ -620,15 +619,15 @@
         
         @media (max-width: 480px) {
             body {
-                padding: 8px;
-                padding-top: 10px;
+                padding: 5px;
+                padding-top: 8px;
             }
             
             .payment-container {
-                padding: 20px 15px;
-                border-radius: 15px;
-                margin: 0;
-                width: 100%;
+                padding: 15px 12px;
+                border-radius: 12px;
+                width: calc(100% - 10px);
+                margin: 0 auto;
                 box-sizing: border-box;
             }
             
