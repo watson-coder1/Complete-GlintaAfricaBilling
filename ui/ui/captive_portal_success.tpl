@@ -875,10 +875,10 @@
         setTimeout(function() {
             console.log('Creating MikroTik authentication form...');
             
-            const macAddress = '{$username}';
-            const loginUrl = '{$mikrotik_login_url}';
-            const destination = '{$destination}';
-            const authPassword = '{$password}';
+            const macAddress = '{$session->mac_address}';
+            const loginUrl = 'http://192.168.88.1/login';
+            const destination = 'https://google.com';
+            const authPassword = '';
             
             console.log('MAC Address:', macAddress);
             console.log('Login URL from PHP:', loginUrl);
@@ -887,34 +887,7 @@
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = loginUrl;
-            
-            // Debug: Add comprehensive logging
-            console.log('Current URL:', window.location.href);
-            console.log('Referrer URL:', document.referrer);
-            console.log('User Agent:', navigator.userAgent);
-            
-            // For MikroTik hotspot, we need to determine the gateway IP dynamically
-            // Since users access via captive portal, the gateway should be the original referrer
-            let loginUrl = 'http://192.168.88.1/login'; // Default fallback
-            
-            // Try to get the gateway IP from the original hotspot redirect
-            const urlParams = new URLSearchParams(window.location.search);
-            const linkLoginOnly = urlParams.get('link-login-only');
-            const gatewayIP = urlParams.get('gw') || urlParams.get('gateway');
-            
-            if (linkLoginOnly) {
-                loginUrl = linkLoginOnly;
-                console.log('Using link-login-only:', loginUrl);
-            } else if (gatewayIP) {
-                loginUrl = `http://${gatewayIP}/login`;
-                console.log('Using gateway IP:', loginUrl);
-            } else {
-                // Try to detect from referrer or use a more reliable method
-                console.log('Using default MikroTik IP:', loginUrl);
-            }
-            
-            form.action = loginUrl;
-            console.log('Final login URL:', loginUrl);
+            console.log('MikroTik login URL:', loginUrl);
             
             // Add username field
             const usernameField = document.createElement('input');
