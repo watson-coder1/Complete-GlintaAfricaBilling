@@ -835,10 +835,10 @@
         setInterval(() => {
             const container = document.querySelector('.success-container');
             if (container) {
-                container.style.boxShadow = `
-                    0 30px 60px rgba(0, 0, 0, 0.3),
-                    0 0 100px rgba(16, 185, 129, ${0.2 + Math.random() * 0.2})
-                `;
+                const randomOpacity = 0.2 + Math.random() * 0.2;
+                container.style.boxShadow = 
+                    '0 30px 60px rgba(0, 0, 0, 0.3), ' +
+                    '0 0 100px rgba(16, 185, 129, ' + randomOpacity + ')';
             }
         }, 2000);
         
