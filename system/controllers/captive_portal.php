@@ -89,20 +89,8 @@ switch ($routes['1']) {
                 $mac = 'auto-' . substr(md5($ip . $userAgent), 0, 12);
             }
             
-            // Check if MAC already has active session
-            $activeSession = ORM::for_table('tbl_user_recharges')
-                ->where('username', $mac)
-                ->where('status', 'on')
-                ->where_gt('expiration', date('Y-m-d H:i:s'))
-                ->find_one();
-                
-            if ($activeSession) {
-                // User already has active session - redirect to success page
-                r2(U . 'captive_portal/success/' . $mac, 's', 'You already have an active internet session');
-                return;
-            }
-            
-            // Create new portal session
+            // Create new portal session FIRST (always create it)
+            $portalSessionCreated = false;
             try {
                 $session = ORM::for_table('tbl_portal_sessions')->create();
                 $session->session_id = $sessionId;
@@ -113,6 +101,7 @@ switch ($routes['1']) {
                 $session->expires_at = date('Y-m-d H:i:s', strtotime('+2 hours'));
                 $session->status = 'pending';
                 $session->save();
+                $portalSessionCreated = true;
                 
                 // Debug: Log successful session creation
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
@@ -123,6 +112,21 @@ switch ($routes['1']) {
                 error_log("Portal session creation failed: " . $e->getMessage());
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                     date('Y-m-d H:i:s') . " Session creation FAILED: " . $e->getMessage() . "\n", FILE_APPEND);
+            }
+            
+            // Check if MAC already has active session (AFTER creating portal session)
+            $activeSession = ORM::for_table('tbl_user_recharges')
+                ->where('username', $mac)
+                ->where('status', 'on')
+                ->where_gt('expiration', date('Y-m-d H:i:s'))
+                ->find_one();
+                
+            if ($activeSession && $portalSessionCreated) {
+                // User already has active session but we created portal session for form consistency
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " User has active session, redirecting to success (MAC: $mac)\n", FILE_APPEND);
+                r2(U . 'captive_portal/success/' . $mac, 's', 'You already have an active internet session');
+                return;
             }
             
             // Get available packages from existing plans (Hotspot only)
