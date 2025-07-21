@@ -357,8 +357,15 @@ switch ($routes['1']) {
                 $session->checkout_request_id = $stkResult['checkout_request_id'] ?? '';
                 $session->save();
                 
+                // Debug the redirect URL before redirecting
+                $redirectUrl = U . 'captive_portal/payment/' . $sessionId;
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " REDIRECT URL: " . $redirectUrl . "\n", FILE_APPEND);
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " SESSION ID: " . $sessionId . "\n", FILE_APPEND);
+                    
                 // Redirect to payment status page
-                r2(U . 'captive_portal/payment/' . $sessionId, 's', 'Payment request sent to your phone. Please check and enter your M-Pesa PIN.');
+                r2($redirectUrl, 's', 'Payment request sent to your phone. Please check and enter your M-Pesa PIN.');
                 
             } else {
                 $errorMessage = $stkResult['message'] ?? 'Unknown error occurred';
