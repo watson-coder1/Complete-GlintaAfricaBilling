@@ -272,6 +272,10 @@ switch ($routes['1']) {
             $accountReference = 'PORTAL-' . substr($sessionId, -8);
             $transactionDesc = 'Glinta WiFi - ' . substr($plan->name_plan, 0, 13);
             
+            // Log STK push request details
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Initiating STK Push - Phone: $phoneNumber, Amount: {$plan->price}, Ref: $accountReference\n", FILE_APPEND);
+            
             $stkResult = $daraja->send_request([
                 'phone_number' => $phoneNumber,
                 'amount' => $plan->price,
@@ -284,36 +288,42 @@ switch ($routes['1']) {
                 date('Y-m-d H:i:s') . " STK Push Result: " . json_encode($stkResult) . "\n", FILE_APPEND);
             
             if ($stkResult['success']) {
-                // Create payment gateway record with all required fields
-                $payment = ORM::for_table('tbl_payment_gateway')->create();
-                $payment->username = $session->mac_address;
-                $payment->gateway = 'Daraja';
-                $payment->gateway_trx_id = $stkResult['merchant_request_id'] ?? '';
-                $payment->plan_id = $planId;
-                $payment->plan_name = $plan->name_plan;
-                $payment->routers_id = $plan->routers_id ?? 1;
-                $payment->routers = $plan->routers ?? 'default';
-                $payment->price = $plan->price;
-                $payment->pg_url_payment = '';
-                $payment->payment_method = 'M-Pesa STK Push';
-                $payment->payment_channel = 'Captive Portal';
-                $payment->device_info = json_encode([
-                    'ip' => $session->ip_address,
-                    'mac' => $session->mac_address,
-                    'user_agent' => $session->user_agent
-                ]);
-                $payment->pg_request = json_encode([
-                    'phone_number' => $phoneNumber,
-                    'amount' => $plan->price,
-                    'account_reference' => $accountReference,
-                    'session_id' => $sessionId
-                ]);
-                $payment->expired_date = date('Y-m-d H:i:s', strtotime('+1 hour'));
-                $payment->created_date = date('Y-m-d H:i:s');
-                $payment->trx_invoice = $accountReference;
-                $payment->status = 1; // Pending
-                $payment->checkout_request_id = $stkResult['checkout_request_id'] ?? '';
-                $payment->save();
+                // Create payment gateway record with required fields only
+                try {
+                    $payment = ORM::for_table('tbl_payment_gateway')->create();
+                    $payment->username = $session->mac_address;
+                    $payment->gateway = 'Daraja';
+                    $payment->gateway_trx_id = $stkResult['merchant_request_id'] ?? '';
+                    $payment->plan_id = $planId;
+                    $payment->plan_name = $plan->name_plan;
+                    $payment->routers_id = $plan->routers_id ?? 1;
+                    $payment->routers = $plan->routers ?? 'default';
+                    $payment->price = $plan->price;
+                    $payment->pg_url_payment = '';
+                    $payment->payment_method = 'M-Pesa STK Push';
+                    $payment->payment_channel = 'Captive Portal';
+                    $payment->pg_request = json_encode([
+                        'phone_number' => $phoneNumber,
+                        'amount' => $plan->price,
+                        'account_reference' => $accountReference,
+                        'session_id' => $sessionId,
+                        'stk_request' => $stkResult
+                    ]);
+                    $payment->expired_date = date('Y-m-d H:i:s', strtotime('+1 hour'));
+                    $payment->created_date = date('Y-m-d H:i:s');
+                    $payment->trx_invoice = $accountReference;
+                    $payment->status = 1; // Pending
+                    $payment->checkout_request_id = $stkResult['checkout_request_id'] ?? '';
+                    $payment->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Payment record created with ID: " . $payment->id() . "\n", FILE_APPEND);
+                        
+                } catch (Exception $paymentError) {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Payment creation error: " . $paymentError->getMessage() . "\n", FILE_APPEND);
+                    throw $paymentError;
+                }
                 
                 // Update session with payment ID
                 $session->payment_id = $payment->id();
@@ -327,7 +337,12 @@ switch ($routes['1']) {
                 $errorMessage = $stkResult['message'] ?? 'Unknown error occurred';
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                     date('Y-m-d H:i:s') . " STK Push Failed: " . $errorMessage . "\n", FILE_APPEND);
-                r2(U . 'captive_portal', 'e', 'Failed to initiate payment: ' . $errorMessage);
+                
+                // Update session status to failed
+                $session->status = 'failed';
+                $session->save();
+                
+                r2(U . 'captive_portal', 'e', 'Failed to initiate M-Pesa payment: ' . $errorMessage . '. Please try again or contact support.');
             }
             
         } catch (Exception $e) {
