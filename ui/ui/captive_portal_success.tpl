@@ -859,16 +859,25 @@
             }
         });
         
-        // Auto-authenticate with MikroTik after payment success
-        // This submits credentials to MikroTik, which then validates against RADIUS
+        // Debug: Check current URL to understand captive portal structure
+        console.log('Success page loaded. Current URL:', window.location.href);
+        console.log('Protocol:', window.location.protocol);
+        console.log('Hostname:', window.location.hostname);
+        console.log('MAC Address from session:', '{$session->mac_address}');
+        
+        // Try different authentication approaches
         setTimeout(function() {
-            console.log('Starting MikroTik RADIUS authentication...');
+            console.log('Attempting MikroTik hotspot authentication...');
+            
+            // Method 1: Try current hostname + /login (most common)
+            const loginUrl = window.location.protocol + '//' + window.location.hostname + '/login';
+            console.log('Login URL:', loginUrl);
             
             // Create form to submit to MikroTik hotspot login
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/login'; // MikroTik hotspot login endpoint
-            form.style.display = 'none';
+            form.action = loginUrl;
+            form.target = '_blank'; // Open in new tab to see what happens
             
             // Username (MAC address for RADIUS)
             const username = document.createElement('input');
@@ -877,7 +886,7 @@
             username.value = '{$session->mac_address}';
             form.appendChild(username);
             
-            // Password (MAC address - as set in RADIUS)
+            // Password (MAC address - as set in RADIUS)  
             const password = document.createElement('input');
             password.type = 'hidden';
             password.name = 'password';
@@ -893,13 +902,17 @@
             
             document.body.appendChild(form);
             
-            // Submit form to authenticate via RADIUS
-            console.log('Submitting RADIUS authentication to MikroTik...', {
+            console.log('Form created with:', {
+                action: loginUrl,
                 username: '{$session->mac_address}',
-                action: '/login'
+                password: '{$session->mac_address}',
+                dst: 'https://google.com'
             });
+            
+            // Submit form - this should authenticate with RADIUS
             form.submit();
-        }, 3000); // Wait 3 seconds for user to see success message
+            
+        }, 5000); // Wait 5 seconds for debugging
     </script>
 </body>
 </html>
