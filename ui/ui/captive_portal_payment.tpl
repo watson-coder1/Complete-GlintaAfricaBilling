@@ -851,6 +851,7 @@
     <input type="hidden" id="hiddenBaseUrl" value="{$_url}">
     <input type="hidden" id="hiddenPaymentId" value="{if $payment}{$payment->id}{else}null{/if}">
     
+    {literal}
     <script>
         // Get session data from hidden inputs (safer than direct Smarty variables in JS)
         const sessionId = document.getElementById('hiddenSessionId').value;
@@ -1221,5 +1222,6 @@
             });
         });
     </script>
+    {/literal}
 </body>
 </html>
