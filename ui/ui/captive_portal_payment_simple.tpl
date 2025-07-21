@@ -120,14 +120,6 @@
                 <li>Contact 0711311897 for support</li>
             </ul>
         </div>
-        
-        <!-- DEBUG INFO - Remove after testing -->
-        <div style="background: yellow; padding: 15px; margin: 20px 0; border-radius: 10px; font-size: 12px;">
-            <strong>DEBUG INFO:</strong><br>
-            Session ID: '{$session_id}'<br>
-            Base URL: '{$_url}'<br>
-            Plan ID: {if $plan}'{$plan->id}'{else}'No plan'{/if}
-        </div>
     </div>
     
     <!-- Hidden inputs to pass Smarty variables to JavaScript -->
