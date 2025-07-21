@@ -823,6 +823,9 @@ switch ($routes['1']) {
             }
             
             // Find the payment record using checkout_request_id
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " CALLBACK DEBUG: Processing callback for checkout_request_id=" . $checkoutRequestId . " result_code=" . $resultCode . "\n", FILE_APPEND);
+            
             $payment = ORM::for_table('tbl_payment_gateway')
                 ->where('checkout_request_id', $checkoutRequestId)
                 ->find_one();
@@ -830,9 +833,14 @@ switch ($routes['1']) {
             if (!$payment) {
                 file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                     date('Y-m-d H:i:s') . ' - Payment record not found for checkout ID: ' . $checkoutRequestId . PHP_EOL, FILE_APPEND);
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " CALLBACK ERROR: Payment record not found for checkout_request_id=" . $checkoutRequestId . "\n", FILE_APPEND);
                 echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment not found']);
                 exit;
             }
+            
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " CALLBACK DEBUG: Found payment record ID=" . $payment->id() . "\n", FILE_APPEND);
             
             if ($resultCode == 0) { // Success
                 // Extract payment details from callback
@@ -871,6 +879,9 @@ switch ($routes['1']) {
                     date('Y-m-d H:i:s') . ' - Payment marked as successful: ' . $mpesaReceiptNumber . PHP_EOL, FILE_APPEND);
                 
                 // Get session and plan
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " CALLBACK DEBUG: Looking for session with payment_id=" . $payment->id() . "\n", FILE_APPEND);
+                    
                 $session = ORM::for_table('tbl_portal_sessions')
                     ->where('payment_id', $payment->id())
                     ->find_one();
@@ -878,9 +889,14 @@ switch ($routes['1']) {
                 if (!$session) {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - Session not found for payment ID: ' . $payment->id() . PHP_EOL, FILE_APPEND);
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK ERROR: Session not found for payment_id=" . $payment->id() . "\n", FILE_APPEND);
                     echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Session not found']);
                     exit;
                 }
+                
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " CALLBACK DEBUG: Found session ID=" . $session->session_id . " status='" . $session->status . "' MAC=" . $session->mac_address . "\n", FILE_APPEND);
                 
                 $plan = ORM::for_table('tbl_plans')
                     ->where('id', $payment->plan_id)
@@ -962,8 +978,22 @@ switch ($routes['1']) {
                     
                         // Always update session status to completed when payment is successful
                     // regardless of RADIUS creation status
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: About to update session " . $session->session_id . " from '" . $session->status . "' to 'completed'\n", FILE_APPEND);
+                    
                     $session->status = 'completed';
-                    $session->save();
+                    $sessionSaveResult = $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Session save result: " . var_export($sessionSaveResult, true) . "\n", FILE_APPEND);
+                    
+                    // Verify the update by re-fetching the session
+                    $verifySession = ORM::for_table('tbl_portal_sessions')
+                        ->where('session_id', $session->session_id)
+                        ->find_one();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Verification - session " . $session->session_id . " status is now: '" . $verifySession->status . "'\n", FILE_APPEND);
                     
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - Session status updated to completed' . PHP_EOL, FILE_APPEND);
@@ -976,8 +1006,22 @@ switch ($routes['1']) {
                         date('Y-m-d H:i:s') . ' - RADIUS Error: ' . $radiusError->getMessage() . PHP_EOL, FILE_APPEND);
                     
                     // Still update session status to completed even if RADIUS fails
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: RADIUS failed, updating session " . $session->session_id . " from '" . $session->status . "' to 'completed'\n", FILE_APPEND);
+                    
                     $session->status = 'completed';
-                    $session->save();
+                    $sessionSaveResult = $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Session save result (RADIUS error): " . var_export($sessionSaveResult, true) . "\n", FILE_APPEND);
+                    
+                    // Verify the update by re-fetching the session
+                    $verifySession = ORM::for_table('tbl_portal_sessions')
+                        ->where('session_id', $session->session_id)
+                        ->find_one();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Verification (RADIUS error) - session " . $session->session_id . " status is now: '" . $verifySession->status . "'\n", FILE_APPEND);
                     
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - Session status updated to completed (despite RADIUS error)' . PHP_EOL, FILE_APPEND);
