@@ -383,9 +383,16 @@ switch ($routes['1']) {
     case 'payment':
         // Payment status and monitoring page
         try {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " === PAYMENT CASE START ===\n", FILE_APPEND);
+            
             $sessionId = $routes['2'] ?? '';
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Payment page session ID: " . ($sessionId ?: 'EMPTY') . "\n", FILE_APPEND);
             
             if (empty($sessionId)) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " ERROR: Session ID required - redirecting\n", FILE_APPEND);
                 r2(U . 'captive_portal', 'e', 'Session ID required');
                 return;
             }
@@ -422,10 +429,15 @@ switch ($routes['1']) {
             $ui->assign('_title', 'Processing Payment - Glinta Africa');
             $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
             
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " About to display payment template for session: $sessionId\n", FILE_APPEND);
+            
             $ui->display('captive_portal_payment.tpl');
             
         } catch (Exception $e) {
             error_log("Captive Portal Payment Error: " . $e->getMessage());
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " PAYMENT CASE ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
             r2(U . 'captive_portal', 'e', 'Unable to load payment page. Please try again.');
         }
         break;
