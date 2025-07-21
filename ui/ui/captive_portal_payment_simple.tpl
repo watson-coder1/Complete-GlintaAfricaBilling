@@ -120,17 +120,37 @@
                 <li>Contact 0711311897 for support</li>
             </ul>
         </div>
+        
+        <!-- DEBUG INFO - Remove after testing -->
+        <div style="background: yellow; padding: 15px; margin: 20px 0; border-radius: 10px; font-size: 12px;">
+            <strong>DEBUG INFO:</strong><br>
+            Session ID: '{$session_id}'<br>
+            Base URL: '{$_url}'<br>
+            Plan ID: {if $plan}'{$plan->id}'{else}'No plan'{/if}
+        </div>
     </div>
     
+    <!-- Hidden inputs to pass Smarty variables to JavaScript -->
+    <input type="hidden" id="hiddenSessionId" value="{$session_id}">
+    <input type="hidden" id="hiddenBaseUrl" value="{$_url}">
+    
     <script>
-        // Simple, guaranteed JavaScript polling
-        var sessionId = '{$session_id}';
-        var baseUrl = '{$_url}';
+        // Get variables from hidden inputs to avoid Smarty parsing issues
+        var sessionId = document.getElementById('hiddenSessionId').value;
+        var baseUrl = document.getElementById('hiddenBaseUrl').value;
         var pollCount = 0;
         var maxPolls = 40; // 2 minutes at 3-second intervals
         
-        // Test that JavaScript is working
+        // Test that JavaScript is working and show debug info
         document.getElementById('message').innerHTML += '<br><small style="color: green;">JavaScript loaded successfully!</small>';
+        
+        // Debug: Show retrieved values
+        if (!sessionId || sessionId.includes('{') || sessionId.includes('$')) {
+            alert('Session ID missing! Value: "' + sessionId + '"');
+            document.getElementById('message').innerHTML += '<br><small style="color: red;">❌ Session ID Error: ' + sessionId + '</small>';
+        } else {
+            document.getElementById('message').innerHTML += '<br><small style="color: blue;">✅ Session ID OK: ' + sessionId + '</small>';
+        }
         
         // Simple polling function
         function checkStatus() {
