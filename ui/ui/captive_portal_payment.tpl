@@ -575,14 +575,18 @@
                 padding-bottom: 15px;
                 min-height: 100vh;
                 height: auto;
+                justify-content: center;
+                align-items: flex-start;
             }
             
             .payment-container {
                 padding: 25px 20px;
-                margin: 0 auto;
+                margin: 0;
+                width: 100%;
                 max-width: 100%;
                 border-radius: 20px;
                 min-height: auto;
+                box-sizing: border-box;
             }
             
             .brand-logo {
@@ -623,6 +627,9 @@
             .payment-container {
                 padding: 20px 15px;
                 border-radius: 15px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
             }
             
             .package-details {
