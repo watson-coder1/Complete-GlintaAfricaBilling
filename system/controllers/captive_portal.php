@@ -163,8 +163,16 @@ switch ($routes['1']) {
     case 'select':
         // Package selection and M-Pesa payment initiation
         try {
+            // Debug: Log all incoming data
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " === SELECT CASE START ===\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " POST Data: " . json_encode($_POST) . "\n", FILE_APPEND);
+                
             // Validate request method
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " ERROR: Invalid request method\n", FILE_APPEND);
                 r2(U . 'captive_portal', 'e', 'Invalid request method');
                 return;
             }
@@ -259,11 +267,19 @@ switch ($routes['1']) {
                 require_once dirname(__DIR__) . '/paymentgateway/Daraja.php';
                 $daraja = new Daraja();
                 $mpesaEnabled = $daraja->isEnabled();
+                
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " M-Pesa Gateway Status: " . ($mpesaEnabled ? 'Enabled' : 'Disabled') . "\n", FILE_APPEND);
+                    
             } catch (Exception $e) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Daraja check error: " . $e->getMessage() . "\n", FILE_APPEND);
                 error_log("Daraja check failed: " . $e->getMessage());
             }
             
             if (!$mpesaEnabled) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Payment system not configured - redirecting to error\n", FILE_APPEND);
                 r2(U . 'captive_portal', 'e', 'Payment system not configured. Please contact administrator.');
                 return;
             }

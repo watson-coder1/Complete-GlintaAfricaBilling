@@ -1,0 +1,3 @@
+#!/bin/bash
+# This is a placeholder for the compressed deployment files
+echo "Create deployment package with: tar -czf deploy_files.tar.gz system/controllers/captive_portal.php system/paymentgateway/Daraja.php system/autoload/RadiusManager.php ui/ui/captive_portal_*.tpl callback_mpesa.php"
