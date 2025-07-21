@@ -872,18 +872,29 @@ switch ($routes['1']) {
                     if ($result['success']) {
                         file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                             date('Y-m-d H:i:s') . ' - RADIUS User Created: ' . $username . PHP_EOL, FILE_APPEND);
-                            
-                        // Update session status
-                        $session->status = 'completed';
                         $session->mikrotik_user = $username;
-                        $session->save();
                     } else {
                         file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                             date('Y-m-d H:i:s') . ' - RADIUS User Creation Failed: ' . $result['message'] . PHP_EOL, FILE_APPEND);
                     }
+                    
+                    // Always update session status to completed when payment is successful
+                    // regardless of RADIUS creation status
+                    $session->status = 'completed';
+                    $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                        date('Y-m-d H:i:s') . ' - Session status updated to completed' . PHP_EOL, FILE_APPEND);
                 } catch (Exception $radiusError) {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                         date('Y-m-d H:i:s') . ' - RADIUS Error: ' . $radiusError->getMessage() . PHP_EOL, FILE_APPEND);
+                    
+                    // Still update session status to completed even if RADIUS fails
+                    $session->status = 'completed';
+                    $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                        date('Y-m-d H:i:s') . ' - Session status updated to completed (despite RADIUS error)' . PHP_EOL, FILE_APPEND);
                 }
                 
             } else {
