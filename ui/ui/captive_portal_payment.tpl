@@ -38,23 +38,17 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, var(--kenya-black) 0%, #1a1a1a 25%, var(--kenya-green) 75%, var(--glinta-gold) 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: flex-start;
             justify-content: center;
             padding: 15px;
             padding-top: 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
             overflow-x: hidden;
             overflow-y: auto;
-            /* Prevent pull-to-refresh deformation */
-            overscroll-behavior: contain;
+            /* Prevent pull-to-refresh deformation while allowing scroll */
+            overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
         }
         
         /* Animated background */
@@ -835,19 +829,56 @@
         
         console.log('Payment monitoring started for session:', sessionId);
         
-        // Prevent pull-to-refresh on mobile
+        // Check if session is already completed (for refreshes)
+        function quickStatusCheck() {
+            console.log('Quick status check on page load...');
+            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
+            
+            fetch(statusUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ check: true })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Quick check result:', data);
+                if (data.status === 'completed') {
+                    console.log('Session already completed! Redirecting...');
+                    window.location.href = data.redirect || '{$_url}captive_portal/success';
+                }
+            })
+            .catch(error => {
+                console.log('Quick check failed:', error);
+                // Continue with normal flow
+            });
+        }
+        
+        // Prevent pull-to-refresh only at the very top of page
         let startY = 0;
+        let isAtTop = true;
+        
         document.addEventListener('touchstart', function(e) {
             startY = e.touches[0].pageY;
+            isAtTop = window.scrollY <= 10; // Allow small tolerance
         });
         
         document.addEventListener('touchmove', function(e) {
             const y = e.touches[0].pageY;
-            // Disable pull-to-refresh if swiping down at top of page
-            if (y > startY && window.scrollY === 0) {
+            const deltaY = y - startY;
+            
+            // Only prevent pull-to-refresh if:
+            // 1. We're at the very top of the page
+            // 2. User is pulling down (positive delta)
+            // 3. Delta is significant (more than 5px)
+            if (isAtTop && deltaY > 5 && window.scrollY === 0) {
                 e.preventDefault();
             }
         }, { passive: false });
+        
+        // Update scroll position tracking
+        document.addEventListener('scroll', function() {
+            isAtTop = window.scrollY <= 10;
+        });
         
         // Payment monitoring
         let checkCount = 0;
@@ -1012,8 +1043,26 @@
             }, 1000);
         }
         
-        // Start payment status checking after 3 seconds
-        setTimeout(checkPaymentStatus, 3000);
+        // Handle page refresh/reload - check session status immediately
+        function handlePageLoad() {
+            console.log('Page loaded/refreshed - checking session status immediately...');
+            // First do a quick check if already completed
+            quickStatusCheck();
+            // Then start normal monitoring
+            setTimeout(checkPaymentStatus, 500);
+        }
+        
+        // Run on page load
+        window.addEventListener('load', handlePageLoad);
+        
+        // Also check if page was refreshed
+        if (performance.navigation.type === 1) {
+            console.log('Page was refreshed - checking payment status...');
+            handlePageLoad();
+        } else {
+            // Normal page load - start checking after 3 seconds
+            setTimeout(checkPaymentStatus, 3000);
+        }
         
         // Check again when user returns to page (page focus)
         window.addEventListener('focus', function() {

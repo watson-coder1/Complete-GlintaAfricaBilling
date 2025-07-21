@@ -33,14 +33,15 @@
             background: linear-gradient(135deg, var(--kenya-black) 0%, #1a1a1a 25%, var(--kenya-green) 75%, var(--glinta-gold) 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 15px;
+            padding-top: 20px;
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
-            /* Prevent pull-to-refresh deformation */
-            overscroll-behavior: none;
+            /* Prevent pull-to-refresh deformation while allowing scroll */
+            overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
         }
         
