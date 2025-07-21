@@ -38,6 +38,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, var(--kenya-black) 0%, #1a1a1a 25%, var(--kenya-green) 75%, var(--glinta-gold) 100%);
             min-height: 100vh;
+            min-height: -webkit-fill-available; /* iOS Safari fix */
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -48,6 +49,23 @@
             /* Allow scrolling but prevent pull-to-refresh */
             overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
+            /* Ensure full width and proper centering */
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Fix for mobile viewport issues */
+        html {
+            height: 100%;
+            height: -webkit-fill-available; /* iOS Safari */
+        }
+        
+        /* Ensure consistent centering on mobile */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                height: -webkit-fill-available;
+            }
         }
         
         /* Animated background */
@@ -895,16 +913,28 @@
             const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
             console.log('Status URL:', statusUrl);
             
-            // Make AJAX request to check payment status
+            // Make AJAX request to check payment status with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
             fetch(statusUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ check: true })
+                body: JSON.stringify({ 
+                    check: true, 
+                    session_id: sessionId,
+                    timestamp: Date.now() 
+                }),
+                signal: controller.signal
             })
             .then(response => {
+                clearTimeout(timeoutId);
                 console.log('Status response:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 return response.json();
             })
             .then(data => {
@@ -920,20 +950,34 @@
                     showError(data.message);
                 } else {
                     console.log('Payment still processing, status:', data.status);
-                    // Continue checking if not maxed out - check every 1 second for faster detection
+                    // More aggressive checking - reduce interval to 500ms for first minute
+                    const nextInterval = checkCount < 120 ? 500 : 1000;
                     if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, 1000);
+                        setTimeout(checkPaymentStatus, nextInterval);
                     } else {
                         showTimeout();
                     }
                 }
             })
             .catch(error => {
+                clearTimeout(timeoutId);
                 console.log('Status check failed:', error);
-                if (checkCount < maxChecks) {
-                    setTimeout(checkPaymentStatus, 1000);
+                
+                // If it's an abort error (timeout), try again more aggressively
+                if (error.name === 'AbortError') {
+                    console.log('Request timed out, retrying immediately...');
+                    if (checkCount < maxChecks) {
+                        setTimeout(checkPaymentStatus, 200); // Immediate retry for timeouts
+                    } else {
+                        showTimeout();
+                    }
                 } else {
-                    showTimeout();
+                    // Network or other error - continue with normal interval
+                    if (checkCount < maxChecks) {
+                        setTimeout(checkPaymentStatus, 1000);
+                    } else {
+                        showTimeout();
+                    }
                 }
             });
         }
@@ -1027,6 +1071,21 @@
         // Handle page refresh/reload - check session status immediately
         function handlePageLoad() {
             console.log('Page loaded/refreshed - checking session status immediately...');
+            
+            // Fix layout issues on mobile refresh
+            if (window.innerWidth <= 768) {
+                // Force layout recalculation
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // Trigger reflow
+                document.body.style.display = 'flex';
+                
+                // Ensure proper centering
+                setTimeout(() => {
+                    document.body.style.justifyContent = 'center';
+                    document.body.style.alignItems = 'flex-start';
+                }, 50);
+            }
+            
             // First do a quick check if already completed
             quickStatusCheck();
             // Then start normal monitoring
@@ -1044,6 +1103,35 @@
             // Normal page load - start checking after 1 second for faster detection
             setTimeout(checkPaymentStatus, 1000);
         }
+        
+        // Add backup payment detection using MAC address (if session detection fails)
+        function backupPaymentCheck() {
+            const mac = '{$session->mac_address}';
+            if (!mac) return;
+            
+            const statusUrl = window.location.origin + '{$_url}captive_portal/status/backup';
+            fetch(statusUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mac: mac, check: true })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    console.log('Backup check: Payment completed!');
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '{$_url}captive_portal/success';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.log('Backup check failed:', error);
+            });
+        }
+        
+        // Run backup check every 30 seconds
+        setInterval(backupPaymentCheck, 30000);
         
         // Check again when user returns to page (page focus)
         window.addEventListener('focus', function() {
