@@ -718,6 +718,15 @@
             <div class="brand-logo">G</div>
             <h1 class="brand-title">Glinta Africa</h1>
             <p class="brand-subtitle">Premium WiFi Solutions</p>
+            
+            <!-- DEBUG: Show template variables -->
+            <div style="background: yellow; padding: 10px; margin: 10px; font-size: 12px; border: 2px solid red;">
+                <strong>DEBUG INFO:</strong><br>
+                Session ID: "{$session_id}"<br>
+                URL: "{$_url}"<br>
+                Session Object: {if $session}EXISTS{else}NULL{/if}<br>
+                Plan: {if $plan}EXISTS{else}NULL{/if}
+            </div>
         </div>
         
         <!-- Payment Status -->

@@ -442,6 +442,10 @@ switch ($routes['1']) {
             
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " About to display payment template for session: $sessionId\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Template variables assigned - session_id: '$sessionId', _url: '" . U . "'\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Session object ID: " . ($session ? $session->session_id : 'NULL') . "\n", FILE_APPEND);
             
             $ui->display('captive_portal_payment.tpl');
             
