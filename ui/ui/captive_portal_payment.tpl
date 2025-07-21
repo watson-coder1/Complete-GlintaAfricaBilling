@@ -838,360 +838,94 @@
     </div>
     
     <script>
-        // Session data from PHP
-        const sessionId = '{$session_id}';
-        const paymentId = '{if $payment}{$payment->id}{else}null{/if}';
+        // IMMEDIATE TEST: Force JavaScript execution detection
+        setTimeout(function() {
+            // Try to send a simple ping to prove JS is working
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{$_url}captive_portal/debug_log');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({message: 'BASIC JS TEST: JavaScript is executing'}));
+        }, 100);
         
-        // Debug: Log to server to check if JavaScript is running
-        fetch('{$_url}captive_portal/debug_log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: 'JavaScript started for session: ' + sessionId,
-                timestamp: new Date().toISOString()
-            })
-        }).catch(() => {});
+        // Session data from PHP  
+        var sessionId = '{$session_id}';
+        var paymentId = '{if $payment}{$payment->id}{else}null{/if}';
         
-        console.log('Payment monitoring started for session:', sessionId);
+        // Test if variables are loading
+        setTimeout(function() {
+            var xhr2 = new XMLHttpRequest();
+            xhr2.open('POST', '{$_url}captive_portal/debug_log');
+            xhr2.setRequestHeader('Content-Type', 'application/json');
+            xhr2.send(JSON.stringify({message: 'SESSION ID TEST: ' + sessionId}));
+        }, 200);
         
-        // Alert user if session ID is missing
-        if (!sessionId || sessionId === '' || sessionId === '{$session_id}') {
-            alert('ERROR: Session ID not loaded. Refreshing page...');
-            setTimeout(() => window.location.reload(), 1000);
-            return;
-        }
-        
-        // Check if session is already completed (for refreshes)
-        function quickStatusCheck() {
-            console.log('Quick status check on page load...');
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
-            
-            fetch(statusUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ check: true })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Quick check result:', data);
-                if (data.status === 'completed') {
-                    console.log('Session already completed! Redirecting...');
-                    window.location.href = data.redirect || '{$_url}captive_portal/success';
-                }
-            })
-            .catch(error => {
-                console.log('Quick check failed:', error);
-                // Continue with normal flow
-            });
-        }
-        
-        // Simple pull-to-refresh prevention - only prevent at very top
-        document.addEventListener('touchmove', function(e) {
-            if (window.scrollY === 0 && e.touches[0].clientY > e.touches[0].clientY) {
-                // Only prevent if at absolute top and pulling down significantly
-                const touch = e.touches[0];
-                if (touch.clientY > 50) { // Allow small movements
-                    e.preventDefault();
-                }
-            }
-        }, { passive: false });
-        
-        // Payment monitoring
-        let checkCount = 0;
-        const maxChecks = 600; // Check for 10 minutes (600 * 1 second)
-        let redirectTimeout;
-        
-        // Loading text rotation
-        const loadingTexts = [
-            'Waiting for payment confirmation...',
-            'Processing your M-Pesa payment...',
-            'Activating your internet access...',
-            'Almost ready, please wait...',
-            'Connecting to payment gateway...',
-            'Verifying transaction details...'
-        ];
-        let textIndex = 0;
-        
-        function rotateLoadingText() {
-            const loadingText = document.getElementById('loadingText');
-            if (loadingText && checkCount < maxChecks) {
-                textIndex = (textIndex + 1) % loadingTexts.length;
-                loadingText.textContent = loadingTexts[textIndex];
-            }
-        }
-        
-        // Start text rotation
-        setInterval(rotateLoadingText, 3000);
-        
-        function checkPaymentStatus() {
-            checkCount++;
-            console.log('Checking payment status, attempt:', checkCount);
-            
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/' + sessionId;
-            console.log('Status URL:', statusUrl);
-            
-            // Make AJAX request to check payment status with timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-            
-            fetch(statusUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    check: true, 
-                    session_id: sessionId,
-                    timestamp: Date.now() 
-                }),
-                signal: controller.signal
-            })
-            .then(response => {
-                clearTimeout(timeoutId);
-                console.log('Status response:', response.status, response.statusText);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${'${response.status}'}: ${'${response.statusText}'}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Status data received:', data);
-                if (data.status === 'completed') {
-                    console.log('Payment completed! Redirecting to:', data.redirect);
-                    showSuccess();
-                    setTimeout(() => {
-                        window.location.href = data.redirect || '{$_url}captive_portal/success';
-                    }, 3000);
-                } else if (data.status === 'error') {
-                    console.log('Payment error:', data.message);
-                    showError(data.message);
-                } else {
-                    console.log('Payment still processing, status:', data.status);
-                    // More aggressive checking - reduce interval to 500ms for first minute
-                    const nextInterval = checkCount < 120 ? 500 : 1000;
-                    if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, nextInterval);
-                    } else {
-                        showTimeout();
+        // Alert and simple polling if session ID exists
+        if (sessionId && sessionId !== '' && sessionId !== '{$session_id}') {
+            // Start simple polling every 3 seconds
+            setTimeout(function() {
+                var pollCount = 0;
+                var interval = setInterval(function() {
+                    pollCount++;
+                    var xhr3 = new XMLHttpRequest();
+                    xhr3.open('POST', '{$_url}captive_portal/status/' + sessionId);
+                    xhr3.setRequestHeader('Content-Type', 'application/json');
+                    xhr3.onload = function() {
+                        if (xhr3.status === 200) {
+                            var data = JSON.parse(xhr3.responseText);
+                            if (data.status === 'completed') {
+                                clearInterval(interval);
+                                window.location.href = data.redirect || '{$_url}captive_portal/success/' + sessionId;
+                            }
+                        }
+                    };
+                    xhr3.send(JSON.stringify({check: true}));
+                    
+                    // Stop after 20 attempts (1 minute)
+                    if (pollCount >= 20) {
+                        clearInterval(interval);
                     }
-                }
-            })
-            .catch(error => {
-                clearTimeout(timeoutId);
-                console.log('Status check failed:', error);
-                
-                // If it's an abort error (timeout), try again more aggressively
-                if (error.name === 'AbortError') {
-                    console.log('Request timed out, retrying immediately...');
-                    if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, 200); // Immediate retry for timeouts
-                    } else {
-                        showTimeout();
-                    }
-                } else {
-                    // Network or other error - continue with normal interval
-                    if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, 1000);
-                    } else {
-                        showTimeout();
-                    }
-                }
-            });
-        }
-        
-        function showSuccess() {
-            const icon = document.getElementById('paymentIcon');
-            const title = document.getElementById('paymentTitle');
-            const message = document.getElementById('paymentMessage');
-            const loading = document.getElementById('loadingSection');
-            const alert = document.getElementById('statusAlert');
-            const alertText = document.getElementById('statusText');
-            const countdown = document.getElementById('countdown');
-            const actions = document.getElementById('actions');
-            
-            // Update UI
-            icon.textContent = '✅';
-            icon.className = 'payment-icon success';
-            title.textContent = 'Payment Successful!';
-            message.textContent = 'Your payment has been processed and internet access is now active.';
-            
-            // Hide loading, show success alert
-            loading.style.display = 'none';
-            alert.className = 'status-alert success';
-            alert.style.display = 'block';
-            alertText.innerHTML = '🎉 <strong>Success!</strong> You now have internet access. Redirecting to welcome page...';
-            
-            // Show countdown
-            countdown.style.display = 'block';
-            startCountdown();
-            
-            // Show actions
-            actions.classList.add('show');
-        }
-        
-        function showError(message) {
-            const icon = document.getElementById('paymentIcon');
-            const title = document.getElementById('paymentTitle');
-            const messageEl = document.getElementById('paymentMessage');
-            const loading = document.getElementById('loadingSection');
-            const alert = document.getElementById('statusAlert');
-            const alertText = document.getElementById('statusText');
-            const actions = document.getElementById('actions');
-            
-            // Update UI
-            icon.textContent = '❌';
-            icon.className = 'payment-icon error';
-            title.textContent = 'Payment Failed';
-            messageEl.textContent = 'There was an issue with your payment. Please try again.';
-            
-            // Hide loading, show error alert
-            loading.style.display = 'none';
-            alert.className = 'status-alert error';
-            alert.style.display = 'block';
-            alertText.innerHTML = `❌ <strong>Payment Failed:</strong> ${'${message}'}`;
-            
-            // Show actions
-            actions.classList.add('show');
-        }
-        
-        function showTimeout() {
-            const loading = document.getElementById('loadingSection');
-            const alert = document.getElementById('statusAlert');
-            const alertText = document.getElementById('statusText');
-            const actions = document.getElementById('actions');
-            
-            // Hide loading, show timeout alert
-            loading.style.display = 'none';
-            alert.className = 'status-alert warning';
-            alert.style.display = 'block';
-            alertText.innerHTML = '⏰ <strong>Payment check timeout.</strong> If you completed the payment, please wait a moment and refresh the page, or contact support.';
-            
-            // Show actions
-            actions.classList.add('show');
-        }
-        
-        function startCountdown() {
-            let count = 5;
-            const countdownEl = document.getElementById('countdownNumber');
-            
-            const interval = setInterval(() => {
-                count--;
-                if (countdownEl) {
-                    countdownEl.textContent = count;
-                }
-                if (count <= 0) {
-                    clearInterval(interval);
-                }
-            }, 1000);
-        }
-        
-        // Handle page refresh/reload - check session status immediately
-        function handlePageLoad() {
-            console.log('Page loaded/refreshed - checking session status immediately...');
-            
-            // Fix layout issues on mobile refresh
-            if (window.innerWidth <= 768) {
-                // Force layout recalculation
-                document.body.style.display = 'none';
-                document.body.offsetHeight; // Trigger reflow
-                document.body.style.display = 'flex';
-                
-                // Ensure proper centering
-                setTimeout(() => {
-                    document.body.style.justifyContent = 'center';
-                    document.body.style.alignItems = 'flex-start';
-                }, 50);
-            }
-            
-            // First do a quick check if already completed
-            quickStatusCheck();
-            // Then start normal monitoring
-            setTimeout(checkPaymentStatus, 500);
-        }
-        
-        // Run on page load
-        window.addEventListener('load', handlePageLoad);
-        
-        // Also check if page was refreshed
-        if (performance.navigation.type === 1) {
-            console.log('Page was refreshed - checking payment status...');
-            handlePageLoad();
+                }, 3000);
+            }, 2000);
         } else {
-            // Normal page load - start checking after 1 second for faster detection
-            setTimeout(checkPaymentStatus, 1000);
+            alert('Session ID missing! Redirecting...');
+            setTimeout(function() {
+                window.location.href = '{$_url}captive_portal';
+            }, 2000);
         }
         
-        // Fallback: Start polling immediately after 2 seconds regardless
-        setTimeout(() => {
-            if (checkCount === 0) {
-                console.log('Fallback: Starting payment status check...');
-                checkPaymentStatus();
+        // Start simple polling after 2 seconds
+        setTimeout(function() {
+            var pollCount = 0;
+            var maxPolls = 40;
+            
+            function pollStatus() {
+                pollCount++;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '{$_url}captive_portal/status/' + sessionId, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data.status === 'completed') {
+                                window.location.href = data.redirect || '{$_url}captive_portal/success/' + sessionId;
+                            } else if (pollCount < maxPolls) {
+                                setTimeout(pollStatus, 3000);
+                            }
+                        } catch (e) {
+                            if (pollCount < maxPolls) setTimeout(pollStatus, 3000);
+                        }
+                    } else if (pollCount < maxPolls) {
+                        setTimeout(pollStatus, 3000);
+                    }
+                };
+                
+                xhr.send(JSON.stringify({check: true}));
             }
+            
+            pollStatus();
         }, 2000);
-        
-        // Add backup payment detection using MAC address (if session detection fails)
-        function backupPaymentCheck() {
-            const mac = '{$session->mac_address}';
-            if (!mac) return;
-            
-            const statusUrl = window.location.origin + '{$_url}captive_portal/status/backup';
-            fetch(statusUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mac: mac, check: true })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'completed') {
-                    console.log('Backup check: Payment completed!');
-                    showSuccess();
-                    setTimeout(() => {
-                        window.location.href = data.redirect || '{$_url}captive_portal/success';
-                    }, 2000);
-                }
-            })
-            .catch(error => {
-                console.log('Backup check failed:', error);
-            });
-        }
-        
-        // Run backup check every 30 seconds
-        setInterval(backupPaymentCheck, 30000);
-        
-        // Check again when user returns to page (page focus)
-        window.addEventListener('focus', function() {
-            if (checkCount < maxChecks) {
-                setTimeout(checkPaymentStatus, 1000);
-            }
-        });
-        
-        // Handle page unload/reload
-        window.addEventListener('beforeunload', function() {
-            if (redirectTimeout) {
-                clearTimeout(redirectTimeout);
-            }
-        });
-        
-        // Add some interaction feedback
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            });
-        });
-        
-        // Add hover effects to package details
-        document.querySelectorAll('.package-detail').forEach(detail => {
-            detail.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px) scale(1.05)';
-            });
-            
-            detail.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(-3px) scale(1)';
-            });
-        });
     </script>
 </body>
 </html>
