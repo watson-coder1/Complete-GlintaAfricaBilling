@@ -32,7 +32,6 @@
         
         html {
             height: 100%;
-            overflow: hidden;
         }
         
         body {
@@ -103,10 +102,11 @@
             z-index: 10;
             border: 2px solid rgba(255, 215, 0, 0.3);
             animation: container-entrance 0.8s ease-out;
-            /* Prevent container deformation */
+            /* Allow container to grow with content */
             min-width: 300px;
-            flex-shrink: 0;
-            margin: auto;
+            margin: 20px auto;
+            overflow-y: auto;
+            max-height: none;
         }
         
         @keyframes container-entrance {
@@ -577,14 +577,11 @@
                 padding: 8px;
                 padding-top: 10px;
                 padding-bottom: 10px;
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
             }
             
             .payment-container {
                 padding: 20px 15px;
-                margin: 0 auto;
+                margin: 10px auto;
                 width: calc(100% - 16px);
                 max-width: none;
                 border-radius: 15px;
@@ -631,7 +628,7 @@
                 padding: 15px 12px;
                 border-radius: 12px;
                 width: calc(100% - 10px);
-                margin: 0 auto;
+                margin: 5px auto;
                 box-sizing: border-box;
             }
             
@@ -853,32 +850,16 @@
             });
         }
         
-        // Prevent pull-to-refresh only at the very top of page
-        let startY = 0;
-        let isAtTop = true;
-        
-        document.addEventListener('touchstart', function(e) {
-            startY = e.touches[0].pageY;
-            isAtTop = window.scrollY <= 10; // Allow small tolerance
-        });
-        
+        // Simple pull-to-refresh prevention - only prevent at very top
         document.addEventListener('touchmove', function(e) {
-            const y = e.touches[0].pageY;
-            const deltaY = y - startY;
-            
-            // Only prevent pull-to-refresh if:
-            // 1. We're at the very top of the page
-            // 2. User is pulling down (positive delta)
-            // 3. Delta is significant (more than 5px)
-            if (isAtTop && deltaY > 5 && window.scrollY === 0) {
-                e.preventDefault();
+            if (window.scrollY === 0 && e.touches[0].clientY > e.touches[0].clientY) {
+                // Only prevent if at absolute top and pulling down significantly
+                const touch = e.touches[0];
+                if (touch.clientY > 50) { // Allow small movements
+                    e.preventDefault();
+                }
             }
         }, { passive: false });
-        
-        // Update scroll position tracking
-        document.addEventListener('scroll', function() {
-            isAtTop = window.scrollY <= 10;
-        });
         
         // Payment monitoring
         let checkCount = 0;
