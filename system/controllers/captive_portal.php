@@ -693,22 +693,33 @@ switch ($routes['1']) {
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " Success page accessed with session ID: " . ($sessionId ?: 'EMPTY') . "\n", FILE_APPEND);
             
+            // Check if sessionId is actually a MAC address (contains colons)
+            if (!empty($sessionId) && strpos($sessionId, ':') !== false) {
+                // This is a MAC address, not a session ID
+                $mac = $sessionId;
+                $sessionId = ''; // Clear it so we search by MAC
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Detected MAC address in URL: " . $mac . "\n", FILE_APPEND);
+            }
+            
             // Allow MAC address as identifier for existing sessions
             if (empty($sessionId)) {
-                $mac = $_GET['mac'] ?? '';
+                if (empty($mac)) {
+                    $mac = $_GET['mac'] ?? '';
+                }
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                     date('Y-m-d H:i:s') . " No session ID provided, trying MAC: " . ($mac ?: 'EMPTY') . "\n", FILE_APPEND);
                 if (!empty($mac)) {
-                    // Find session by MAC address
+                    // Find session by MAC address - check both completed and pending status
                     $session = ORM::for_table('tbl_portal_sessions')
                         ->where('mac_address', $mac)
-                        ->where('status', 'completed')
+                        ->where_in('status', ['completed', 'pending'])
                         ->order_by_desc('created_at')
                         ->find_one();
                     if ($session) {
                         $sessionId = $session->session_id;
                         file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                            date('Y-m-d H:i:s') . " Found session by MAC: " . $sessionId . "\n", FILE_APPEND);
+                            date('Y-m-d H:i:s') . " Found session by MAC: " . $sessionId . " (status: " . $session->status . ")\n", FILE_APPEND);
                     }
                 }
             }
