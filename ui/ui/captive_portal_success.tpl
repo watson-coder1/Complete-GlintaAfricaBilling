@@ -869,15 +869,15 @@
         setTimeout(function() {
             console.log('Attempting MikroTik hotspot authentication...');
             
-            // Method 1: Try current hostname + /login (most common)
-            const loginUrl = window.location.protocol + '//' + window.location.hostname + '/login';
+            // Method 1: Try relative /login (MikroTik hotspot endpoint)
+            const loginUrl = '/login';
             console.log('Login URL:', loginUrl);
             
             // Create form to submit to MikroTik hotspot login
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = loginUrl;
-            form.target = '_blank'; // Open in new tab to see what happens
+            // form.target = '_blank'; // Remove - we want same window redirect
             
             // Username (MAC address for RADIUS)
             const username = document.createElement('input');
