@@ -670,9 +670,17 @@ switch ($routes['1']) {
         try {
             $sessionId = $routes['2'] ?? '';
             
+            // Debug log the success page access
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " === SUCCESS CASE START ===\n", FILE_APPEND);
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Success page accessed with session ID: " . ($sessionId ?: 'EMPTY') . "\n", FILE_APPEND);
+            
             // Allow MAC address as identifier for existing sessions
             if (empty($sessionId)) {
                 $mac = $_GET['mac'] ?? '';
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " No session ID provided, trying MAC: " . ($mac ?: 'EMPTY') . "\n", FILE_APPEND);
                 if (!empty($mac)) {
                     // Find session by MAC address
                     $session = ORM::for_table('tbl_portal_sessions')
@@ -682,11 +690,15 @@ switch ($routes['1']) {
                         ->find_one();
                     if ($session) {
                         $sessionId = $session->session_id;
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                            date('Y-m-d H:i:s') . " Found session by MAC: " . $sessionId . "\n", FILE_APPEND);
                     }
                 }
             }
             
             if (empty($sessionId)) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " ERROR: No session ID found - redirecting to portal\n", FILE_APPEND);
                 r2(U . 'captive_portal', 'e', 'Session not found');
                 return;
             }
@@ -696,9 +708,14 @@ switch ($routes['1']) {
                 ->find_one();
                 
             if (!$session) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " ERROR: Session not found in database: " . $sessionId . " - redirecting to portal\n", FILE_APPEND);
                 r2(U . 'captive_portal', 'e', 'Invalid or expired session');
                 return;
             }
+            
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " SUCCESS: Found session " . $sessionId . " with status: " . $session->status . "\n", FILE_APPEND);
             
             $plan = null;
             if ($session->plan_id) {
@@ -751,6 +768,8 @@ switch ($routes['1']) {
             
         } catch (Exception $e) {
             error_log("Captive Portal Success Error: " . $e->getMessage());
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " SUCCESS CASE ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
             r2(U . 'captive_portal', 'e', 'Unable to load success page. Please contact support.');
         }
         break;
