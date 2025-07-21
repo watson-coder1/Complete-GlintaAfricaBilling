@@ -864,6 +864,12 @@
         console.log('Protocol:', window.location.protocol);
         console.log('Hostname:', window.location.hostname);
         console.log('MAC Address from session:', '{$session->mac_address}');
+        console.log('Session status:', '{$session->status}');
+        console.log('User recharge exists:', '{if $user_recharge}YES{else}NO{/if}');
+        {if $user_recharge}
+        console.log('User recharge status:', '{$user_recharge->status}');
+        console.log('User recharge expiration:', '{$user_recharge->expiration}');
+        {/if}
         
         // Try different authentication approaches
         setTimeout(function() {
@@ -875,7 +881,27 @@
             // Create form for POST authentication to MikroTik
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'http://glinta.africa/login';
+            
+            // Debug: Add comprehensive logging
+            console.log('Current URL:', window.location.href);
+            console.log('Referrer URL:', document.referrer);
+            console.log('User Agent:', navigator.userAgent);
+            
+            // For MikroTik hotspot, the login URL should typically be the gateway IP
+            // Check if we have original hotspot IP from referrer or use common defaults
+            let loginUrl = 'http://192.168.88.1/login'; // Default MikroTik IP
+            
+            // Try to extract the gateway IP from the original referrer or current location
+            if (document.referrer && document.referrer.includes('://')) {
+                const referrerUrl = new URL(document.referrer);
+                if (referrerUrl.hostname !== window.location.hostname) {
+                    loginUrl = `http://${referrerUrl.hostname}/login`;
+                    console.log('Using referrer hostname for login:', loginUrl);
+                }
+            }
+            
+            form.action = loginUrl;
+            console.log('Final login URL:', loginUrl);
             
             // Add username field
             const usernameField = document.createElement('input');
