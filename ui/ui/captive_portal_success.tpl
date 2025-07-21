@@ -887,18 +887,9 @@
             console.log('Referrer URL:', document.referrer);
             console.log('User Agent:', navigator.userAgent);
             
-            // For MikroTik hotspot, the login URL should typically be the gateway IP
-            // Check if we have original hotspot IP from referrer or use common defaults
-            let loginUrl = 'http://192.168.88.1/login'; // Default MikroTik IP
-            
-            // Try to extract the gateway IP from the original referrer or current location
-            if (document.referrer && document.referrer.includes('://')) {
-                const referrerUrl = new URL(document.referrer);
-                if (referrerUrl.hostname !== window.location.hostname) {
-                    loginUrl = `http://${referrerUrl.hostname}/login`;
-                    console.log('Using referrer hostname for login:', loginUrl);
-                }
-            }
+            // MikroTik hotspot IP address (confirmed as 192.168.88.1)
+            const loginUrl = 'http://192.168.88.1/login';
+            console.log('MikroTik login URL:', loginUrl);
             
             form.action = loginUrl;
             console.log('Final login URL:', loginUrl);
@@ -926,8 +917,27 @@
             
             document.body.appendChild(form);
             
+            // Debug all form fields before submission
+            console.log('=== MikroTik Authentication Form Debug ===');
+            console.log('Form action:', form.action);
+            console.log('Username (MAC):', usernameField.value);
+            console.log('Password (MAC):', passwordField.value); 
+            console.log('Destination:', dstField.value);
+            console.log('Form HTML:', form.outerHTML);
+            
             console.log('Submitting authentication form to MikroTik...');
-            form.submit();
+            
+            // Add form submission event listener for debugging
+            form.addEventListener('submit', function(e) {
+                console.log('Form submission event triggered');
+            });
+            
+            try {
+                form.submit();
+                console.log('Form submission initiated successfully');
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
             
         }, 5000); // Wait 5 seconds to see success message
     </script>
