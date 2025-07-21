@@ -447,7 +447,7 @@ switch ($routes['1']) {
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " Session object ID: " . ($session ? $session->session_id : 'NULL') . "\n", FILE_APPEND);
             
-            $ui->display('captive_portal_payment.tpl');
+            $ui->display('captive_portal_payment_fixed.tpl');
             
         } catch (Exception $e) {
             error_log("Captive Portal Payment Error: " . $e->getMessage());
