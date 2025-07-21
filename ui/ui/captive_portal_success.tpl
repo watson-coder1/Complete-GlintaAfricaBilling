@@ -867,52 +867,19 @@
         
         // Try different authentication approaches
         setTimeout(function() {
-            console.log('Attempting MikroTik hotspot authentication...');
+            console.log('Redirecting to MikroTik for RADIUS authentication...');
             
-            // Authentication URL for MikroTik hotspot (using your custom domain)
-            const loginUrl = 'http://glinta.africa/login';
-            console.log('Login URL:', loginUrl);
+            // Direct redirect to MikroTik login with GET parameters
+            const macAddress = '{$session->mac_address}';
+            const loginUrl = `http://glinta.africa/login?username=${macAddress}&password=${macAddress}&dst=https://google.com`;
             
-            // Create form to submit to MikroTik hotspot login
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = loginUrl;
-            // form.target = '_blank'; // Remove - we want same window redirect
+            console.log('Redirecting to:', loginUrl);
+            console.log('MAC Address:', macAddress);
             
-            // Username (MAC address for RADIUS)
-            const username = document.createElement('input');
-            username.type = 'hidden';
-            username.name = 'username';
-            username.value = '{$session->mac_address}';
-            form.appendChild(username);
+            // Direct redirect - no form needed
+            window.location.href = loginUrl;
             
-            // Password (MAC address - as set in RADIUS)  
-            const password = document.createElement('input');
-            password.type = 'hidden';
-            password.name = 'password';
-            password.value = '{$session->mac_address}';
-            form.appendChild(password);
-            
-            // Destination after successful auth
-            const dst = document.createElement('input');
-            dst.type = 'hidden';
-            dst.name = 'dst';
-            dst.value = 'https://google.com';
-            form.appendChild(dst);
-            
-            document.body.appendChild(form);
-            
-            console.log('Form created with:', {
-                action: loginUrl,
-                username: '{$session->mac_address}',
-                password: '{$session->mac_address}',
-                dst: 'https://google.com'
-            });
-            
-            // Submit form - this should authenticate with RADIUS
-            form.submit();
-            
-        }, 5000); // Wait 5 seconds for debugging
+        }, 5000); // Wait 5 seconds to see success message
     </script>
 </body>
 </html>
