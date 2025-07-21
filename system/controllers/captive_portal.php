@@ -89,29 +89,46 @@ switch ($routes['1']) {
                 $mac = 'auto-' . substr(md5($ip . $userAgent), 0, 12);
             }
             
-            // Create new portal session FIRST (always create it)
-            $portalSessionCreated = false;
-            try {
-                $session = ORM::for_table('tbl_portal_sessions')->create();
-                $session->session_id = $sessionId;
-                $session->mac_address = $mac;
-                $session->ip_address = $ip;
-                $session->user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-                $session->created_at = date('Y-m-d H:i:s');
-                $session->expires_at = date('Y-m-d H:i:s', strtotime('+2 hours'));
-                $session->status = 'pending';
-                $session->save();
+            // Check if a recent session already exists for this MAC to prevent duplicates
+            $existingSession = ORM::for_table('tbl_portal_sessions')
+                ->where('mac_address', $mac)
+                ->where('status', 'pending')
+                ->where_gt('created_at', date('Y-m-d H:i:s', strtotime('-5 minutes')))
+                ->order_by_desc('created_at')
+                ->find_one();
+                
+            if ($existingSession) {
+                // Use existing session instead of creating new one
+                $sessionId = $existingSession->session_id;
                 $portalSessionCreated = true;
                 
-                // Debug: Log successful session creation
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " Session created successfully: $sessionId (MAC: $mac, IP: $ip)\n", FILE_APPEND);
+                    date('Y-m-d H:i:s') . " Using existing session: $sessionId (MAC: $mac) - preventing duplicate\n", FILE_APPEND);
+            } else {
+                // Create new portal session only if none exists
+                $portalSessionCreated = false;
+                try {
+                    $session = ORM::for_table('tbl_portal_sessions')->create();
+                    $session->session_id = $sessionId;
+                    $session->mac_address = $mac;
+                    $session->ip_address = $ip;
+                    $session->user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                    $session->created_at = date('Y-m-d H:i:s');
+                    $session->expires_at = date('Y-m-d H:i:s', strtotime('+2 hours'));
+                    $session->status = 'pending';
+                    $session->save();
+                    $portalSessionCreated = true;
                     
-            } catch (Exception $e) {
-                // If session creation fails, continue without saving (graceful degradation)
-                error_log("Portal session creation failed: " . $e->getMessage());
-                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " Session creation FAILED: " . $e->getMessage() . "\n", FILE_APPEND);
+                    // Debug: Log successful session creation
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " NEW session created: $sessionId (MAC: $mac, IP: $ip)\n", FILE_APPEND);
+                        
+                } catch (Exception $e) {
+                    // If session creation fails, continue without saving (graceful degradation)
+                    error_log("Portal session creation failed: " . $e->getMessage());
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " Session creation FAILED: " . $e->getMessage() . "\n", FILE_APPEND);
+                }
             }
             
             // Check if MAC already has active session (AFTER creating portal session)
