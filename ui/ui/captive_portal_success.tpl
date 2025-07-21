@@ -922,11 +922,11 @@
             usernameField.value = macAddress;
             form.appendChild(usernameField);
             
-            // Add password field  
+            // Add password field (empty for MAC authentication)
             const passwordField = document.createElement('input');
             passwordField.type = 'hidden';
             passwordField.name = 'password';
-            passwordField.value = macAddress;
+            passwordField.value = '{$password}'; // Empty for MAC auth
             form.appendChild(passwordField);
             
             // Add destination field

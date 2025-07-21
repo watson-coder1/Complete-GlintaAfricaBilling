@@ -784,9 +784,20 @@ switch ($routes['1']) {
             $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
             
             // Add MikroTik authentication variables
-            $ui->assign('mikrotik_login_url', 'http://192.168.88.1/login');
-            $ui->assign('username', $session->mac_address);
-            $ui->assign('password', $session->mac_address);
+            // Try to detect the actual hotspot gateway IP from the request
+            $hotspotGateway = $_SERVER['HTTP_HOST'] ?? '192.168.88.1';
+            
+            // Common hotspot gateway IPs to try
+            $possibleGateways = [
+                '10.0.0.1',      // Common hotspot IP
+                '172.16.0.1',    // Another common hotspot IP  
+                '192.168.1.1',   // Default router IP
+                '192.168.88.1'   // Current MikroTik IP
+            ];
+            
+            $ui->assign('mikrotik_login_url', 'http://192.168.88.1/login'); // Confirmed from MikroTik config
+            $ui->assign('username', $session->mac_address); // MAC as username
+            $ui->assign('password', ''); // Empty password for MAC auth
             $ui->assign('destination', 'https://google.com');
             
             // Add connection info for display
