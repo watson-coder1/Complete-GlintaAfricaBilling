@@ -878,6 +878,7 @@
             const macAddress = '{$username}';
             const loginUrl = '{$mikrotik_login_url}';
             const destination = '{$destination}';
+            const authPassword = '{$password}';
             
             console.log('MAC Address:', macAddress);
             console.log('Login URL from PHP:', loginUrl);
@@ -926,7 +927,7 @@
             const passwordField = document.createElement('input');
             passwordField.type = 'hidden';
             passwordField.name = 'password';
-            passwordField.value = '{$password}'; // Empty for MAC auth
+            passwordField.value = authPassword; // Empty for MAC auth
             form.appendChild(passwordField);
             
             // Add destination field
