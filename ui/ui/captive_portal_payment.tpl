@@ -799,7 +799,7 @@
         
         // Payment monitoring
         let checkCount = 0;
-        const maxChecks = 60; // Check for 2 minutes
+        const maxChecks = 400; // Check for 10 minutes (400 * 1.5 seconds)
         let redirectTimeout;
         
         // Loading text rotation
@@ -847,7 +847,7 @@
                 } else {
                     // Continue checking if not maxed out
                     if (checkCount < maxChecks) {
-                        setTimeout(checkPaymentStatus, 2000);
+                        setTimeout(checkPaymentStatus, 1500);
                     } else {
                         showTimeout();
                     }
@@ -856,7 +856,7 @@
             .catch(error => {
                 console.log('Status check failed:', error);
                 if (checkCount < maxChecks) {
-                    setTimeout(checkPaymentStatus, 3000);
+                    setTimeout(checkPaymentStatus, 2000);
                 } else {
                     showTimeout();
                 }
