@@ -443,7 +443,28 @@ switch ($routes['1']) {
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " About to display payment template for session: $sessionId\n", FILE_APPEND);
             
-            $ui->display('captive_portal_payment.tpl');
+            // Check if template exists
+            $templatePath = dirname(__DIR__) . '/ui/ui/captive_portal_payment.tpl';
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " Template exists: " . (file_exists($templatePath) ? 'YES' : 'NO') . " at $templatePath\n", FILE_APPEND);
+            
+            try {
+                $ui->display('captive_portal_payment.tpl');
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " Template displayed successfully\n", FILE_APPEND);
+            } catch (Exception $templateError) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " TEMPLATE ERROR: " . $templateError->getMessage() . "\n", FILE_APPEND);
+                    
+                // Fallback - simple HTML output
+                echo '<!DOCTYPE html><html><head><title>Processing Payment</title></head><body>';
+                echo '<h1>Glinta Africa WiFi</h1>';
+                echo '<h2>Processing M-Pesa Payment...</h2>';
+                echo '<p>Session ID: ' . htmlspecialchars($sessionId) . '</p>';
+                echo '<p>Please wait while we process your payment...</p>';
+                echo '<script>setTimeout(function(){window.location.reload();}, 5000);</script>';
+                echo '</body></html>';
+            }
             
         } catch (Exception $e) {
             error_log("Captive Portal Payment Error: " . $e->getMessage());
