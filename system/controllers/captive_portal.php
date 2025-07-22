@@ -92,6 +92,9 @@ switch ($routes['1']) {
                 $mac = 'auto-' . substr(md5($ip . $userAgent), 0, 12);
             }
             
+            // DISABLED: Session check causing all devices to see success page
+            // TODO: Fix MAC detection logic before re-enabling
+            /*
             // CRITICAL: Check for completed sessions FIRST to prevent redirect loop
             $completedSession = ORM::for_table('tbl_portal_sessions')
                 ->where('mac_address', $mac)
@@ -124,6 +127,7 @@ switch ($routes['1']) {
                 r2(U . 'captive_portal/success/' . $successSessionId, 's', 'You already have an active internet session');
                 return;
             }
+            */
 
             // Check if a recent pending session already exists for this MAC to prevent duplicates
             $existingSession = ORM::for_table('tbl_portal_sessions')
