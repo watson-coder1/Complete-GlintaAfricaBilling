@@ -603,7 +603,21 @@
 <body>
     {literal}
     <script>
-        alert("DEBUG: JavaScript IS RUNNING!"); // This should pop up!
+        // BULLETPROOF DEBUG BOX - This MUST appear
+        var debugBox = document.createElement('div');
+        debugBox.id = 'debug-info';
+        debugBox.style.position = 'fixed';
+        debugBox.style.top = '10px';
+        debugBox.style.left = '10px';
+        debugBox.style.backgroundColor = '#ff0000';
+        debugBox.style.color = '#ffffff';
+        debugBox.style.padding = '15px';
+        debugBox.style.fontSize = '14px';
+        debugBox.style.zIndex = '99999';
+        debugBox.style.maxWidth = '350px';
+        debugBox.style.border = '3px solid yellow';
+        debugBox.innerHTML = '<strong>🔴 DEBUG MODE ACTIVE</strong><br>JavaScript is working!<br>Page loaded successfully';
+        document.body.appendChild(debugBox);
     </script>
     {/literal}
     <!-- Celebration Background -->
@@ -876,41 +890,36 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
-        // IMMEDIATE DEBUG BOX - show before any other code
-        const debugDiv = document.createElement('div');
-        debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:red;color:white;padding:10px;font-size:14px;z-index:9999;max-width:300px;';
-        debugDiv.innerHTML = '<strong>DEBUG: Success page loaded!</strong><br>JavaScript is running...';
-        document.body.appendChild(debugDiv);
-        
-        // Bulletproof MikroTik authentication with VISIBLE debugging
+        // Add MikroTik authentication info to debug box after 2 seconds
         setTimeout(function() {
-            debugDiv.innerHTML += '<br>Timer started, checking variables...';
-        
-            // Use PHP-provided parameters with proper fallbacks
-            const loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
-            const username = '{$mikrotik_username}';
-            const password = '{$mikrotik_password}';
-            const dst = '{$mikrotik_dst}' || 'https://google.com';
-            
-            debugDiv.innerHTML += '<br>LoginURL: ' + loginUrl + '<br>Username: ' + username + '<br>Password: ' + password;
-            console.log('=== BULLETPROOF MikroTik Authentication Starting ===');
-            
-            console.log('Login URL:', loginUrl);
-            console.log('Username (MAC):', username);
-            console.log('Password (MAC):', password);
-            console.log('Destination:', dst);
-            
-            // Add status element to existing debug div
-            debugDiv.innerHTML += '<br><span id="debug-status">Preparing authentication...</span>';
+            var debugBox = document.getElementById('debug-info');
+            if (debugBox) {
+                // Use PHP-provided parameters with proper fallbacks
+                var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
+                var username = '{$mikrotik_username}';
+                var password = '{$mikrotik_password}';
+                var dst = '{$mikrotik_dst}' || 'https://google.com';
+                
+                debugBox.innerHTML += '<br><strong>🔧 MikroTik Auth Info:</strong>';
+                debugBox.innerHTML += '<br>Login URL: ' + loginUrl;
+                debugBox.innerHTML += '<br>Username: ' + username;
+                debugBox.innerHTML += '<br>Password: ' + password;
+                debugBox.innerHTML += '<br><span id="debug-status">Preparing authentication...</span>';
+                
+                console.log('=== MikroTik Authentication Starting ===');
+                console.log('Login URL:', loginUrl);
+                console.log('Username (MAC):', username);
+                console.log('Password (MAC):', password);
+                console.log('Destination:', dst);
             
             // Create form with ALL MikroTik parameters
-            const form = document.createElement('form');
+            var form = document.createElement('form');
             form.method = 'POST';
             form.action = loginUrl;
             form.id = 'mikrotik_auth_form';
             
             // Core fields
-            const fields = {
+            var fields = {
                 'username': username,
                 'password': password,
                 'dst': dst,
@@ -968,15 +977,15 @@
                 console.error('❌ Error submitting form:', error);
                 document.getElementById('debug-status').innerText = 'Form submit failed, trying fallback...';
                 // Fallback: try direct redirect with GET parameters
-                const params = new URLSearchParams(fields);
-                const fallbackUrl = loginUrl + '?' + params.toString();
+                var params = new URLSearchParams(fields);
+                var fallbackUrl = loginUrl + '?' + params.toString();
                 console.log('Attempting fallback redirect to:', fallbackUrl);
                 document.getElementById('debug-status').innerText = 'Redirecting to: ' + fallbackUrl;
-                setTimeout(() => {
+                setTimeout(function() {
                     window.location.href = fallbackUrl;
                 }, 2000);
             }
-            
+            }
         }, 3000); // Wait 3 seconds for user to see success page
     </script>
 </body>
