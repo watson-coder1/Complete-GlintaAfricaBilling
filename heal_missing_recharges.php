@@ -18,7 +18,7 @@ $brokenPayments = ORM::raw_execute("
     WHERE p.status = 2 
     AND s.mac_address IS NOT NULL
     AND ur.id IS NULL
-    AND p.paid_date >= DATE_SUB(NOW(), INTERVAL 24 HOURS)
+    AND p.paid_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
     ORDER BY p.paid_date DESC
 ");
 
