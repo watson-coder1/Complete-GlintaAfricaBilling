@@ -878,6 +878,14 @@ switch ($routes['1']) {
                 date('Y-m-d H:i:s') . " CALLBACK DEBUG: Found payment record ID=" . $payment->id() . "\n", FILE_APPEND);
             
             if ($resultCode == 0) { // Success
+                // Check if payment already processed to prevent duplicate processing
+                if ($payment->status == 2) {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Payment already processed, skipping duplicate\n", FILE_APPEND);
+                    echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Already processed']);
+                    exit;
+                }
+                
                 // Extract payment details from callback
                 $mpesaReceiptNumber = '';
                 $phoneNumber = '';
