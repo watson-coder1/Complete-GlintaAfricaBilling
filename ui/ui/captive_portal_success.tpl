@@ -871,7 +871,7 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
-        // Bulletproof MikroTik authentication
+        // Bulletproof MikroTik authentication with VISIBLE debugging
         setTimeout(function() {
             console.log('=== BULLETPROOF MikroTik Authentication Starting ===');
             
@@ -880,6 +880,19 @@
             const username = '{$mikrotik_username}';
             const password = '{$mikrotik_password}';
             const dst = '{$mikrotik_dst}' || 'https://google.com';
+            
+            // VISIBLE DEBUG: Add debug info to the page for mobile testing
+            const debugDiv = document.createElement('div');
+            debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:black;color:white;padding:10px;font-size:12px;z-index:9999;max-width:300px;';
+            debugDiv.innerHTML = `
+                <strong>DEBUG INFO:</strong><br>
+                Login URL: ${loginUrl}<br>
+                Username: ${username}<br>
+                Password: ${password}<br>
+                Destination: ${dst}<br>
+                <span id="debug-status">Preparing authentication...</span>
+            `;
+            document.body.appendChild(debugDiv);
             
             console.log('Login URL:', loginUrl);
             console.log('Username (MAC):', username);
@@ -943,15 +956,21 @@
             console.log('Form HTML:', form.outerHTML);
             
             try {
+                document.getElementById('debug-status').innerText = 'Submitting form to MikroTik...';
                 form.submit();
                 console.log('✅ Form submission initiated successfully');
+                document.getElementById('debug-status').innerText = 'Form submitted, waiting for response...';
             } catch (error) {
                 console.error('❌ Error submitting form:', error);
+                document.getElementById('debug-status').innerText = 'Form submit failed, trying fallback...';
                 // Fallback: try direct redirect with GET parameters
                 const params = new URLSearchParams(fields);
                 const fallbackUrl = loginUrl + '?' + params.toString();
                 console.log('Attempting fallback redirect to:', fallbackUrl);
-                window.location.href = fallbackUrl;
+                document.getElementById('debug-status').innerText = 'Redirecting to: ' + fallbackUrl;
+                setTimeout(() => {
+                    window.location.href = fallbackUrl;
+                }, 2000);
             }
             
         }, 3000); // Wait 3 seconds for user to see success page
