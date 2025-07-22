@@ -998,42 +998,64 @@ switch ($routes['1']) {
                     ->find_one();
                 
                 if (!$existingRecharge) {
-                    // Create user recharge record
-                    $userRecharge = ORM::for_table('tbl_user_recharges')->create();
-                    $userRecharge->customer_id = 0; // Portal customer
-                    $userRecharge->username = $session->mac_address;
-                    $userRecharge->plan_id = $plan->id();
-                    $userRecharge->namebp = $plan->name_plan;
-                    $userRecharge->recharged_on = date('Y-m-d');
-                    $userRecharge->recharged_time = date('H:i:s');
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Creating user recharge for MAC=" . $session->mac_address . "\n", FILE_APPEND);
                     
-                    // Calculate expiration based on plan validity
-                    $expirationTime = strtotime('+' . $plan->validity . ' ' . $plan->validity_unit);
-                    $userRecharge->expiration = date('Y-m-d H:i:s', $expirationTime);
-                    $userRecharge->time = date('H:i:s', $expirationTime);
-                    
-                    $userRecharge->status = 'on';
-                    $userRecharge->type = 'Hotspot';
-                    $userRecharge->routers = $plan->routers ?? '1';
-                    $userRecharge->method = 'M-Pesa STK Push';
-                    $userRecharge->save();
-                    
-                    // Create transaction record
-                    $transaction = ORM::for_table('tbl_transactions')->create();
-                    $transaction->invoice = $userRecharge->id();
-                    $transaction->username = $session->mac_address;
-                    $transaction->plan_name = $plan->name_plan;
-                    $transaction->price = $payment->price;
-                    $transaction->recharged_on = date('Y-m-d');
-                    $transaction->recharged_time = date('H:i:s');
-                    $transaction->expiration = $userRecharge->expiration;
-                    $transaction->time = $userRecharge->time;
-                    $transaction->method = 'M-Pesa STK Push';
-                    $transaction->routers = $plan->routers ?? '1';
-                    $transaction->save();
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - User recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                    try {
+                        // Create user recharge record
+                        $userRecharge = ORM::for_table('tbl_user_recharges')->create();
+                        $userRecharge->customer_id = 0; // Portal customer
+                        $userRecharge->username = $session->mac_address;
+                        $userRecharge->plan_id = $plan->id();
+                        $userRecharge->namebp = $plan->name_plan;
+                        $userRecharge->recharged_on = date('Y-m-d');
+                        $userRecharge->recharged_time = date('H:i:s');
+                        
+                        // Calculate expiration based on plan validity
+                        $expirationTime = strtotime('+' . $plan->validity . ' ' . $plan->validity_unit);
+                        $userRecharge->expiration = date('Y-m-d H:i:s', $expirationTime);
+                        $userRecharge->time = date('H:i:s', $expirationTime);
+                        
+                        $userRecharge->status = 'on';
+                        $userRecharge->type = 'Hotspot';
+                        $userRecharge->routers = 'Main Router';
+                        $userRecharge->method = 'M-Pesa STK Push';
+                        $userRecharge->admin_id = 1; // Add admin_id field
+                        $userRecharge->save();
+                        
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                            date('Y-m-d H:i:s') . " CALLBACK SUCCESS: User recharge created ID=" . $userRecharge->id() . " for MAC=" . $session->mac_address . "\n", FILE_APPEND);
+                        
+                        // Create transaction record
+                        $transaction = ORM::for_table('tbl_transactions')->create();
+                        $transaction->invoice = $userRecharge->id();
+                        $transaction->username = $session->mac_address;
+                        $transaction->plan_name = $plan->name_plan;
+                        $transaction->price = $payment->price;
+                        $transaction->recharged_on = date('Y-m-d');
+                        $transaction->recharged_time = date('H:i:s');
+                        $transaction->expiration = $userRecharge->expiration;
+                        $transaction->time = $userRecharge->time;
+                        $transaction->method = 'M-Pesa STK Push';
+                        $transaction->routers = 'Main Router';
+                        $transaction->type = 'Hotspot';
+                        $transaction->save();
+                        
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                            date('Y-m-d H:i:s') . " CALLBACK SUCCESS: Transaction created ID=" . $transaction->id() . "\n", FILE_APPEND);
+                        
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - User recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                            
+                    } catch (Exception $e) {
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                            date('Y-m-d H:i:s') . " CALLBACK ERROR: User recharge creation failed: " . $e->getMessage() . "\n", FILE_APPEND);
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - ERROR: User recharge creation failed: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+                    }
+                } else {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Existing recharge found for MAC=" . $session->mac_address . " ID=" . $existingRecharge->id() . "\n", FILE_APPEND);
                 }
                 
                 // Create RADIUS user using RadiusManager
