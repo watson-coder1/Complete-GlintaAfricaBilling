@@ -871,33 +871,32 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
+        // IMMEDIATE DEBUG BOX - show before any other code
+        const debugDiv = document.createElement('div');
+        debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:red;color:white;padding:10px;font-size:14px;z-index:9999;max-width:300px;';
+        debugDiv.innerHTML = '<strong>DEBUG: Success page loaded!</strong><br>JavaScript is running...';
+        document.body.appendChild(debugDiv);
+        
         // Bulletproof MikroTik authentication with VISIBLE debugging
         setTimeout(function() {
-            console.log('=== BULLETPROOF MikroTik Authentication Starting ===');
-            
+            debugDiv.innerHTML += '<br>Timer started, checking variables...';
+        
             // Use PHP-provided parameters with proper fallbacks
             const loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
             const username = '{$mikrotik_username}';
             const password = '{$mikrotik_password}';
             const dst = '{$mikrotik_dst}' || 'https://google.com';
             
-            // VISIBLE DEBUG: Add debug info to the page for mobile testing
-            const debugDiv = document.createElement('div');
-            debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:black;color:white;padding:10px;font-size:12px;z-index:9999;max-width:300px;';
-            debugDiv.innerHTML = `
-                <strong>DEBUG INFO:</strong><br>
-                Login URL: ${loginUrl}<br>
-                Username: ${username}<br>
-                Password: ${password}<br>
-                Destination: ${dst}<br>
-                <span id="debug-status">Preparing authentication...</span>
-            `;
-            document.body.appendChild(debugDiv);
+            debugDiv.innerHTML += '<br>LoginURL: ' + loginUrl + '<br>Username: ' + username + '<br>Password: ' + password;
+            console.log('=== BULLETPROOF MikroTik Authentication Starting ===');
             
             console.log('Login URL:', loginUrl);
             console.log('Username (MAC):', username);
             console.log('Password (MAC):', password);
             console.log('Destination:', dst);
+            
+            // Add status element to existing debug div
+            debugDiv.innerHTML += '<br><span id="debug-status">Preparing authentication...</span>';
             
             // Create form with ALL MikroTik parameters
             const form = document.createElement('form');
