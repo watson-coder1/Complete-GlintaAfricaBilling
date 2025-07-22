@@ -871,77 +871,90 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
-        // Try different authentication approaches
+        // Bulletproof MikroTik authentication
         setTimeout(function() {
-            console.log('Creating MikroTik authentication form...');
+            console.log('=== BULLETPROOF MikroTik Authentication Starting ===');
             
-            const macAddress = '{$session->mac_address}';
-            const loginUrl = 'http://192.168.88.1/login';
-            const destination = 'https://google.com';
-            const authPassword = '{$password}'; // MAC address as password
+            // Use PHP-provided parameters with proper fallbacks
+            const loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
+            const username = '{$mikrotik_username}';
+            const password = '{$mikrotik_password}';
+            const dst = '{$mikrotik_dst}' || 'https://google.com';
             
-            console.log('MAC Address:', macAddress);
-            console.log('Login URL from PHP:', loginUrl);
+            console.log('Login URL:', loginUrl);
+            console.log('Username (MAC):', username);
+            console.log('Password (MAC):', password);
+            console.log('Destination:', dst);
             
-            // Create form for POST authentication to MikroTik
+            // Create form with ALL MikroTik parameters
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = loginUrl;
-            console.log('MikroTik login URL:', loginUrl);
+            form.id = 'mikrotik_auth_form';
             
-            // Add username field
-            const usernameField = document.createElement('input');
-            usernameField.type = 'hidden';
-            usernameField.name = 'username';
-            usernameField.value = macAddress;
-            form.appendChild(usernameField);
+            // Core fields
+            const fields = {
+                'username': username,
+                'password': password,
+                'dst': dst,
+                'popup': 'true'
+            };
             
-            // Add password field (MAC address for MAC authentication)
-            const passwordField = document.createElement('input');
-            passwordField.type = 'hidden';
-            passwordField.name = 'password';
-            passwordField.value = authPassword; // MAC address for MAC auth
-            form.appendChild(passwordField);
+            // Add MikroTik-specific fields if they exist
+            {if $mikrotik_mac}
+            fields['mac'] = '{$mikrotik_mac}';
+            {/if}
+            {if $mikrotik_ip}
+            fields['ip'] = '{$mikrotik_ip}';
+            {/if}
+            {if $mikrotik_link_orig}
+            fields['link-orig'] = '{$mikrotik_link_orig}';
+            {/if}
+            {if $mikrotik_link_login_only}
+            fields['link-login-only'] = '{$mikrotik_link_login_only}';
+            {/if}
+            {if $mikrotik_chap_id}
+            fields['chap-id'] = '{$mikrotik_chap_id}';
+            {/if}
+            {if $mikrotik_chap_challenge}
+            fields['chap-challenge'] = '{$mikrotik_chap_challenge}';
+            {/if}
+            {if $mikrotik_hotspotaddress}
+            fields['hotspotaddress'] = '{$mikrotik_hotspotaddress}';
+            {/if}
             
-            // Add destination field
-            const dstField = document.createElement('input');
-            dstField.type = 'hidden';
-            dstField.name = 'dst';
-            dstField.value = destination;
-            form.appendChild(dstField);
+            // Always include login-by=mac for MAC authentication
+            fields['login-by'] = 'mac';
             
-            // Add popup field (required by some MikroTik configurations)
-            const popupField = document.createElement('input');
-            popupField.type = 'hidden';
-            popupField.name = 'popup';
-            popupField.value = 'true';
-            form.appendChild(popupField);
+            // Create all form fields
+            console.log('=== Form Fields ===');
+            for (const [name, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+                console.log(name + ':', value);
+            }
             
             document.body.appendChild(form);
             
-            // Debug all form fields before submission
-            console.log('=== MikroTik Authentication Form Debug ===');
-            console.log('Form action:', form.action);
-            console.log('Username (MAC):', usernameField.value);
-            console.log('Password (MAC as password):', passwordField.value); 
-            console.log('Destination:', dstField.value);
+            console.log('=== Submitting MikroTik Authentication Form ===');
             console.log('Form HTML:', form.outerHTML);
-            
-            console.log('Submitting authentication form to MikroTik...');
-            
-            // Add form submission event listener for debugging
-            form.addEventListener('submit', function(e) {
-                console.log('Form submission event triggered');
-            });
             
             try {
                 form.submit();
-                console.log('Form submission initiated successfully');
+                console.log('✅ Form submission initiated successfully');
             } catch (error) {
-                console.error('Error submitting form:', error);
+                console.error('❌ Error submitting form:', error);
+                // Fallback: try direct redirect with GET parameters
+                const params = new URLSearchParams(fields);
+                const fallbackUrl = loginUrl + '?' + params.toString();
+                console.log('Attempting fallback redirect to:', fallbackUrl);
+                window.location.href = fallbackUrl;
             }
             
-        }, 5000); // Wait 5 seconds to see success message
+        }, 3000); // Wait 3 seconds for user to see success page
     </script>
 </body>
 </html>

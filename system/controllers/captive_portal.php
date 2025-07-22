@@ -783,12 +783,24 @@ switch ($routes['1']) {
             $ui->assign('_title', 'Welcome to Glinta WiFi');
             $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
             
-            // Add MikroTik authentication variables for proper MAC-based auth
-            $ui->assign('mikrotik_login_url', 'http://192.168.88.1/login');
-            $ui->assign('username', $session->mac_address); // MAC as username
-            $ui->assign('password', $session->mac_address); // MAC as password (common for MAC auth)
-            $ui->assign('destination', 'https://google.com');
-            $ui->assign('popup', 'true');
+            // Capture ALL MikroTik parameters from initial redirect
+            $mikrotik_params = $_GET;
+            
+            // Store ALL GET parameters for the template
+            foreach ($mikrotik_params as $key => $value) {
+                $smarty_key = 'mikrotik_' . str_replace('-', '_', $key);
+                $ui->assign($smarty_key, $value);
+            }
+            
+            // Core authentication parameters with proper fallbacks
+            $ui->assign('mikrotik_login_url', $mikrotik_params['link-login-only'] ?? 'http://192.168.88.1/login');
+            $ui->assign('mikrotik_username', $session->mac_address);
+            $ui->assign('mikrotik_password', $session->mac_address);
+            $ui->assign('mikrotik_dst', $mikrotik_params['link-orig'] ?? 'https://google.com');
+            $ui->assign('mikrotik_popup', 'true');
+            
+            // Pass all parameters to template for dynamic form creation
+            $ui->assign('all_mikrotik_params', $mikrotik_params);
             
             // Add connection info for display
             $connectionInfo = [
