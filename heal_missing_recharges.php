@@ -9,18 +9,44 @@ require_once 'init.php';
 echo "=== AUTO-HEALING MISSING USER RECHARGES ===\n";
 echo "Started at: " . date('Y-m-d H:i:s') . "\n\n";
 
-// Find successful payments without user recharges
-$brokenPayments = ORM::raw_execute("
-    SELECT p.*, s.mac_address, s.session_id 
-    FROM tbl_payment_gateway p
-    LEFT JOIN tbl_portal_sessions s ON s.payment_id = p.id
-    LEFT JOIN tbl_user_recharges ur ON ur.username = s.mac_address AND ur.status = 'on'
-    WHERE p.status = 2 
-    AND s.mac_address IS NOT NULL
-    AND ur.id IS NULL
-    AND p.paid_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
-    ORDER BY p.paid_date DESC
-");
+// Find successful payments from recent sessions first (avoid collation issues)
+$recentSessions = ORM::for_table('tbl_portal_sessions')
+    ->where('status', 'completed')
+    ->where_not_null('payment_id')
+    ->where_gte('created_at', date('Y-m-d H:i:s', strtotime('-24 hours')))
+    ->order_by_desc('id')
+    ->find_many();
+
+$brokenPayments = [];
+foreach ($recentSessions as $session) {
+    // Check if payment is successful
+    $payment = ORM::for_table('tbl_payment_gateway')
+        ->where('id', $session->payment_id)
+        ->where('status', 2)
+        ->find_one();
+    
+    if ($payment) {
+        // Check if user recharge exists
+        $userRecharge = ORM::for_table('tbl_user_recharges')
+            ->where('username', $session->mac_address)
+            ->where('status', 'on')
+            ->where_gt('expiration', date('Y-m-d H:i:s'))
+            ->find_one();
+        
+        if (!$userRecharge) {
+            $brokenPayments[] = [
+                'id' => $payment->id(),
+                'mac_address' => $session->mac_address,
+                'session_id' => $session->session_id,
+                'plan_id' => $payment->plan_id,
+                'price' => $payment->price,
+                'paid_date' => $payment->paid_date,
+                'payment' => $payment,
+                'session' => $session
+            ];
+        }
+    }
+}
 
 if (!$brokenPayments || count($brokenPayments) == 0) {
     echo "✅ No broken payments found - all payments have user recharges!\n";
@@ -37,6 +63,8 @@ foreach ($brokenPayments as $row) {
     $planId = $row['plan_id'];
     $amount = $row['price'];
     $paidDate = $row['paid_date'];
+    $payment = $row['payment'];
+    $session = $row['session'];
     
     echo "Processing Payment ID: $paymentId, MAC: $mac\n";
     
@@ -91,15 +119,13 @@ foreach ($brokenPayments as $row) {
         echo "  ✅ Fixed! Recharge ID: {$userRecharge->id()}, Transaction ID: {$transaction->id()}, RADIUS: " . ($result['success'] ? 'OK' : 'FAILED') . "\n";
         $fixed++;
         
-        // Update session status to completed
-        $session = ORM::for_table('tbl_portal_sessions')
-            ->where('mac_address', $mac)
-            ->where('payment_id', $paymentId)
-            ->find_one();
-        if ($session) {
+        // Session should already be completed, but double-check
+        if ($session->status !== 'completed') {
             $session->status = 'completed';
             $session->save();
             echo "  ✅ Session status updated to completed\n";
+        } else {
+            echo "  ✅ Session already marked as completed\n";
         }
         
     } catch (Exception $e) {
