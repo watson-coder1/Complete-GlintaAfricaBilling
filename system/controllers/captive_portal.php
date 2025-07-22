@@ -1,5 +1,8 @@
 <?php
 
+// CRITICAL DEBUG MODE for tracking RADIUS user lifecycle
+define('CAPTIVE_PORTAL_DEBUG_MODE', true); // Set to false for production
+
 /**
  * Enhanced Dynamic Captive Portal Controller
  * Complete captive portal system for Glinta Africa Billing System
@@ -1105,6 +1108,12 @@ switch ($routes['1']) {
                         date('Y-m-d H:i:s') . " CALLBACK: Session " . $session->session_id . " marked as completed (RADIUS error ignored)\n", FILE_APPEND);
                 }
                 
+                // CRITICAL: Terminate script execution after successful callback response to prevent any additional RADIUS operations
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " CALLBACK: Payment processing completed successfully, terminating script execution\n", FILE_APPEND);
+                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Service processed successfully']);
+                exit; // Critical exit to prevent further execution that might remove RADIUS user
+                
             } else {
                 // Payment failed or cancelled
                 $resultDesc = $callback['ResultDesc'] ?? 'Payment failed';
@@ -1117,7 +1126,8 @@ switch ($routes['1']) {
                     date('Y-m-d H:i:s') . ' - Payment failed: ' . $resultDesc . PHP_EOL, FILE_APPEND);
             }
             
-            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Success']);
+            // This line is reached only for failed payments
+            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment processed']);
             
         } catch (Exception $e) {
             file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 

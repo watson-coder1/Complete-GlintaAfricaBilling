@@ -15,6 +15,12 @@ class RadiusManager
     {
         global $config;
         
+        if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
+            $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: Attempting to CREATE user " . $username . " with expiration " . ($expiration_time ?? 'none') . "\n", FILE_APPEND);
+        }
+        
         if (!$config['radius_enable']) {
             return ['success' => false, 'message' => 'RADIUS is not enabled'];
         }
@@ -92,6 +98,12 @@ class RadiusManager
             
             _log("RADIUS hotspot user created: {$username}", 'RADIUS', 0);
             
+            if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
+                $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: User " . $username . " CREATION completed successfully\n", FILE_APPEND);
+            }
+            
             return ['success' => true, 'message' => 'RADIUS user created successfully'];
             
         } catch (Exception $e) {
@@ -149,6 +161,12 @@ class RadiusManager
      */
     public static function removeRadiusUser($username)
     {
+        if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
+            $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: Attempting to REMOVE user " . $username . "\n", FILE_APPEND);
+        }
+        
         try {
             // Remove from radcheck
             ORM::for_table('radcheck', 'radius')
@@ -176,6 +194,12 @@ class RadiusManager
                 ->delete_many();
             
             _log("RADIUS user removed: {$username}", 'RADIUS', 0);
+            
+            if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
+                $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: User " . $username . " REMOVAL completed\n", FILE_APPEND);
+            }
             
             return true;
             
