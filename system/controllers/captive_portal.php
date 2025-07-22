@@ -131,18 +131,36 @@ switch ($routes['1']) {
                 }
             }
             
-            // Check if MAC already has active session (AFTER creating portal session)
+            // CRITICAL FIX: Check for completed sessions FIRST to prevent redirect loop
+            $completedSession = ORM::for_table('tbl_portal_sessions')
+                ->where('mac_address', $mac)
+                ->where('status', 'completed')
+                ->where_gt('created_at', date('Y-m-d H:i:s', strtotime('-24 hours')))
+                ->order_by_desc('id')
+                ->find_one();
+                
+            if ($completedSession) {
+                // User has a completed session, redirect to success immediately
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " CRITICAL: User has completed session #{$completedSession->id}, redirecting to success (MAC: $mac)\n", FILE_APPEND);
+                r2(U . 'captive_portal/success/' . $completedSession->session_id, 's', 'Welcome back! Your session is still active.');
+                return;
+            }
+            
+            // Also check if MAC has active RADIUS user
             $activeSession = ORM::for_table('tbl_user_recharges')
                 ->where('username', $mac)
                 ->where('status', 'on')
                 ->where_gt('expiration', date('Y-m-d H:i:s'))
                 ->find_one();
                 
-            if ($activeSession && $portalSessionCreated) {
-                // User already has active session but we created portal session for form consistency
+            if ($activeSession) {
+                // User has active RADIUS session, redirect to success
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " User has active session, redirecting to success (MAC: $mac)\n", FILE_APPEND);
-                r2(U . 'captive_portal/success/' . $mac, 's', 'You already have an active internet session');
+                    date('Y-m-d H:i:s') . " User has active RADIUS session, redirecting to success (MAC: $mac)\n", FILE_APPEND);
+                // Find the completed session or use MAC as session ID
+                $sessionForRedirect = $completedSession ? $completedSession->session_id : $mac;
+                r2(U . 'captive_portal/success/' . $sessionForRedirect, 's', 'You already have an active internet session');
                 return;
             }
             
