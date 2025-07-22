@@ -26,56 +26,104 @@ class RadiusManager
         }
         
         try {
-            // Remove existing entries for this user
-            self::removeRadiusUser($username);
+            // ATOMIC UPSERT: Update existing entries or create new ones (no removal race condition)
             
-            // Create password entry for both CHAP and PAP authentication
-            $radcheck = ORM::for_table('radcheck', 'radius')->create();
-            $radcheck->username = $username;
-            $radcheck->attribute = 'Cleartext-Password';
-            $radcheck->op = ':=';
-            $radcheck->value = $password;
-            $radcheck->save();
+            // Upsert Cleartext-Password
+            $existing_password = ORM::for_table('radcheck', 'radius')
+                ->where('username', $username)
+                ->where('attribute', 'Cleartext-Password')
+                ->find_one();
             
-            // For MAC-based authentication, we still need Auth-Type Accept
-            // but only for users who have paid (this is created per paid user)
-            $authtype = ORM::for_table('radcheck', 'radius')->create();
-            $authtype->username = $username;
-            $authtype->attribute = 'Auth-Type';
-            $authtype->op = ':=';
-            $authtype->value = 'Accept';
-            $authtype->save();
+            if ($existing_password) {
+                $existing_password->value = $password;
+                $existing_password->save();
+            } else {
+                $radcheck = ORM::for_table('radcheck', 'radius')->create();
+                $radcheck->username = $username;
+                $radcheck->attribute = 'Cleartext-Password';
+                $radcheck->op = ':=';
+                $radcheck->value = $password;
+                $radcheck->save();
+            }
             
-            // Add simultaneous use limit
-            $simultaneous = ORM::for_table('radcheck', 'radius')->create();
-            $simultaneous->username = $username;
-            $simultaneous->attribute = 'Simultaneous-Use';
-            $simultaneous->op = ':=';
-            $simultaneous->value = '1';
-            $simultaneous->save();
+            // Upsert Auth-Type Accept
+            $existing_authtype = ORM::for_table('radcheck', 'radius')
+                ->where('username', $username)
+                ->where('attribute', 'Auth-Type')
+                ->find_one();
+                
+            if ($existing_authtype) {
+                $existing_authtype->value = 'Accept';
+                $existing_authtype->save();
+            } else {
+                $authtype = ORM::for_table('radcheck', 'radius')->create();
+                $authtype->username = $username;
+                $authtype->attribute = 'Auth-Type';
+                $authtype->op = ':=';
+                $authtype->value = 'Accept';
+                $authtype->save();
+            }
             
-            // Add session timeout if plan has time limit
+            // Upsert Simultaneous-Use
+            $existing_simultaneous = ORM::for_table('radcheck', 'radius')
+                ->where('username', $username)
+                ->where('attribute', 'Simultaneous-Use')
+                ->find_one();
+                
+            if ($existing_simultaneous) {
+                $existing_simultaneous->value = '1';
+                $existing_simultaneous->save();
+            } else {
+                $simultaneous = ORM::for_table('radcheck', 'radius')->create();
+                $simultaneous->username = $username;
+                $simultaneous->attribute = 'Simultaneous-Use';
+                $simultaneous->op = ':=';
+                $simultaneous->value = '1';
+                $simultaneous->save();
+            }
+            
+            // Upsert session timeout if plan has time limit
             if ($plan && $plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
                 $timeout_seconds = $plan->time_limit * ($plan->time_unit == 'Hrs' ? 3600 : 60);
                 
-                $session_timeout = ORM::for_table('radcheck', 'radius')->create();
-                $session_timeout->username = $username;
-                $session_timeout->attribute = 'Session-Timeout';
-                $session_timeout->op = ':=';
-                $session_timeout->value = $timeout_seconds;
-                $session_timeout->save();
+                $existing_timeout = ORM::for_table('radcheck', 'radius')
+                    ->where('username', $username)
+                    ->where('attribute', 'Session-Timeout')
+                    ->find_one();
+                    
+                if ($existing_timeout) {
+                    $existing_timeout->value = $timeout_seconds;
+                    $existing_timeout->save();
+                } else {
+                    $session_timeout = ORM::for_table('radcheck', 'radius')->create();
+                    $session_timeout->username = $username;
+                    $session_timeout->attribute = 'Session-Timeout';
+                    $session_timeout->op = ':=';
+                    $session_timeout->value = $timeout_seconds;
+                    $session_timeout->save();
+                }
             }
             
-            // Add data limit if applicable
+            // Upsert data limit if applicable
             if ($plan && $plan->typebp == 'Limited' && $plan->limit_type == 'Data_Limit') {
                 $data_limit = $plan->data_limit * 1048576; // Convert MB to bytes
                 
-                $data_check = ORM::for_table('radcheck', 'radius')->create();
-                $data_check->username = $username;
-                $data_check->attribute = 'Max-Octets';
-                $data_check->op = ':=';
-                $data_check->value = $data_limit;
-                $data_check->save();
+                $existing_data_limit = ORM::for_table('radcheck', 'radius')
+                    ->where('username', $username)
+                    ->where('attribute', 'Max-Octets')
+                    ->find_one();
+                    
+                if ($existing_data_limit) {
+                    $existing_data_limit->value = $data_limit;
+                    $existing_data_limit->save();
+                } else {
+                    $data_check = ORM::for_table('radcheck', 'radius')->create();
+                    $data_check->username = $username;
+                    $data_check->attribute = 'Max-Octets';
+                    $data_check->op = ':=';
+                    $data_check->value = $data_limit;
+                    $data_check->save();
+                }
             }
             
             // Add bandwidth limits (radreply)
@@ -86,14 +134,24 @@ class RadiusManager
                 }
             }
             
-            // Add expiration time
+            // Upsert expiration time
             if ($expiration_time) {
-                $expiry = ORM::for_table('radcheck', 'radius')->create();
-                $expiry->username = $username;
-                $expiry->attribute = 'Expiration';
-                $expiry->op = ':=';
-                $expiry->value = date('M j Y H:i:s', strtotime($expiration_time));
-                $expiry->save();
+                $existing_expiry = ORM::for_table('radcheck', 'radius')
+                    ->where('username', $username)
+                    ->where('attribute', 'Expiration')
+                    ->find_one();
+                    
+                if ($existing_expiry) {
+                    $existing_expiry->value = date('M j Y H:i:s', strtotime($expiration_time));
+                    $existing_expiry->save();
+                } else {
+                    $expiry = ORM::for_table('radcheck', 'radius')->create();
+                    $expiry->username = $username;
+                    $expiry->attribute = 'Expiration';
+                    $expiry->op = ':=';
+                    $expiry->value = date('M j Y H:i:s', strtotime($expiration_time));
+                    $expiry->save();
+                }
             }
             
             _log("RADIUS hotspot user created: {$username}", 'RADIUS', 0);
