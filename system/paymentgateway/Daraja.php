@@ -194,7 +194,7 @@ function Daraja_stk_push($phoneNumber, $amount, $accountReference, $transactionD
         'PartyA' => $phoneNumber,
         'PartyB' => $pgData['shortcode'],
         'PhoneNumber' => $phoneNumber,
-        'CallBackURL' => U . 'captive_portal/callback',
+        'CallBackURL' => U . 'callback/daraja',
         'AccountReference' => substr($accountReference, 0, 12), // Max 12 characters
         'TransactionDesc' => substr($transactionDesc, 0, 13)   // Max 13 characters
     ];
@@ -321,5 +321,190 @@ class Daraja
     public function getConfig()
     {
         return $this->config;
+    }
+}
+
+/**
+ * M-Pesa Payment Notification Handler
+ * Called by callback.php when M-Pesa sends payment confirmation
+ */
+function Daraja_payment_notification()
+{
+    global $UPLOAD_PATH;
+    
+    try {
+        $input = file_get_contents('php://input');
+        
+        // Log the callback for debugging
+        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+            date('Y-m-d H:i:s') . ' - Daraja callback received: ' . $input . PHP_EOL, FILE_APPEND);
+        
+        $data = json_decode($input, true);
+        
+        if (!$data || !isset($data['Body']['stkCallback'])) {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Invalid Daraja callback data structure' . PHP_EOL, FILE_APPEND);
+            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Invalid data']);
+            return;
+        }
+        
+        $callback = $data['Body']['stkCallback'];
+        $checkoutRequestId = $callback['CheckoutRequestID'] ?? '';
+        $resultCode = $callback['ResultCode'] ?? -1;
+        
+        if (empty($checkoutRequestId)) {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Missing CheckoutRequestID in Daraja callback' . PHP_EOL, FILE_APPEND);
+            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Missing checkout ID']);
+            return;
+        }
+        
+        // Find the payment record using checkout_request_id
+        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+            date('Y-m-d H:i:s') . " DARAJA CALLBACK: Processing callback for checkout_request_id=" . $checkoutRequestId . " result_code=" . $resultCode . "\n", FILE_APPEND);
+        
+        $payment = ORM::for_table('tbl_payment_gateway')
+            ->where('checkout_request_id', $checkoutRequestId)
+            ->find_one();
+            
+        if (!$payment) {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Payment record not found for Daraja checkout ID: ' . $checkoutRequestId . PHP_EOL, FILE_APPEND);
+            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment not found']);
+            return;
+        }
+        
+        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+            date('Y-m-d H:i:s') . " DARAJA CALLBACK: Found payment record ID=" . $payment->id() . "\n", FILE_APPEND);
+        
+        if ($resultCode == 0) { // Success
+            // Check if payment already processed
+            if ($payment->status == 2) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " DARAJA CALLBACK: Payment already processed, skipping duplicate\n", FILE_APPEND);
+                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Already processed']);
+                return;
+            }
+            
+            // Extract payment details from callback
+            $mpesaReceiptNumber = '';
+            $phoneNumber = '';
+            $amount = 0;
+            $transactionDate = '';
+            
+            if (isset($callback['CallbackMetadata']['Item'])) {
+                foreach ($callback['CallbackMetadata']['Item'] as $item) {
+                    switch ($item['Name']) {
+                        case 'MpesaReceiptNumber':
+                            $mpesaReceiptNumber = $item['Value'];
+                            break;
+                        case 'PhoneNumber':
+                            $phoneNumber = $item['Value'];
+                            break;
+                        case 'Amount':
+                            $amount = floatval($item['Value']);
+                            break;
+                        case 'TransactionDate':
+                            $transactionDate = $item['Value'];
+                            break;
+                    }
+                }
+            }
+            
+            // Update payment record
+            $payment->status = 2; // Paid
+            $payment->paid_date = date('Y-m-d H:i:s');
+            $payment->pg_paid_response = $input;
+            $payment->gateway_trx_id = $mpesaReceiptNumber;
+            $payment->save();
+            
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Daraja payment marked as successful: ' . $mpesaReceiptNumber . PHP_EOL, FILE_APPEND);
+            
+            // Get session and plan
+            $session = ORM::for_table('tbl_portal_sessions')
+                ->where('payment_id', $payment->id())
+                ->find_one();
+                
+            if ($session) {
+                $plan = ORM::for_table('tbl_plans')
+                    ->where('id', $payment->plan_id)
+                    ->find_one();
+                
+                if ($plan) {
+                    // Check if user recharge already exists
+                    $existingRecharge = ORM::for_table('tbl_user_recharges')
+                        ->where('username', $session->mac_address)
+                        ->where('status', 'on')
+                        ->where_gt('expiration', date('Y-m-d H:i:s'))
+                        ->find_one();
+                    
+                    if (!$existingRecharge) {
+                        // Create user recharge record
+                        $userRecharge = ORM::for_table('tbl_user_recharges')->create();
+                        $userRecharge->customer_id = 0;
+                        $userRecharge->username = $session->mac_address;
+                        $userRecharge->plan_id = $plan->id();
+                        $userRecharge->namebp = $plan->name_plan;
+                        $userRecharge->recharged_on = date('Y-m-d');
+                        $userRecharge->recharged_time = date('H:i:s');
+                        $userRecharge->expiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
+                        $userRecharge->time = date('H:i:s');
+                        $userRecharge->status = 'on';
+                        $userRecharge->type = 'Hotspot';
+                        $userRecharge->routers = 'Main Router';
+                        $userRecharge->method = 'M-Pesa STK Push';
+                        $userRecharge->admin_id = 1;
+                        $userRecharge->save();
+                        
+                        // Create transaction record
+                        $transaction = ORM::for_table('tbl_transactions')->create();
+                        $transaction->invoice = $userRecharge->id();
+                        $transaction->username = $session->mac_address;
+                        $transaction->plan_name = $plan->name_plan;
+                        $transaction->price = $payment->price;
+                        $transaction->recharged_on = date('Y-m-d');
+                        $transaction->recharged_time = date('H:i:s');
+                        $transaction->expiration = $userRecharge->expiration;
+                        $transaction->time = $userRecharge->time;
+                        $transaction->method = 'M-Pesa STK Push';
+                        $transaction->routers = 'Main Router';
+                        $transaction->type = 'Hotspot';
+                        $transaction->save();
+                        
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - Daraja user recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                    }
+                    
+                    // Create RADIUS user
+                    require_once dirname(__DIR__) . '/autoload/RadiusManager.php';
+                    $result = RadiusManager::createHotspotUser($session->mac_address, $session->mac_address, $plan, $userRecharge->expiration ?? date('Y-m-d H:i:s', strtotime('+2 hours')));
+                    
+                    if ($result['success']) {
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - Daraja RADIUS User Created: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                    }
+                    
+                    // Mark session as completed
+                    $session->status = 'completed';
+                    $session->save();
+                }
+            }
+        } else {
+            // Payment failed
+            $payment->status = 3; // Failed
+            $payment->pg_paid_response = $input;
+            $payment->save();
+            
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Daraja payment failed: Result Code ' . $resultCode . PHP_EOL, FILE_APPEND);
+        }
+        
+        echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Success']);
+        
+    } catch (Exception $e) {
+        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+            date('Y-m-d H:i:s') . ' - Daraja callback error: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['ResultCode' => 1, 'ResultDesc' => 'Error: ' . $e->getMessage()]);
     }
 }
