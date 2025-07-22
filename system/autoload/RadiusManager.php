@@ -163,8 +163,14 @@ class RadiusManager
     {
         if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
             $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+            
+            // Get stack trace to see what called this function
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+            $caller = isset($backtrace[1]) ? $backtrace[1]['file'] . ':' . $backtrace[1]['line'] : 'unknown';
+            $function = isset($backtrace[1]) ? ($backtrace[1]['function'] ?? 'unknown') : 'unknown';
+            
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: Attempting to REMOVE user " . $username . "\n", FILE_APPEND);
+                date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: Attempting to REMOVE user " . $username . " - CALLED FROM: " . $caller . " in function: " . $function . "\n", FILE_APPEND);
         }
         
         try {
