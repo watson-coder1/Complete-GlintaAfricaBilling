@@ -601,6 +601,11 @@
     </style>
 </head>
 <body>
+    {literal}
+    <script>
+        alert("DEBUG: JavaScript IS RUNNING!"); // This should pop up!
+    </script>
+    {/literal}
     <!-- Celebration Background -->
     <div class="celebration-bg">
         <div class="confetti"></div>
