@@ -968,22 +968,28 @@
             console.log('=== Submitting MikroTik Authentication Form ===');
             console.log('Form HTML:', form.outerHTML);
             
+            // Use GET redirect instead of POST form to avoid HTTPS→HTTP mixed content issues
             try {
-                document.getElementById('debug-status').innerText = 'Submitting form to MikroTik...';
-                form.submit();
-                console.log('✅ Form submission initiated successfully');
-                document.getElementById('debug-status').innerText = 'Form submitted, waiting for response...';
-            } catch (error) {
-                console.error('❌ Error submitting form:', error);
-                document.getElementById('debug-status').innerText = 'Form submit failed, trying fallback...';
-                // Fallback: try direct redirect with GET parameters
+                document.getElementById('debug-status').innerText = 'Redirecting to MikroTik authentication...';
+                
+                // Create GET URL with parameters to avoid mixed content warnings
                 var params = new URLSearchParams(fields);
-                var fallbackUrl = loginUrl + '?' + params.toString();
-                console.log('Attempting fallback redirect to:', fallbackUrl);
-                document.getElementById('debug-status').innerText = 'Redirecting to: ' + fallbackUrl;
+                var authUrl = loginUrl + '?' + params.toString();
+                
+                console.log('✅ Redirecting to MikroTik:', authUrl);
+                document.getElementById('debug-status').innerText = 'Authenticating with MikroTik...';
+                
+                // Use window.location instead of form.submit() to avoid HTTPS→HTTP issues
+                window.location.href = authUrl;
+                
+            } catch (error) {
+                console.error('❌ Error during redirect:', error);
+                document.getElementById('debug-status').innerText = 'Authentication failed, please try again...';
+                
+                // Show user-friendly message after delay
                 setTimeout(function() {
-                    window.location.href = fallbackUrl;
-                }, 2000);
+                    alert('Login might have failed. Please reconnect or restart your Wi-Fi.');
+                }, 3000);
             }
             }
         }, 3000); // Wait 3 seconds for user to see success page
