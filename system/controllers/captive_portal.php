@@ -941,9 +941,128 @@ switch ($routes['1']) {
         }
         break;
         
-    // Removed 'callback' case - now using system callback routing at 'callback/daraja'
-    // This ensures M-Pesa callbacks are processed by the Daraja payment gateway
-    // which properly handles user recharge creation and session status updates
+    case 'callback':
+        // M-Pesa callback handler for captive portal payments
+        header('Content-Type: application/json');
+        
+        try {
+            $input = file_get_contents('php://input');
+            
+            // Log the callback for debugging
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Callback received: ' . $input . PHP_EOL, FILE_APPEND);
+            
+            $data = json_decode($input, true);
+            
+            if (!$data || !isset($data['Body']['stkCallback'])) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                    date('Y-m-d H:i:s') . ' - Invalid callback data structure' . PHP_EOL, FILE_APPEND);
+                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Invalid data']);
+                exit;
+            }
+            
+            $callback = $data['Body']['stkCallback'];
+            $checkoutRequestId = $callback['CheckoutRequestID'] ?? '';
+            $resultCode = $callback['ResultCode'] ?? -1;
+            
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . " - Processing callback for CheckoutID: $checkoutRequestId, ResultCode: $resultCode" . PHP_EOL, FILE_APPEND);
+            
+            // Find the payment record
+            $payment = ORM::for_table('tbl_payment_gateway')
+                ->where('checkout_request_id', $checkoutRequestId)
+                ->find_one();
+            
+            if (!$payment) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                    date('Y-m-d H:i:s') . " - Payment not found for CheckoutID: $checkoutRequestId" . PHP_EOL, FILE_APPEND);
+                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment not found']);
+                exit;
+            }
+            
+            if ($resultCode == 0) {
+                // Payment successful
+                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                    date('Y-m-d H:i:s') . " - Payment successful for CheckoutID: $checkoutRequestId" . PHP_EOL, FILE_APPEND);
+                
+                // Extract payment details from callback
+                $amount = 0;
+                $phoneNumber = '';
+                $transactionId = '';
+                
+                if (isset($callback['CallbackMetadata']['Item'])) {
+                    foreach ($callback['CallbackMetadata']['Item'] as $item) {
+                        switch ($item['Name']) {
+                            case 'Amount':
+                                $amount = $item['Value'];
+                                break;
+                            case 'MpesaReceiptNumber':
+                                $transactionId = $item['Value'];
+                                break;
+                            case 'PhoneNumber':
+                                $phoneNumber = $item['Value'];
+                                break;
+                        }
+                    }
+                }
+                
+                // Update payment record
+                $payment->status = 2; // Successful
+                $payment->paid_date = date('Y-m-d H:i:s');
+                $payment->phone_number = $phoneNumber;
+                $payment->gateway_trx_id = $transactionId;
+                $payment->save();
+                
+                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                    date('Y-m-d H:i:s') . " - Payment record updated successfully" . PHP_EOL, FILE_APPEND);
+                
+                // Find and update the portal session
+                $session = ORM::for_table('tbl_portal_sessions')
+                    ->where('payment_id', $payment->id)
+                    ->find_one();
+                
+                if ($session) {
+                    $session->status = 'completed';
+                    $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                        date('Y-m-d H:i:s') . " - Portal session marked as completed" . PHP_EOL, FILE_APPEND);
+                } else {
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                        date('Y-m-d H:i:s') . " - Portal session not found for payment ID: " . $payment->id . PHP_EOL, FILE_APPEND);
+                }
+                
+                // Create user recharge and RADIUS user (same as in Daraja.php)
+                require_once dirname(__DIR__) . '/paymentgateway/Daraja.php';
+                if (function_exists('Daraja_payment_notification')) {
+                    $callbackData = [
+                        'payment_id' => $payment->id,
+                        'checkout_request_id' => $checkoutRequestId,
+                        'amount' => $amount,
+                        'phone_number' => $phoneNumber,
+                        'transaction_id' => $transactionId
+                    ];
+                    Daraja_payment_notification($callbackData);
+                }
+                
+            } else {
+                // Payment failed
+                $resultDesc = $callback['ResultDesc'] ?? 'Payment failed';
+                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                    date('Y-m-d H:i:s') . " - Payment failed: $resultDesc" . PHP_EOL, FILE_APPEND);
+                
+                $payment->status = 0; // Failed
+                $payment->save();
+            }
+            
+            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Success']);
+            
+        } catch (Exception $e) {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                date('Y-m-d H:i:s') . ' - Callback error: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+            echo json_encode(['ResultCode' => 1, 'ResultDesc' => 'Error processing callback']);
+        }
+        exit;
         
     case 'voucher':
         // Voucher code authentication (alternative to payment)
