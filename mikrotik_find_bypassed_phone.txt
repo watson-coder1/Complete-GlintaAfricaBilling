@@ -1,0 +1,61 @@
+# Commands to find your bypassed phone on MikroTik
+
+# 1. First, let's see ALL devices currently connected (active and inactive)
+/ip dhcp-server lease print
+
+# 2. Check active hotspot sessions
+/ip hotspot active print
+
+# 3. Check ALL hotspot hosts (this shows all devices that have connected)
+/ip hotspot host print
+
+# 4. Check ARP table for all devices
+/ip arp print
+
+# 5. Check if there are any firewall rules allowing specific IPs
+/ip firewall filter print where action=accept and src-address~"192.168"
+/ip firewall nat print where action=accept
+
+# 6. Check address lists for any bypass entries
+/ip firewall address-list print
+
+# 7. Check for any static DHCP entries that might bypass
+/ip dhcp-server lease print where dynamic=no
+
+# 8. Check hotspot user profiles for unlimited access
+/ip hotspot user print
+/ip hotspot user profile print
+
+# 9. Check if any devices are bypassed through MAC authentication
+/ip hotspot host print where bypassed=yes
+
+# 10. To find your phone specifically, look for these patterns:
+# For iPhone:
+/ip dhcp-server lease print where host-name~"iPhone"
+/ip dhcp-server lease print where comment~"phone"
+
+# For Android:
+/ip dhcp-server lease print where host-name~"android"
+/ip dhcp-server lease print where host-name~"Samsung"
+/ip dhcp-server lease print where host-name~"Xiaomi"
+/ip dhcp-server lease print where host-name~"OPPO"
+
+# 11. Check WiFi connections
+/interface wireless registration-table print
+
+# 12. See all connections in last 24 hours
+/ip hotspot host print where uptime<24:00:00
+
+# IMPORTANT: Your phone might be bypassed through:
+# 1. Not appearing in hotspot at all (firewall rule bypass)
+# 2. Static DHCP lease with special treatment
+# 3. Address list bypass
+# 4. Direct NAT rule
+# 5. Bridge/interface bypass
+
+# To see EVERYTHING at once:
+/ip firewall address-list print
+/ip firewall filter print where action=accept
+/ip firewall nat print where action=masquerade or action=accept
+/ip hotspot walled-garden print
+/ip hotspot walled-garden ip print

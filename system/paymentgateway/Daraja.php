@@ -335,9 +335,15 @@ function Daraja_payment_notification()
     try {
         $input = file_get_contents('php://input');
         
+        // Create callbacks log file if it doesn't exist
+        if (!file_exists($UPLOAD_PATH . '/captive_portal_callbacks.log')) {
+            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                "=== M-Pesa Daraja Callbacks Log ===\n");
+        }
+        
         // Log the callback for debugging
         file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-            date('Y-m-d H:i:s') . ' - Daraja callback received: ' . $input . PHP_EOL, FILE_APPEND);
+            "\n" . date('Y-m-d H:i:s') . ' - Daraja callback received: ' . $input . PHP_EOL, FILE_APPEND);
         
         $data = json_decode($input, true);
         
@@ -422,16 +428,26 @@ function Daraja_payment_notification()
                 date('Y-m-d H:i:s') . ' - Daraja payment marked as successful: ' . $mpesaReceiptNumber . PHP_EOL, FILE_APPEND);
             
             // Get session and plan
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " DARAJA CALLBACK: Looking for session with payment_id=" . $payment->id() . "\n", FILE_APPEND);
+                
             $session = ORM::for_table('tbl_portal_sessions')
                 ->where('payment_id', $payment->id())
                 ->find_one();
                 
             if ($session) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " DARAJA CALLBACK: Found session ID=" . $session->session_id . " status='" . $session->status . "' MAC=" . $session->mac_address . "\n", FILE_APPEND);
+                    
                 $plan = ORM::for_table('tbl_plans')
                     ->where('id', $payment->plan_id)
                     ->find_one();
                 
                 if ($plan) {
+                    // Initialize variables
+                    $userRecharge = null;
+                    $radiusExpiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
+                    
                     // Check if user recharge already exists
                     $existingRecharge = ORM::for_table('tbl_user_recharges')
                         ->where('username', $session->mac_address)
@@ -458,7 +474,7 @@ function Daraja_payment_notification()
                             $userRecharge->namebp = $plan->name_plan;
                             $userRecharge->recharged_on = date('Y-m-d');
                             $userRecharge->recharged_time = date('H:i:s');
-                            $userRecharge->expiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
+                            $userRecharge->expiration = $radiusExpiration;
                             $userRecharge->time = date('H:i:s');
                             $userRecharge->status = 'on';
                             $userRecharge->type = 'Hotspot';
@@ -488,20 +504,48 @@ function Daraja_payment_notification()
                             file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                                 date('Y-m-d H:i:s') . ' - Daraja transaction already exists, skipping duplicate creation for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
                         }
+                    } else {
+                        // Use existing recharge for RADIUS creation
+                        $userRecharge = $existingRecharge;
+                        $radiusExpiration = $existingRecharge->expiration;
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - Daraja using existing recharge for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
                     }
                     
-                    // Create RADIUS user
+                    // Create RADIUS user - Use calculated expiration if no userRecharge exists
                     require_once dirname(__DIR__) . '/autoload/RadiusManager.php';
-                    $result = RadiusManager::createHotspotUser($session->mac_address, $session->mac_address, $plan, $userRecharge->expiration ?? date('Y-m-d H:i:s', strtotime('+2 hours')));
+                    $result = RadiusManager::createHotspotUser(
+                        $session->mac_address, 
+                        $session->mac_address, 
+                        $plan, 
+                        $radiusExpiration
+                    );
                     
                     if ($result['success']) {
                         file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
                             date('Y-m-d H:i:s') . ' - Daraja RADIUS User Created: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                    } else {
+                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                            date('Y-m-d H:i:s') . ' - Daraja RADIUS User Creation Failed: ' . $session->mac_address . ' - ' . $result['message'] . PHP_EOL, FILE_APPEND);
                     }
                     
                     // Mark session as completed
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " DARAJA CALLBACK: Updating session " . $session->session_id . " from '" . $session->status . "' to 'completed'\n", FILE_APPEND);
+                        
                     $session->status = 'completed';
-                    $session->save();
+                    $sessionSaveResult = $session->save();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " DARAJA CALLBACK: Session save result: " . var_export($sessionSaveResult, true) . "\n", FILE_APPEND);
+                    
+                    // Verify the update
+                    $verifySession = ORM::for_table('tbl_portal_sessions')
+                        ->where('session_id', $session->session_id)
+                        ->find_one();
+                    
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " DARAJA CALLBACK: Verification - session " . $session->session_id . " status is now: '" . $verifySession->status . "'\n", FILE_APPEND);
                 }
             }
         } else {

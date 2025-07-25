@@ -413,12 +413,8 @@ switch ($routes['1']) {
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                 date('Y-m-d H:i:s') . " Initiating STK Push - Phone: $phoneNumber, Amount: {$plan->price}, Ref: $accountReference\n", FILE_APPEND);
             
-            $stkResult = $daraja->send_request([
-                'phone_number' => $phoneNumber,
-                'amount' => $plan->price,
-                'invoice' => $accountReference,
-                'description' => $transactionDesc
-            ]);
+            // Use the improved Daraja STK push function for better callback handling
+            $stkResult = Daraja_stk_push($phoneNumber, $plan->price, $accountReference, $transactionDesc);
             
             // Log the STK push result
             file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
@@ -657,6 +653,13 @@ switch ($routes['1']) {
                     ->where_gt('expiration', date('Y-m-d H:i:s'))
                     ->find_one();
                 
+                // Check completion conditions BEFORE logging (to avoid undefined variable errors):
+                // 1. There's an active recharge, OR
+                // 2. The payment linked to THIS session is successful (status 2), OR  
+                // 3. The session itself is marked as completed
+                $paymentCompleted = ($payment && $payment->status == 2 && $payment->id() == $session->payment_id);
+                $sessionCompleted = ($session->status === 'completed');
+                
                 // Log current status for debugging with more detail
                 file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                     date('Y-m-d H:i:s') . " Status check results - Session status: " . ($session->status ?? 'null') . 
@@ -665,21 +668,21 @@ switch ($routes['1']) {
                     ", Payment ID: " . ($payment ? $payment->id() : 'none') .
                     ", Payment status: " . ($payment ? $payment->status : 'none') . 
                     ", IDs match: " . ($payment && $payment->id() == $session->payment_id ? 'yes' : 'no') .
-                    ", Active recharge: " . ($activeRecharge ? 'yes' : 'no') . "\n", FILE_APPEND);
+                    ", Active recharge: " . ($activeRecharge ? 'yes' : 'no') . 
+                    ", Payment completed: " . ($paymentCompleted ? 'yes' : 'no') .
+                    ", Session completed: " . ($sessionCompleted ? 'yes' : 'no') . "\n", FILE_APPEND);
                 
                 // If payment is successful but session not marked completed, update it
-                if ($payment && $payment->status == 2 && $payment->id == $session->payment_id && $session->status !== 'completed') {
+                if ($payment && $payment->status == 2 && $payment->id() == $session->payment_id && $session->status !== 'completed') {
                     $session->status = 'completed';
                     $session->save();
                     file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                         date('Y-m-d H:i:s') . " Session status updated to completed based on payment status\n", FILE_APPEND);
+                    // Update the local variable to reflect this change
+                    $sessionCompleted = true;
                 }
                 
-                // Only consider completed if:
-                // 1. There's an active recharge, OR
-                // 2. The payment linked to THIS session is successful (status 2), OR  
-                // 3. The session itself is marked as completed
-                if ($activeRecharge || ($payment && $payment->status == 2 && $payment->id == $session->payment_id) || $session->status === 'completed') {
+                if ($activeRecharge || $paymentCompleted || $sessionCompleted) {
                     file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
                         date('Y-m-d H:i:s') . " Payment completed - sending success response\n", FILE_APPEND);
                     $redirectUrl = U . 'captive_portal/success/' . $sessionId;
@@ -938,304 +941,9 @@ switch ($routes['1']) {
         }
         break;
         
-    case 'callback':
-        // M-Pesa callback handler for captive portal payments
-        header('Content-Type: application/json');
-        
-        try {
-            $input = file_get_contents('php://input');
-            
-            // Log the callback for debugging
-            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                date('Y-m-d H:i:s') . ' - Callback received: ' . $input . PHP_EOL, FILE_APPEND);
-            
-            $data = json_decode($input, true);
-            
-            if (!$data || !isset($data['Body']['stkCallback'])) {
-                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                    date('Y-m-d H:i:s') . ' - Invalid callback data structure' . PHP_EOL, FILE_APPEND);
-                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Invalid data']);
-                exit;
-            }
-            
-            $callback = $data['Body']['stkCallback'];
-            $checkoutRequestId = $callback['CheckoutRequestID'] ?? '';
-            $resultCode = $callback['ResultCode'] ?? -1;
-            
-            if (empty($checkoutRequestId)) {
-                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                    date('Y-m-d H:i:s') . ' - Missing CheckoutRequestID' . PHP_EOL, FILE_APPEND);
-                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Missing checkout ID']);
-                exit;
-            }
-            
-            // Find the payment record using checkout_request_id
-            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                date('Y-m-d H:i:s') . " CALLBACK DEBUG: Processing callback for checkout_request_id=" . $checkoutRequestId . " result_code=" . $resultCode . "\n", FILE_APPEND);
-            
-            $payment = ORM::for_table('tbl_payment_gateway')
-                ->where('checkout_request_id', $checkoutRequestId)
-                ->find_one();
-                
-            if (!$payment) {
-                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                    date('Y-m-d H:i:s') . ' - Payment record not found for checkout ID: ' . $checkoutRequestId . PHP_EOL, FILE_APPEND);
-                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " CALLBACK ERROR: Payment record not found for checkout_request_id=" . $checkoutRequestId . "\n", FILE_APPEND);
-                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment not found']);
-                exit;
-            }
-            
-            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                date('Y-m-d H:i:s') . " CALLBACK DEBUG: Found payment record ID=" . $payment->id() . "\n", FILE_APPEND);
-            
-            if ($resultCode == 0) { // Success
-                // Check if payment already processed to prevent duplicate processing
-                if ($payment->status == 2) {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Payment already processed, skipping duplicate\n", FILE_APPEND);
-                    echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Already processed']);
-                    exit;
-                }
-                
-                // Extract payment details from callback
-                $mpesaReceiptNumber = '';
-                $phoneNumber = '';
-                $amount = 0;
-                $transactionDate = '';
-                
-                if (isset($callback['CallbackMetadata']['Item'])) {
-                    foreach ($callback['CallbackMetadata']['Item'] as $item) {
-                        switch ($item['Name']) {
-                            case 'MpesaReceiptNumber':
-                                $mpesaReceiptNumber = $item['Value'];
-                                break;
-                            case 'PhoneNumber':
-                                $phoneNumber = $item['Value'];
-                                break;
-                            case 'Amount':
-                                $amount = floatval($item['Value']);
-                                break;
-                            case 'TransactionDate':
-                                $transactionDate = $item['Value'];
-                                break;
-                        }
-                    }
-                }
-                
-                // Update payment record
-                $payment->status = 2; // Paid
-                $payment->paid_date = date('Y-m-d H:i:s');
-                $payment->pg_paid_response = $input;
-                $payment->gateway_trx_id = $mpesaReceiptNumber;
-                $payment->save();
-                
-                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                    date('Y-m-d H:i:s') . ' - Payment marked as successful: ' . $mpesaReceiptNumber . PHP_EOL, FILE_APPEND);
-                
-                // Get session and plan
-                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " CALLBACK DEBUG: Looking for session with payment_id=" . $payment->id() . "\n", FILE_APPEND);
-                    
-                $session = ORM::for_table('tbl_portal_sessions')
-                    ->where('payment_id', $payment->id())
-                    ->find_one();
-                    
-                if (!$session) {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - Session not found for payment ID: ' . $payment->id() . PHP_EOL, FILE_APPEND);
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK ERROR: Session not found for payment_id=" . $payment->id() . "\n", FILE_APPEND);
-                    echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Session not found']);
-                    exit;
-                }
-                
-                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " CALLBACK DEBUG: Found session ID=" . $session->session_id . " status='" . $session->status . "' MAC=" . $session->mac_address . "\n", FILE_APPEND);
-                
-                $plan = ORM::for_table('tbl_plans')
-                    ->where('id', $payment->plan_id)
-                    ->find_one();
-                
-                if (!$plan) {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - Plan not found for ID: ' . $payment->plan_id . PHP_EOL, FILE_APPEND);
-                    echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Plan not found']);
-                    exit;
-                }
-                
-                // Check if user recharge already exists (prevent duplicates)
-                $existingRecharge = ORM::for_table('tbl_user_recharges')
-                    ->where('username', $session->mac_address)
-                    ->where('status', 'on')
-                    ->where_gt('expiration', date('Y-m-d H:i:s'))
-                    ->find_one();
-                
-                if (!$existingRecharge) {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Creating user recharge for MAC=" . $session->mac_address . "\n", FILE_APPEND);
-                    
-                    try {
-                        // Create user recharge record
-                        $userRecharge = ORM::for_table('tbl_user_recharges')->create();
-                        $userRecharge->customer_id = 0; // Portal customer
-                        $userRecharge->username = $session->mac_address;
-                        $userRecharge->plan_id = $plan->id();
-                        $userRecharge->namebp = $plan->name_plan;
-                        $userRecharge->recharged_on = date('Y-m-d');
-                        $userRecharge->recharged_time = date('H:i:s');
-                        
-                        // Calculate expiration based on plan validity
-                        $expirationTime = strtotime('+' . $plan->validity . ' ' . $plan->validity_unit);
-                        $userRecharge->expiration = date('Y-m-d H:i:s', $expirationTime);
-                        $userRecharge->time = date('H:i:s', $expirationTime);
-                        
-                        $userRecharge->status = 'on';
-                        $userRecharge->type = 'Hotspot';
-                        $userRecharge->routers = 'Main Router';
-                        $userRecharge->method = 'M-Pesa STK Push';
-                        $userRecharge->admin_id = 1; // Add admin_id field
-                        $userRecharge->save();
-                        
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                            date('Y-m-d H:i:s') . " CALLBACK SUCCESS: User recharge created ID=" . $userRecharge->id() . " for MAC=" . $session->mac_address . "\n", FILE_APPEND);
-                        
-                        // Create transaction record
-                        $transaction = ORM::for_table('tbl_transactions')->create();
-                        $transaction->invoice = $userRecharge->id();
-                        $transaction->username = $session->mac_address;
-                        $transaction->plan_name = $plan->name_plan;
-                        $transaction->price = $payment->price;
-                        $transaction->recharged_on = date('Y-m-d');
-                        $transaction->recharged_time = date('H:i:s');
-                        $transaction->expiration = $userRecharge->expiration;
-                        $transaction->time = $userRecharge->time;
-                        $transaction->method = 'M-Pesa STK Push';
-                        $transaction->routers = 'Main Router';
-                        $transaction->type = 'Hotspot';
-                        $transaction->save();
-                        
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                            date('Y-m-d H:i:s') . " CALLBACK SUCCESS: Transaction created ID=" . $transaction->id() . "\n", FILE_APPEND);
-                        
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                            date('Y-m-d H:i:s') . ' - User recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
-                            
-                    } catch (Exception $e) {
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                            date('Y-m-d H:i:s') . " CALLBACK ERROR: User recharge creation failed: " . $e->getMessage() . "\n", FILE_APPEND);
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                            date('Y-m-d H:i:s') . ' - ERROR: User recharge creation failed: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-                    }
-                } else {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Existing recharge found for MAC=" . $session->mac_address . " ID=" . $existingRecharge->id() . "\n", FILE_APPEND);
-                }
-                
-                // Create RADIUS user using RadiusManager
-                try {
-                    require_once dirname(__DIR__) . '/autoload/RadiusManager.php';
-                    
-                    $username = $session->mac_address;
-                    $password = $session->mac_address; // Use MAC as password for auto-login
-                    
-                    // Calculate expiration for RADIUS
-                    $radiusExpiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
-                    
-                    $result = RadiusManager::createHotspotUser($username, $password, $plan, $radiusExpiration);
-                    
-                    if ($result['success']) {
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                            date('Y-m-d H:i:s') . ' - RADIUS User Created: ' . $username . PHP_EOL, FILE_APPEND);
-                        $session->mikrotik_user = $username;
-                    } else {
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                            date('Y-m-d H:i:s') . ' - RADIUS User Creation Failed: ' . $result['message'] . PHP_EOL, FILE_APPEND);
-                    }
-                    
-                        // Always update session status to completed when payment is successful
-                    // regardless of RADIUS creation status
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: About to update session " . $session->session_id . " from '" . $session->status . "' to 'completed'\n", FILE_APPEND);
-                    
-                    $session->status = 'completed';
-                    $sessionSaveResult = $session->save();
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Session save result: " . var_export($sessionSaveResult, true) . "\n", FILE_APPEND);
-                    
-                    // Verify the update by re-fetching the session
-                    $verifySession = ORM::for_table('tbl_portal_sessions')
-                        ->where('session_id', $session->session_id)
-                        ->find_one();
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Verification - session " . $session->session_id . " status is now: '" . $verifySession->status . "'\n", FILE_APPEND);
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - Session status updated to completed' . PHP_EOL, FILE_APPEND);
-                    
-                    // Also log to main debug log for tracking
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK: Session " . $session->session_id . " marked as completed\n", FILE_APPEND);
-                } catch (Exception $radiusError) {
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - RADIUS Error: ' . $radiusError->getMessage() . PHP_EOL, FILE_APPEND);
-                    
-                    // Still update session status to completed even if RADIUS fails
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: RADIUS failed, updating session " . $session->session_id . " from '" . $session->status . "' to 'completed'\n", FILE_APPEND);
-                    
-                    $session->status = 'completed';
-                    $sessionSaveResult = $session->save();
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Session save result (RADIUS error): " . var_export($sessionSaveResult, true) . "\n", FILE_APPEND);
-                    
-                    // Verify the update by re-fetching the session
-                    $verifySession = ORM::for_table('tbl_portal_sessions')
-                        ->where('session_id', $session->session_id)
-                        ->find_one();
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK DEBUG: Verification (RADIUS error) - session " . $session->session_id . " status is now: '" . $verifySession->status . "'\n", FILE_APPEND);
-                    
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                        date('Y-m-d H:i:s') . ' - Session status updated to completed (despite RADIUS error)' . PHP_EOL, FILE_APPEND);
-                    
-                    // Also log to main debug log for tracking
-                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                        date('Y-m-d H:i:s') . " CALLBACK: Session " . $session->session_id . " marked as completed (RADIUS error ignored)\n", FILE_APPEND);
-                }
-                
-                // CRITICAL: Terminate script execution after successful callback response to prevent any additional RADIUS operations
-                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
-                    date('Y-m-d H:i:s') . " CALLBACK: Payment processing completed successfully, terminating script execution\n", FILE_APPEND);
-                echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Service processed successfully']);
-                exit; // Critical exit to prevent further execution that might remove RADIUS user
-                
-            } else {
-                // Payment failed or cancelled
-                $resultDesc = $callback['ResultDesc'] ?? 'Payment failed';
-                
-                $payment->status = 0; // Failed
-                $payment->pg_paid_response = $input;
-                $payment->save();
-                
-                file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                    date('Y-m-d H:i:s') . ' - Payment failed: ' . $resultDesc . PHP_EOL, FILE_APPEND);
-            }
-            
-            // This line is reached only for failed payments
-            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Payment processed']);
-            
-        } catch (Exception $e) {
-            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                date('Y-m-d H:i:s') . ' - Callback Error: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-            echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Acknowledged']);
-        }
-        exit;
-        break;
+    // Removed 'callback' case - now using system callback routing at 'callback/daraja'
+    // This ensures M-Pesa callbacks are processed by the Daraja payment gateway
+    // which properly handles user recharge creation and session status updates
         
     case 'voucher':
         // Voucher code authentication (alternative to payment)

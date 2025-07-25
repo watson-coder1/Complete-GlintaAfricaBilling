@@ -983,6 +983,7 @@
             .then(data => {
                 console.log('Status data received:', data);
                 logToServer('JS DEBUG: Status response received: ' + JSON.stringify(data));
+                
                 if (data.status === 'completed') {
                     console.log('Payment completed! Redirecting to:', data.redirect);
                     logToServer('JS DEBUG: PAYMENT COMPLETED! Redirecting to: ' + data.redirect);
@@ -995,13 +996,25 @@
                         console.log('Redirecting to:', successUrl);
                         window.location.href = successUrl;
                     }, 2000);
-                } else if (data.status === 'error') {
-                    console.log('Payment error:', data.message);
-                    showError(data.message);
-                } else {
+                } else if (data.status === 'failed' || data.status === 'error') {
+                    console.log('Payment failed/error:', data.message);
+                    logToServer('JS DEBUG: PAYMENT FAILED: ' + (data.message || 'Unknown error'));
+                    showError(data.message || 'Payment failed. Please try again.');
+                } else if (data.status === 'pending') {
                     console.log('Payment still processing, status:', data.status);
-                    // More aggressive checking - reduce interval to 500ms for first minute
-                    const nextInterval = checkCount < 120 ? 500 : 1000;
+                    logToServer('JS DEBUG: Payment still pending, continuing to check...');
+                    // More aggressive checking - reduce interval to 1 second for first 2 minutes
+                    const nextInterval = checkCount < 120 ? 1000 : 2000;
+                    if (checkCount < maxChecks) {
+                        setTimeout(checkPaymentStatus, nextInterval);
+                    } else {
+                        showTimeout();
+                    }
+                } else {
+                    // Unknown status - treat as still processing
+                    console.log('Unknown payment status:', data.status, 'treating as pending...');
+                    logToServer('JS DEBUG: Unknown status "' + data.status + '", treating as pending');
+                    const nextInterval = checkCount < 120 ? 1000 : 2000;
                     if (checkCount < maxChecks) {
                         setTimeout(checkPaymentStatus, nextInterval);
                     } else {
