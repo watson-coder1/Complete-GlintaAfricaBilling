@@ -167,25 +167,57 @@ function activate_service_after_payment($payment)
             return false;
         }
         
-        // Get customer
+        // Get customer - for captive portal users, create a temporary customer record if none exists
         $customer = ORM::for_table('tbl_customers')->where('username', $payment->username)->find_one();
         if (!$customer) {
-            _log("Customer not found: {$payment->username}", 'M-Pesa', 0);
-            return false;
+            // Check if this is a MAC address (captive portal user)
+            if (preg_match('/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/', $payment->username)) {
+                // Create temporary customer record for captive portal user
+                $customer = ORM::for_table('tbl_customers')->create();
+                $customer->username = $payment->username;
+                $customer->fullname = 'Captive Portal User';
+                $customer->email = '';
+                $customer->phonenumber = '';
+                $customer->address = '';
+                $customer->created_at = date('Y-m-d H:i:s');
+                $customer->status = 'Active';
+                $customer->service_type = 'Hotspot';
+                $customer->save();
+                
+                _log("Created temporary customer record for captive portal user: {$payment->username}", 'M-Pesa', 0);
+            } else {
+                _log("Customer not found: {$payment->username}", 'M-Pesa', 0);
+                return false;
+            }
         }
         
-        // Create transaction record
-        $transaction = ORM::for_table('tbl_transactions')->create();
-        $transaction->invoice = 'MPESA' . $payment->id;
-        $transaction->username = $payment->username;
-        $transaction->plan_name = $payment->plan_name;
-        $transaction->price = $payment->price;
-        $transaction->recharged_on = date('Y-m-d');
-        $transaction->recharged_time = date('H:i:s');
-        $transaction->method = 'M-Pesa STK Push';
-        $transaction->routers = $payment->routers;
-        $transaction->type = $plan->type;
-        $transaction->save();
+        // Check if transaction already exists to prevent duplicates
+        $existingTransaction = ORM::for_table('tbl_transactions')
+            ->where('username', $payment->username)
+            ->where('method', 'M-Pesa STK Push')
+            ->where('plan_name', $payment->plan_name)
+            ->where('price', $payment->price)
+            ->where('recharged_on', date('Y-m-d'))
+            ->find_one();
+            
+        if (!$existingTransaction) {
+            // Create transaction record
+            $transaction = ORM::for_table('tbl_transactions')->create();
+            $transaction->invoice = 'MPESA' . $payment->id;
+            $transaction->username = $payment->username;
+            $transaction->plan_name = $payment->plan_name;
+            $transaction->price = $payment->price;
+            $transaction->recharged_on = date('Y-m-d');
+            $transaction->recharged_time = date('H:i:s');
+            $transaction->method = 'M-Pesa STK Push';
+            $transaction->routers = $payment->routers;
+            $transaction->type = $plan->type;
+            $transaction->save();
+            
+            _log("M-Pesa Transaction created - Invoice: MPESA{$payment->id}, Amount: {$payment->price}", 'M-Pesa', 0);
+        } else {
+            _log("M-Pesa Transaction already exists, skipping duplicate - Username: {$payment->username}, Amount: {$payment->price}", 'M-Pesa', 0);
+        }
         
         // Create user recharge record
         $recharge = ORM::for_table('tbl_user_recharges')->create();
@@ -263,7 +295,7 @@ function activate_hotspot_service($customer, $plan, $recharge)
         $expiration_timestamp = strtotime($recharge->expiration . ' ' . $recharge->time);
         
         // Insert into radcheck for authentication
-        $radcheck = ORM::for_table('radcheck')->create();
+        $radcheck = ORM::for_table('radcheck', 'radius')->create();
         $radcheck->username = $radius_username;
         $radcheck->attribute = 'Cleartext-Password';
         $radcheck->op = ':=';
@@ -274,7 +306,7 @@ function activate_hotspot_service($customer, $plan, $recharge)
         if ($plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
             $session_timeout = ($plan->time_unit == 'Hrs') ? ($plan->time_limit * 3600) : ($plan->time_limit * 60);
             
-            $radcheck_timeout = ORM::for_table('radcheck')->create();
+            $radcheck_timeout = ORM::for_table('radcheck', 'radius')->create();
             $radcheck_timeout->username = $radius_username;
             $radcheck_timeout->attribute = 'Session-Timeout';
             $radcheck_timeout->op = ':=';
@@ -283,7 +315,7 @@ function activate_hotspot_service($customer, $plan, $recharge)
         }
         
         // Set Expiration attribute
-        $radcheck_expiry = ORM::for_table('radcheck')->create();
+        $radcheck_expiry = ORM::for_table('radcheck', 'radius')->create();
         $radcheck_expiry->username = $radius_username;
         $radcheck_expiry->attribute = 'Expiration';
         $radcheck_expiry->op = ':=';
@@ -294,7 +326,7 @@ function activate_hotspot_service($customer, $plan, $recharge)
         if ($plan->typebp == 'Limited' && $plan->limit_type == 'Data_Limit') {
             $data_limit_bytes = $plan->data_limit * 1024 * 1024; // Convert MB to bytes
             
-            $radcheck_data = ORM::for_table('radcheck')->create();
+            $radcheck_data = ORM::for_table('radcheck', 'radius')->create();
             $radcheck_data->username = $radius_username;
             $radcheck_data->attribute = 'Max-Octets';
             $radcheck_data->op = ':=';
@@ -309,14 +341,14 @@ function activate_hotspot_service($customer, $plan, $recharge)
                 $download_rate = trim($bandwidth_parts[0]) . 'k';
                 $upload_rate = trim($bandwidth_parts[1]) . 'k';
                 
-                $radreply_down = ORM::for_table('radreply')->create();
+                $radreply_down = ORM::for_table('radreply', 'radius')->create();
                 $radreply_down->username = $radius_username;
                 $radreply_down->attribute = 'WISPr-Bandwidth-Max-Down';
                 $radreply_down->op = ':=';
                 $radreply_down->value = $download_rate;
                 $radreply_down->save();
                 
-                $radreply_up = ORM::for_table('radreply')->create();
+                $radreply_up = ORM::for_table('radreply', 'radius')->create();
                 $radreply_up->username = $radius_username;
                 $radreply_up->attribute = 'WISPr-Bandwidth-Max-Up';
                 $radreply_up->op = ':=';

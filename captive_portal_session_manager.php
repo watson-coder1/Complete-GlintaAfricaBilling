@@ -6,6 +6,7 @@
  */
 
 require_once 'init.php';
+require_once 'enhanced_authentication_blocker.php';
 
 class CaptivePortalSessionManager
 {
@@ -16,23 +17,48 @@ class CaptivePortalSessionManager
         $logFile = $UPLOAD_PATH . '/captive_portal_session_manager.log';
         
         try {
-            // Find all expired user recharges that are still active
+            // Find all expired user recharges that are still active (enhanced time check)
+            $current_datetime = date("Y-m-d H:i:s");
+            $current_date = date("Y-m-d");
+            
             $expiredSessions = ORM::for_table('tbl_user_recharges')
                 ->where('status', 'on')
-                ->where_lt('expiration', date('Y-m-d H:i:s'))
                 ->where('type', 'Hotspot')
+                ->where_raw("(
+                    (expiration < ? AND time IS NULL) OR 
+                    (expiration = ? AND time IS NOT NULL AND CONCAT(expiration, ' ', time) <= ?) OR
+                    (expiration < ?)
+                )", [$current_date, $current_date, $current_datetime, $current_date])
                 ->find_many();
                 
             self::log("Found " . count($expiredSessions) . " expired sessions to process");
             
             foreach ($expiredSessions as $session) {
                 try {
+                    // Double-check if session is truly expired (enhanced time logic)
+                    $now = time();
+                    if (!empty($session->time)) {
+                        $expiry_time = strtotime($session->expiration . ' ' . $session->time);
+                    } else {
+                        $expiry_time = strtotime($session->expiration . ' 23:59:59');
+                    }
+                    
+                    if ($now < $expiry_time) {
+                        self::log("Session not yet expired for user: " . $session->username . " (expires: " . date('Y-m-d H:i:s', $expiry_time) . ")");
+                        continue;
+                    }
+                    
                     // Deactivate the session
                     $session->status = 'off';
                     $session->save();
                     
-                    // Remove from RADIUS if using RADIUS
-                    if ($_c['radius_enable']) {
+                    // Enhanced RADIUS cleanup using RadiusManager
+                    if (class_exists('RadiusManager')) {
+                        RadiusManager::removeRadiusUser($session->username);
+                        $disconnect_result = RadiusManager::disconnectUser($session->username);
+                        self::log("RADIUS cleanup for " . $session->username . ": " . ($disconnect_result['success'] ? 'success' : $disconnect_result['message']));
+                    } else {
+                        // Fallback to manual cleanup
                         self::removeFromRadius($session->username);
                     }
                     
@@ -42,16 +68,36 @@ class CaptivePortalSessionManager
                     // Update portal session status if exists
                     $portalSession = ORM::for_table('tbl_portal_sessions')
                         ->where('mac_address', $session->username)
-                        ->where('status', 'completed')
+                        ->where_in('status', ['completed', 'active'])
                         ->find_one();
                         
                     if ($portalSession) {
                         $portalSession->status = 'expired';
+                        $portalSession->expired_at = date('Y-m-d H:i:s');
                         $portalSession->save();
                     }
                     
-                    // Log successful processing
-                    self::log("Successfully expired session for user: " . $session->username . " (Plan: " . $session->namebp . ")");
+                    // ENHANCED AUTHENTICATION BLOCKING - Block expired user from re-authentication
+                    try {
+                        $blockResult = EnhancedAuthenticationBlocker::blockMacAddress(
+                            $session->username,
+                            $session->username,
+                            'session_expired',
+                            "Session expired on {$session->expiration}. Plan: {$session->namebp}. Blocked to prevent re-authentication without payment."
+                        );
+                        
+                        if ($blockResult['success']) {
+                            self::log("BLOCKED EXPIRED USER: {$session->username} blocked from re-authentication (Block ID: {$blockResult['block_id']})");
+                        } else {
+                            self::log("ERROR blocking expired user {$session->username}: " . ($blockResult['error'] ?? 'Unknown error'));
+                        }
+                    } catch (Exception $blockError) {
+                        self::log("Exception blocking expired user {$session->username}: " . $blockError->getMessage());
+                    }
+                    
+                    // Log successful processing with detailed info
+                    $expiry_str = !empty($session->time) ? $session->expiration . ' ' . $session->time : $session->expiration . ' (end of day)';
+                    self::log("Successfully expired session for user: " . $session->username . " (Plan: " . $session->namebp . ", Expired: " . $expiry_str . ")");
                     $processed++;
                     
                 } catch (Exception $e) {

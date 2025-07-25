@@ -68,7 +68,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-yellow" style="background-color: #f39c12 !important; min-height: 120px; padding: 20px;">
             <div class="inner">
-                <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;">{$u_act}/{$u_all-$u_act}</h3>
+                <h3 class="text-bold" style="font-size: 38px; font-weight: 800; color: #fff !important; margin-bottom: 10px;">{$u_act}/{$u_expired}</h3>
             </div>
             <div class="icon" style="font-size: 70px; opacity: 0.8;">
                 <i class="ion ion-person"></i>

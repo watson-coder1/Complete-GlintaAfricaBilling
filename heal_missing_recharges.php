@@ -9,7 +9,7 @@ require_once 'init.php';
 echo "=== AUTO-HEALING MISSING USER RECHARGES ===\n";
 echo "Started at: " . date('Y-m-d H:i:s') . "\n\n";
 
-// Find successful payments from recent sessions first (avoid collation issues)
+// Find successful payments from recent sessions AND direct successful payments
 $recentSessions = ORM::for_table('tbl_portal_sessions')
     ->where('status', 'completed')
     ->where_not_null('payment_id')
@@ -17,7 +17,18 @@ $recentSessions = ORM::for_table('tbl_portal_sessions')
     ->order_by_desc('id')
     ->find_many();
 
+// Also check direct successful payments that might not have portal sessions
+$directPayments = ORM::for_table('tbl_payment_gateway')
+    ->where('status', 2) // Paid status
+    ->where('gateway', 'Daraja')
+    ->where_gte('paid_date', date('Y-m-d H:i:s', strtotime('-24 hours')))
+    ->order_by_desc('id')
+    ->find_many();
+
 $brokenPayments = [];
+$processedPaymentIds = [];
+
+// Process payments from portal sessions
 foreach ($recentSessions as $session) {
     // Check if payment is successful
     $payment = ORM::for_table('tbl_payment_gateway')
@@ -26,6 +37,8 @@ foreach ($recentSessions as $session) {
         ->find_one();
     
     if ($payment) {
+        $processedPaymentIds[] = $payment->id();
+        
         // Check if user recharge exists
         $userRecharge = ORM::for_table('tbl_user_recharges')
             ->where('username', $session->mac_address)
@@ -42,9 +55,39 @@ foreach ($recentSessions as $session) {
                 'price' => $payment->price,
                 'paid_date' => $payment->paid_date,
                 'payment' => $payment,
-                'session' => $session
+                'session' => $session,
+                'source' => 'portal_session'
             ];
         }
+    }
+}
+
+// Process direct payments that might not have portal sessions
+foreach ($directPayments as $payment) {
+    // Skip if already processed from portal sessions
+    if (in_array($payment->id(), $processedPaymentIds)) {
+        continue;
+    }
+    
+    // Check if user recharge exists
+    $userRecharge = ORM::for_table('tbl_user_recharges')
+        ->where('username', $payment->username)
+        ->where('status', 'on')
+        ->where_gt('expiration', date('Y-m-d H:i:s'))
+        ->find_one();
+    
+    if (!$userRecharge) {
+        $brokenPayments[] = [
+            'id' => $payment->id(),
+            'mac_address' => $payment->username,
+            'session_id' => null,
+            'plan_id' => $payment->plan_id,
+            'price' => $payment->price,
+            'paid_date' => $payment->paid_date,
+            'payment' => $payment,
+            'session' => null,
+            'source' => 'direct_payment'
+        ];
     }
 }
 

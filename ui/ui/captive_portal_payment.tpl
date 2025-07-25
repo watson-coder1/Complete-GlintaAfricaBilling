@@ -719,14 +719,6 @@
             <h1 class="brand-title">Glinta Africa</h1>
             <p class="brand-subtitle">Premium WiFi Solutions</p>
             
-            <!-- DEBUG: Show template variables -->
-            <div style="background: yellow; padding: 10px; margin: 10px; font-size: 12px; border: 2px solid red;">
-                <strong>DEBUG INFO:</strong><br>
-                Session ID: "{$session_id}"<br>
-                URL: "{$_url}"<br>
-                Session Object: {if $session}EXISTS{else}NULL{/if}<br>
-                Plan: {if $plan}EXISTS{else}NULL{/if}
-            </div>
         </div>
         
         <!-- Payment Status -->
@@ -995,9 +987,14 @@
                     console.log('Payment completed! Redirecting to:', data.redirect);
                     logToServer('JS DEBUG: PAYMENT COMPLETED! Redirecting to: ' + data.redirect);
                     showSuccess();
+                    // Redirect to success page which will then redirect to Google
                     setTimeout(() => {
-                        window.location.href = data.redirect || (baseUrl + 'captive_portal/success');
-                    }, 3000);
+                        console.log('Payment completed, redirecting to success page...');
+                        // Ensure we have the full success URL with session ID
+                        var successUrl = data.redirect || (baseUrl + 'captive_portal/success/' + sessionId);
+                        console.log('Redirecting to:', successUrl);
+                        window.location.href = successUrl;
+                    }, 2000);
                 } else if (data.status === 'error') {
                     console.log('Payment error:', data.message);
                     showError(data.message);

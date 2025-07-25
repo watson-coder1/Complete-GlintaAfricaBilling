@@ -440,40 +440,54 @@ function Daraja_payment_notification()
                         ->find_one();
                     
                     if (!$existingRecharge) {
-                        // Create user recharge record
-                        $userRecharge = ORM::for_table('tbl_user_recharges')->create();
-                        $userRecharge->customer_id = 0;
-                        $userRecharge->username = $session->mac_address;
-                        $userRecharge->plan_id = $plan->id();
-                        $userRecharge->namebp = $plan->name_plan;
-                        $userRecharge->recharged_on = date('Y-m-d');
-                        $userRecharge->recharged_time = date('H:i:s');
-                        $userRecharge->expiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
-                        $userRecharge->time = date('H:i:s');
-                        $userRecharge->status = 'on';
-                        $userRecharge->type = 'Hotspot';
-                        $userRecharge->routers = 'Main Router';
-                        $userRecharge->method = 'M-Pesa STK Push';
-                        $userRecharge->admin_id = 1;
-                        $userRecharge->save();
+                        // Check if transaction already exists to prevent duplicates
+                        $existingTransaction = ORM::for_table('tbl_transactions')
+                            ->where('username', $session->mac_address)
+                            ->where('method', 'M-Pesa STK Push')
+                            ->where('plan_name', $plan->name_plan)
+                            ->where('price', $payment->price)
+                            ->where('recharged_on', date('Y-m-d'))
+                            ->find_one();
                         
-                        // Create transaction record
-                        $transaction = ORM::for_table('tbl_transactions')->create();
-                        $transaction->invoice = $userRecharge->id();
-                        $transaction->username = $session->mac_address;
-                        $transaction->plan_name = $plan->name_plan;
-                        $transaction->price = $payment->price;
-                        $transaction->recharged_on = date('Y-m-d');
-                        $transaction->recharged_time = date('H:i:s');
-                        $transaction->expiration = $userRecharge->expiration;
-                        $transaction->time = $userRecharge->time;
-                        $transaction->method = 'M-Pesa STK Push';
-                        $transaction->routers = 'Main Router';
-                        $transaction->type = 'Hotspot';
-                        $transaction->save();
-                        
-                        file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
-                            date('Y-m-d H:i:s') . ' - Daraja user recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                        if (!$existingTransaction) {
+                            // Create user recharge record
+                            $userRecharge = ORM::for_table('tbl_user_recharges')->create();
+                            $userRecharge->customer_id = 0;
+                            $userRecharge->username = $session->mac_address;
+                            $userRecharge->plan_id = $plan->id();
+                            $userRecharge->namebp = $plan->name_plan;
+                            $userRecharge->recharged_on = date('Y-m-d');
+                            $userRecharge->recharged_time = date('H:i:s');
+                            $userRecharge->expiration = date('Y-m-d H:i:s', strtotime('+' . $plan->validity . ' ' . $plan->validity_unit));
+                            $userRecharge->time = date('H:i:s');
+                            $userRecharge->status = 'on';
+                            $userRecharge->type = 'Hotspot';
+                            $userRecharge->routers = 'Main Router';
+                            $userRecharge->method = 'M-Pesa STK Push';
+                            $userRecharge->admin_id = 1;
+                            $userRecharge->save();
+                            
+                            // Create transaction record
+                            $transaction = ORM::for_table('tbl_transactions')->create();
+                            $transaction->invoice = $userRecharge->id();
+                            $transaction->username = $session->mac_address;
+                            $transaction->plan_name = $plan->name_plan;
+                            $transaction->price = $payment->price;
+                            $transaction->recharged_on = date('Y-m-d');
+                            $transaction->recharged_time = date('H:i:s');
+                            $transaction->expiration = $userRecharge->expiration;
+                            $transaction->time = $userRecharge->time;
+                            $transaction->method = 'M-Pesa STK Push';
+                            $transaction->routers = 'Main Router';
+                            $transaction->type = 'Hotspot';
+                            $transaction->save();
+                            
+                            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                                date('Y-m-d H:i:s') . ' - Daraja user recharge created for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                        } else {
+                            file_put_contents($UPLOAD_PATH . '/captive_portal_callbacks.log', 
+                                date('Y-m-d H:i:s') . ' - Daraja transaction already exists, skipping duplicate creation for: ' . $session->mac_address . PHP_EOL, FILE_APPEND);
+                        }
                     }
                     
                     // Create RADIUS user

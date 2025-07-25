@@ -60,12 +60,26 @@ if ($config['enable_balance'] == 'yes'){
     $ui->assign('cb', $cb);
 }
 
-$u_act = ORM::for_table('tbl_user_recharges')->where('status', 'on')->count();
+// FIXED: Active users must not be expired (date validation added)
+$u_act = ORM::for_table('tbl_user_recharges')
+    ->where('status', 'on')
+    ->where_gte('expiration', $current_date)
+    ->count();
 if (empty($u_act)) {
     $u_act = '0';
 }
 $ui->assign('u_act', $u_act);
 
+// FIXED: Count expired users separately for accurate display
+$u_expired = ORM::for_table('tbl_user_recharges')
+    ->where('status', 'off')
+    ->count();
+if (empty($u_expired)) {
+    $u_expired = '0';
+}
+$ui->assign('u_expired', $u_expired);
+
+// Keep u_all for backward compatibility but clarify its meaning
 $u_all = ORM::for_table('tbl_user_recharges')->count();
 if (empty($u_all)) {
     $u_all = '0';
@@ -372,17 +386,20 @@ if (file_exists($cacheActiveUsersfile) && time() - filemtime($cacheActiveUsersfi
         ->where('status', 'Active')
         ->count();
 
-    // Hotspot Expired Users (from user_recharges)
+    // FIXED: Hotspot Expired Users (proper join with plans table)
     $activeUsersByService['hotspot_expired'] = ORM::for_table('tbl_user_recharges')
-        ->where('type', 'Hotspot')
-        ->where('status', 'off')
-        ->where_lt('expiration', date('Y-m-d'))
+        ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+        ->where('tbl_plans.type', 'Hotspot')
+        ->where('tbl_user_recharges.status', 'off')
+        ->where_lt('tbl_user_recharges.expiration', $current_date)
         ->count();
 
-    // PPPoE Expired Users
-    $activeUsersByService['pppoe_expired'] = ORM::for_table('tbl_customers')
-        ->where('service_type', 'PPPoE')
-        ->where_in('status', ['Expired', 'Inactive'])
+    // FIXED: PPPoE Expired Users (consistent with other counting methods)
+    $activeUsersByService['pppoe_expired'] = ORM::for_table('tbl_user_recharges')
+        ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+        ->where('tbl_plans.type', 'PPPOE')
+        ->where('tbl_user_recharges.status', 'off')
+        ->where_lt('tbl_user_recharges.expiration', $current_date)
         ->count();
 
     file_put_contents($cacheActiveUsersfile, json_encode($activeUsersByService));
@@ -490,35 +507,44 @@ $radius_online_hotspot = 0;
 
 if ($config['radius_enable'] == 'yes' && !empty($config['radius_host'])) {
     try {
-        // Get active sessions from RADIUS
+        // FIXED: Get active sessions from RADIUS with proper expiration check
         $radius_hotspot_sessions = ORM::for_table('radacct', 'radius')
             ->join('tbl_user_recharges', ['radacct.username', '=', 'tbl_user_recharges.username'], 'radius')
             ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'], 'radius')
             ->where_null('radacct.acctstoptime')
             ->where('tbl_plans.type', 'Hotspot')
             ->where('tbl_user_recharges.status', 'on')
+            ->where_gte('tbl_user_recharges.expiration', $current_date)
             ->count();
         
         $radius_online_hotspot = $radius_hotspot_sessions;
     } catch (Exception $e) {
-        // Fallback to user_recharges table if RADIUS unavailable
+        // FIXED: Fallback with proper date validation
         $radius_online_hotspot = ORM::for_table('tbl_user_recharges')
             ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
             ->where('tbl_plans.type', 'Hotspot')
             ->where('tbl_user_recharges.status', 'on')
-            ->where_gt('tbl_user_recharges.expiration', date('Y-m-d H:i:s'))
+            ->where_gte('tbl_user_recharges.expiration', $current_date)
             ->count();
     }
+} else {
+    // FIXED: Fallback when RADIUS is disabled
+    $radius_online_hotspot = ORM::for_table('tbl_user_recharges')
+        ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
+        ->where('tbl_plans.type', 'Hotspot')
+        ->where('tbl_user_recharges.status', 'on')
+        ->where_gte('tbl_user_recharges.expiration', $current_date)
+        ->count();
 }
 
-// 4. PPPOE ACTIVE USERS (from user_recharges + customer status)
+// 4. PPPOE ACTIVE USERS (from user_recharges + customer status) - FIXED
 $pppoe_active = ORM::for_table('tbl_user_recharges')
     ->join('tbl_plans', ['tbl_user_recharges.plan_id', '=', 'tbl_plans.id'])
     ->join('tbl_customers', ['tbl_user_recharges.customer_id', '=', 'tbl_customers.id'])
-    ->where('tbl_plans.type', 'PPPoE')
+    ->where('tbl_plans.type', 'PPPOE')
     ->where('tbl_user_recharges.status', 'on')
     ->where('tbl_customers.status', 'Active')
-    ->where_gt('tbl_user_recharges.expiration', date('Y-m-d H:i:s'))
+    ->where_gte('tbl_user_recharges.expiration', $current_date)
     ->count();
 
 $ui->assign('hotspot_income_today', $hotspot_income_today);

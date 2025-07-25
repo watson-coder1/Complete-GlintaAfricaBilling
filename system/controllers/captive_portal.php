@@ -45,6 +45,9 @@ try {
     // Silent fail for debug logging
 }
 
+// Load Enhanced Authentication Blocker
+require_once dirname(__DIR__, 2) . '/enhanced_authentication_blocker.php';
+
 // Set required template variables
 $ui->assign('_url', U);
 $ui->assign('_title', 'Glinta Africa WiFi Portal');
@@ -90,6 +93,55 @@ switch ($routes['1']) {
             $mac = strtolower(preg_replace('/[^a-f0-9:]/', '', $mac));
             if (strlen($mac) < 12) {
                 $mac = 'auto-' . substr(md5($ip . $userAgent), 0, 12);
+            }
+            
+            // ENHANCED AUTHENTICATION BLOCKING - Check if MAC is blocked from authentication
+            $authCheck = EnhancedAuthenticationBlocker::isAuthenticationBlocked($mac, 'captive_portal', $sessionId);
+            
+            if ($authCheck['blocked']) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " AUTH BLOCKED: MAC {$mac} blocked from authentication - Reason: {$authCheck['reason']}\n", FILE_APPEND);
+                
+                // Show blocked message to user
+                $ui->assign('blocked_reason', $authCheck['reason']);
+                $ui->assign('blocked_message', $authCheck['message'] ?? 'Your device is temporarily blocked from accessing the internet.');
+                $ui->assign('blocked_since', $authCheck['blocked_since'] ?? null);
+                $ui->assign('mac_address', $mac);
+                $ui->assign('_url', U);
+                $ui->assign('_title', 'Access Blocked - Glinta WiFi');
+                $ui->assign('_system_name', $config['CompanyName'] ?? 'Glinta Africa');
+                
+                $ui->display('captive_portal_blocked.tpl');
+                return;
+            }
+            
+            // Check if user already has active session (from auth blocker response)
+            if (isset($authCheck['has_active_session']) && $authCheck['has_active_session']) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " ACTIVE SESSION: MAC {$mac} already has active session - Plan: {$authCheck['active_session']['plan']}\n", FILE_APPEND);
+                
+                // Find or create a success session for this active user
+                $existingSession = ORM::for_table('tbl_portal_sessions')
+                    ->where('mac_address', $mac)
+                    ->where_in('status', ['completed', 'active'])
+                    ->order_by_desc('created_at')
+                    ->find_one();
+                
+                if ($existingSession) {
+                    r2(U . 'captive_portal/success/' . $existingSession->session_id, 's', $authCheck['message']);
+                } else {
+                    // Create a success session for the active user
+                    $successSession = ORM::for_table('tbl_portal_sessions')->create();
+                    $successSession->session_id = uniqid('active_', true);
+                    $successSession->mac_address = $mac;
+                    $successSession->ip_address = $ip;
+                    $successSession->status = 'completed';
+                    $successSession->created_at = date('Y-m-d H:i:s');
+                    $successSession->save();
+                    
+                    r2(U . 'captive_portal/success/' . $successSession->session_id, 's', $authCheck['message']);
+                }
+                return;
             }
             
             // DISABLED: Session check causing all devices to see success page
@@ -269,6 +321,21 @@ switch ($routes['1']) {
                 
             if (!$session) {
                 r2(U . 'captive_portal', 'e', 'Invalid or expired session. Please start again.');
+                return;
+            }
+            
+            // ENHANCED AUTHENTICATION BLOCKING - Re-check authentication during payment
+            $authCheck = EnhancedAuthenticationBlocker::isAuthenticationBlocked($session->mac_address, 'captive_portal', $sessionId);
+            
+            if ($authCheck['blocked']) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " PAYMENT BLOCKED: MAC {$session->mac_address} blocked during payment - Reason: {$authCheck['reason']}\n", FILE_APPEND);
+                
+                // Mark session as blocked
+                $session->status = 'blocked';
+                $session->save();
+                
+                r2(U . 'captive_portal', 'e', $authCheck['message'] ?? 'Your device is temporarily blocked from accessing the internet.');
                 return;
             }
             
@@ -837,6 +904,13 @@ switch ($routes['1']) {
             ];
             $ui->assign('connection_info', $connectionInfo);
             
+            // Add a meta refresh as backup redirect method
+            $ui->assign('_meta_refresh', '<meta http-equiv="refresh" content="12;url=https://www.google.com">');
+            
+            // Log success page access for debugging
+            file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                date('Y-m-d H:i:s') . " SUCCESS PAGE: Displayed for session " . $sessionId . ", should redirect to Google in 10 seconds\n", FILE_APPEND);
+            
             $ui->display('captive_portal_success.tpl');
             
         } catch (Exception $e) {
@@ -1192,6 +1266,17 @@ switch ($routes['1']) {
                 
             if (!$session) {
                 r2(U . 'captive_portal', 'e', 'Invalid or expired session');
+                return;
+            }
+            
+            // ENHANCED AUTHENTICATION BLOCKING - Check authentication for voucher redemption
+            $authCheck = EnhancedAuthenticationBlocker::isAuthenticationBlocked($session->mac_address, 'voucher', $sessionId);
+            
+            if ($authCheck['blocked']) {
+                file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                    date('Y-m-d H:i:s') . " VOUCHER BLOCKED: MAC {$session->mac_address} blocked from voucher redemption - Reason: {$authCheck['reason']}\n", FILE_APPEND);
+                
+                r2(U . 'captive_portal', 'e', $authCheck['message'] ?? 'Your device is temporarily blocked from accessing the internet.');
                 return;
             }
             

@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
+    {if $_meta_refresh}{$_meta_refresh}{/if}
     <title>Welcome to Glinta WiFi - Internet Access Active</title>
     <link rel="shortcut icon" href="{$_url}/ui/ui/images/logo.png" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -603,21 +604,23 @@
 <body>
     {literal}
     <script>
-        // BULLETPROOF DEBUG BOX - This MUST appear
-        var debugBox = document.createElement('div');
-        debugBox.id = 'debug-info';
-        debugBox.style.position = 'fixed';
-        debugBox.style.top = '10px';
-        debugBox.style.left = '10px';
-        debugBox.style.backgroundColor = '#ff0000';
-        debugBox.style.color = '#ffffff';
-        debugBox.style.padding = '15px';
-        debugBox.style.fontSize = '14px';
-        debugBox.style.zIndex = '99999';
-        debugBox.style.maxWidth = '350px';
-        debugBox.style.border = '3px solid yellow';
-        debugBox.innerHTML = '<strong>🔴 DEBUG MODE ACTIVE</strong><br>JavaScript is working!<br>Page loaded successfully';
-        document.body.appendChild(debugBox);
+        // Debug mode - only show in development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            var debugBox = document.createElement('div');
+            debugBox.id = 'debug-info';
+            debugBox.style.position = 'fixed';
+            debugBox.style.bottom = '10px';
+            debugBox.style.right = '10px';
+            debugBox.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            debugBox.style.color = '#00ff00';
+            debugBox.style.padding = '10px';
+            debugBox.style.fontSize = '12px';
+            debugBox.style.zIndex = '99999';
+            debugBox.style.maxWidth = '300px';
+            debugBox.style.borderRadius = '5px';
+            debugBox.innerHTML = 'Debug: Page loaded';
+            document.body.appendChild(debugBox);
+        }
     </script>
     {/literal}
     <!-- Celebration Background -->
@@ -780,15 +783,43 @@
     </div>
     
     <script>
-        // Countdown timer
+        // Countdown timer with improved redirect
         let timeLeft = 10;
         const countdownEl = document.getElementById('countdown');
+        let redirectExecuted = false; // Prevent multiple redirects
         
         function updateCountdown() {
-            countdownEl.textContent = timeLeft;
+            if (countdownEl) {
+                countdownEl.textContent = timeLeft;
+            }
             
-            if (timeLeft <= 0) {
-                window.location.href = 'https://google.com';
+            if (timeLeft <= 0 && !redirectExecuted) {
+                redirectExecuted = true;
+                console.log('Countdown complete, redirecting to Google...');
+                
+                // Try multiple redirect methods for better compatibility
+                try {
+                    // Method 1: Direct navigation
+                    window.location.href = 'https://www.google.com';
+                    
+                    // Method 2: Backup with replace (prevents back button)
+                    setTimeout(function() {
+                        if (!redirectExecuted) {
+                            window.location.replace('https://www.google.com');
+                        }
+                    }, 500);
+                    
+                    // Method 3: Open in new tab if all else fails
+                    setTimeout(function() {
+                        if (!redirectExecuted) {
+                            window.open('https://www.google.com', '_blank');
+                            alert('If Google did not open, please click any of the links above to start browsing.');
+                        }
+                    }, 2000);
+                } catch (e) {
+                    console.error('Redirect error:', e);
+                    alert('Please click on the Google button above to start browsing.');
+                }
                 return;
             }
             
@@ -796,8 +827,11 @@
             setTimeout(updateCountdown, 1000);
         }
         
-        // Start countdown
-        updateCountdown();
+        // Start countdown after a short delay to ensure MikroTik auth completes
+        setTimeout(function() {
+            console.log('Starting Google redirect countdown...');
+            updateCountdown();
+        }, 2000);
         
         // Add click effects to buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -890,109 +924,70 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
-        // Add MikroTik authentication info to debug box after 2 seconds
-        setTimeout(function() {
-            var debugBox = document.getElementById('debug-info');
-            if (debugBox) {
-                // Use PHP-provided parameters with proper fallbacks
-                var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
-                var username = '{$mikrotik_username}';
-                var password = '{$mikrotik_password}';
-                var dst = '{$mikrotik_dst}' || 'https://google.com';
-                
-                debugBox.innerHTML += '<br><strong>🔧 MikroTik Auth Info:</strong>';
-                debugBox.innerHTML += '<br>Login URL: ' + loginUrl;
-                debugBox.innerHTML += '<br>Username: ' + username;
-                debugBox.innerHTML += '<br>Password: ' + password;
-                debugBox.innerHTML += '<br><span id="debug-status">Preparing authentication...</span>';
-                
-                console.log('=== MikroTik Authentication Starting ===');
-                console.log('Login URL:', loginUrl);
-                console.log('Username (MAC):', username);
-                console.log('Password (MAC):', password);
-                console.log('Destination:', dst);
+        // First authenticate with MikroTik in the background
+        function authenticateWithMikrotik() {
+            var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
+            var username = '{$mikrotik_username}';
+            var password = '{$mikrotik_password}';
+            var dst = 'https://google.com'; // Always set destination to Google
             
-            // Create form with ALL MikroTik parameters
+            console.log('=== MikroTik Background Authentication ===');
+            console.log('Username (MAC):', username);
+            console.log('Destination:', dst);
+            
+            // Try to authenticate using iframe (background authentication)
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'mikrotik_auth_frame';
+            document.body.appendChild(iframe);
+            
+            // Create form for authentication
             var form = document.createElement('form');
             form.method = 'POST';
             form.action = loginUrl;
-            form.id = 'mikrotik_auth_form';
+            form.target = 'mikrotik_auth_frame'; // Submit to hidden iframe
             
-            // Core fields
             var fields = {
                 'username': username,
                 'password': password,
                 'dst': dst,
-                'popup': 'true'
+                'popup': 'false'
             };
             
-            // Add MikroTik-specific fields if they exist
-            {if $mikrotik_mac}
-            fields['mac'] = '{$mikrotik_mac}';
-            {/if}
-            {if $mikrotik_ip}
-            fields['ip'] = '{$mikrotik_ip}';
-            {/if}
-            {if $mikrotik_link_orig}
-            fields['link-orig'] = '{$mikrotik_link_orig}';
-            {/if}
-            {if $mikrotik_link_login_only}
-            fields['link-login-only'] = '{$mikrotik_link_login_only}';
-            {/if}
-            {if $mikrotik_chap_id}
-            fields['chap-id'] = '{$mikrotik_chap_id}';
-            {/if}
-            {if $mikrotik_chap_challenge}
-            fields['chap-challenge'] = '{$mikrotik_chap_challenge}';
-            {/if}
-            {if $mikrotik_hotspotaddress}
-            fields['hotspotaddress'] = '{$mikrotik_hotspotaddress}';
-            {/if}
-            
-            // Always include login-by=mac for MAC authentication
-            fields['login-by'] = 'mac';
-            
-            // Create all form fields
-            console.log('=== Form Fields ===');
+            // Add fields
             for (const [name, value] of Object.entries(fields)) {
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = name;
                 input.value = value;
                 form.appendChild(input);
-                console.log(name + ':', value);
             }
             
             document.body.appendChild(form);
             
-            console.log('=== Submitting MikroTik Authentication Form ===');
-            console.log('Form HTML:', form.outerHTML);
-            
-            // Use GET redirect instead of POST form to avoid HTTPS→HTTP mixed content issues
             try {
-                document.getElementById('debug-status').innerText = 'Redirecting to MikroTik authentication...';
+                console.log('Submitting MikroTik authentication in background...');
+                form.submit();
                 
-                // Create GET URL with parameters to avoid mixed content warnings
-                var params = new URLSearchParams(fields);
-                var authUrl = loginUrl + '?' + params.toString();
-                
-                console.log('✅ Redirecting to MikroTik:', authUrl);
-                document.getElementById('debug-status').innerText = 'Authenticating with MikroTik...';
-                
-                // Use window.location instead of form.submit() to avoid HTTPS→HTTP issues
-                window.location.href = authUrl;
-                
+                // Continue with Google redirect regardless of MikroTik result
+                console.log('MikroTik auth submitted, continuing with redirect flow...');
             } catch (error) {
-                console.error('❌ Error during redirect:', error);
-                document.getElementById('debug-status').innerText = 'Authentication failed, please try again...';
-                
-                // Show user-friendly message after delay
-                setTimeout(function() {
-                    alert('Login might have failed. Please reconnect or restart your Wi-Fi.');
-                }, 3000);
+                console.error('MikroTik auth error (non-critical):', error);
             }
+        }
+        
+        // Authenticate with MikroTik immediately on page load
+        authenticateWithMikrotik();
+        
+        // Update debug box if exists
+        setTimeout(function() {
+            var debugBox = document.getElementById('debug-info');
+            if (debugBox) {
+                debugBox.innerHTML += '<br><strong>✅ Auth Status:</strong>';
+                debugBox.innerHTML += '<br>MikroTik: Background auth sent';
+                debugBox.innerHTML += '<br>Redirect: Preparing for Google...';
             }
-        }, 3000); // Wait 3 seconds for user to see success page
+        }, 1000);
     </script>
 </body>
 </html>

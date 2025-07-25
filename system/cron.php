@@ -47,14 +47,36 @@ $_c = $config;
 
 $textExpired = Lang::getNotifText('expired');
 
-$d = ORM::for_table('tbl_user_recharges')->where('status', 'on')->where_lte('expiration', date("Y-m-d"))->find_many();
+// Enhanced expiry check: handle both date-only and precise time-based expiry
+$current_datetime = date("Y-m-d H:i:s");
+$current_date = date("Y-m-d");
+
+// Get all active recharges that might be expired
+$d = ORM::for_table('tbl_user_recharges')
+    ->where('status', 'on')
+    ->where_raw("(
+        (expiration < ? AND time IS NULL) OR 
+        (expiration = ? AND time IS NOT NULL AND CONCAT(expiration, ' ', time) <= ?) OR
+        (expiration < ?)
+    )", [$current_date, $current_date, $current_datetime, $current_date])
+    ->find_many();
 echo "Found " . count($d) . " user(s)\n";
 run_hook('cronjob'); #HOOK
 
 foreach ($d as $ds) {
     $date_now = strtotime(date("Y-m-d H:i:s"));
-    $expiration = strtotime($ds['expiration'] . ' ' . $ds['time']);
-    echo $ds['expiration'] . " : " . (($isCli) ? $ds['username'] : Lang::maskText($ds['username']));
+    
+    // Handle both time-based and date-only expiry
+    if (!empty($ds['time'])) {
+        $expiration = strtotime($ds['expiration'] . ' ' . $ds['time']);
+        $expiry_display = $ds['expiration'] . ' ' . $ds['time'];
+    } else {
+        // For date-only expiry, set to end of day
+        $expiration = strtotime($ds['expiration'] . ' 23:59:59');
+        $expiry_display = $ds['expiration'] . ' (end of day)';
+    }
+    
+    echo $expiry_display . " : " . (($isCli) ? $ds['username'] : Lang::maskText($ds['username']));
     if ($date_now >= $expiration) {
         echo " : EXPIRED \r\n";
         $u = ORM::for_table('tbl_user_recharges')->where('id', $ds['id'])->find_one();
@@ -73,6 +95,52 @@ foreach ($d as $ds) {
                 Message::sendTelegram("Cron error Devices $p[device] not found, cannot disconnect $c[username]");
             }
         }
+        
+        // Enhanced cleanup: Remove from RADIUS and portal sessions immediately
+        if ($p['type'] == 'Hotspot' && $_app_stage != 'demo') {
+            try {
+                // Clean RADIUS entries for immediate disconnection
+                if (class_exists('RadiusManager')) {
+                    RadiusManager::removeRadiusUser($c['username']);
+                    RadiusManager::disconnectUser($c['username']);
+                    echo "RADIUS cleanup completed for user: " . $c['username'] . "\n";
+                }
+                
+                // Clean portal sessions
+                $portalSession = ORM::for_table('tbl_portal_sessions')
+                    ->where('mac_address', $c['username'])
+                    ->where_in('status', ['completed', 'active'])
+                    ->find_one();
+                    
+                if ($portalSession) {
+                    $portalSession->status = 'expired';
+                    $portalSession->expired_at = date('Y-m-d H:i:s');
+                    $portalSession->save();
+                    echo "Portal session expired for user: " . $c['username'] . "\n";
+                }
+                
+                // Force disconnect from active sessions in radacct
+                $activeRadSessions = ORM::for_table('radacct', 'radius')
+                    ->where('username', $c['username'])
+                    ->where_null('acctstoptime')
+                    ->find_many();
+                    
+                foreach ($activeRadSessions as $radSession) {
+                    $radSession->acctstoptime = date('Y-m-d H:i:s');
+                    $radSession->acctterminatecause = 'Session-Timeout';
+                    $radSession->save();
+                }
+                
+                if (count($activeRadSessions) > 0) {
+                    echo "Terminated " . count($activeRadSessions) . " active RADIUS sessions for: " . $c['username'] . "\n";
+                }
+                
+            } catch (Exception $e) {
+                echo "Error during enhanced cleanup for " . $c['username'] . ": " . $e->getMessage() . "\n";
+                Message::sendTelegram("Cron cleanup error for user $c[username]: " . $e->getMessage());
+            }
+        }
+        
         echo Message::sendPackageNotification($c, $u['namebp'], $p['price'], $textExpired, $config['user_notification_expired']) . "\n";
         //update database user dengan status off
         $u->status = 'off';

@@ -25,6 +25,21 @@ class RadiusManager
             return ['success' => false, 'message' => 'RADIUS is not enabled'];
         }
         
+        // ENHANCED AUTHENTICATION BLOCKING - Check if MAC is blocked before creating RADIUS user
+        if (class_exists('EnhancedAuthenticationBlocker')) {
+            $authCheck = EnhancedAuthenticationBlocker::isAuthenticationBlocked($username, 'radius');
+            
+            if ($authCheck['blocked']) {
+                if (defined('CAPTIVE_PORTAL_DEBUG_MODE') && CAPTIVE_PORTAL_DEBUG_MODE) {
+                    $UPLOAD_PATH = dirname(__DIR__, 2) . '/logs';
+                    file_put_contents($UPLOAD_PATH . '/captive_portal_debug.log', 
+                        date('Y-m-d H:i:s') . " DEBUG: RADIUS_MANAGER: User " . $username . " BLOCKED from RADIUS creation - Reason: " . $authCheck['reason'] . "\n", FILE_APPEND);
+                }
+                
+                return ['success' => false, 'message' => 'Authentication blocked: ' . ($authCheck['message'] ?? $authCheck['reason'])];
+            }
+        }
+        
         try {
             // ATOMIC UPSERT: Update existing entries or create new ones (no removal race condition)
             
@@ -321,7 +336,7 @@ class RadiusManager
     }
     
     /**
-     * Disconnect user session (send COA)
+     * Disconnect user session (send COA) with immediate effect
      */
     public static function disconnectUser($username, $nasipaddress = null)
     {
@@ -336,20 +351,65 @@ class RadiusManager
                 return ['success' => false, 'message' => 'No active session found'];
             }
             
-            // Mark session as stopped in database
+            // Mark session as stopped in database first
             $session->acctstoptime = date('Y-m-d H:i:s');
             $session->acctterminatecause = 'Admin-Reset';
             $session->save();
             
-            // TODO: Send actual COA packet to NAS if needed
-            // For now, we rely on session timeout or manual disconnect
+            // Send immediate disconnect via radclient (COA/POD)
+            $disconnect_result = self::sendDisconnectRequest($username, $session->nasipaddress, $session->framedipaddress);
             
-            _log("User session disconnected: {$username}", 'RADIUS', 0);
+            _log("User session disconnected: {$username} - radclient result: " . ($disconnect_result ? 'success' : 'failed'), 'RADIUS', 0);
             
-            return ['success' => true, 'message' => 'User disconnected successfully'];
+            return ['success' => true, 'message' => 'User disconnected successfully', 'radclient_result' => $disconnect_result];
             
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Failed to disconnect user: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Send disconnect request using radclient
+     */
+    private static function sendDisconnectRequest($username, $nasip, $framedip = null)
+    {
+        try {
+            // Get NAS information
+            $nas = ORM::for_table('nas', 'radius')
+                ->where('nasname', $nasip)
+                ->find_one();
+            
+            if (!$nas) {
+                _log("NAS not found for disconnect: {$nasip}", 'RADIUS', 0);
+                return false;
+            }
+            
+            $port = !empty($nas->ports) ? $nas->ports : 3799;
+            $secret = $nas->secret;
+            
+            // Prepare disconnect packet attributes
+            $attributes = "User-Name = {$username}";
+            if ($framedip && $framedip != '0.0.0.0') {
+                $attributes .= ",Framed-IP-Address = {$framedip}";
+            }
+            
+            // Execute radclient command for disconnect (POD)
+            $command = "echo '{$attributes}' | timeout 10 radclient -x {$nasip}:{$port} disconnect '{$secret}' 2>&1";
+            $output = shell_exec($command);
+            
+            $success = (strpos($output, 'Received Disconnect-ACK') !== false || strpos($output, 'Reply-Message') !== false);
+            
+            if ($success) {
+                _log("Successfully sent disconnect request for {$username} to {$nasip}", 'RADIUS', 0);
+            } else {
+                _log("Failed to send disconnect request for {$username}: {$output}", 'RADIUS', 0);
+            }
+            
+            return $success;
+            
+        } catch (Exception $e) {
+            _log("Error sending disconnect request: " . $e->getMessage(), 'RADIUS', 0);
+            return false;
         }
     }
     
