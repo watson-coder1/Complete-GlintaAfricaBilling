@@ -476,7 +476,8 @@ $manual_hotspot_income = ORM::for_table('tbl_transactions')
     ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
     ->sum('tbl_transactions.price');
 
-$hotspot_income_today = ($mpesa_hotspot_income ?: 0) + ($manual_hotspot_income ?: 0);
+// Only use transactions table to avoid double counting
+$hotspot_income_today = $manual_hotspot_income ?: 0;
 
 // 2. PPPOE INCOME TODAY (from M-Pesa payments + manual recharges)
 $pppoe_income_today = 0;
@@ -500,7 +501,8 @@ $manual_pppoe_income = ORM::for_table('tbl_transactions')
     ->where_not_equal('tbl_transactions.method', 'Customer - Balance')
     ->sum('tbl_transactions.price');
 
-$pppoe_income_today = ($mpesa_pppoe_income ?: 0) + ($manual_pppoe_income ?: 0);
+// Only use transactions table to avoid double counting
+$pppoe_income_today = $manual_pppoe_income ?: 0;
 
 // 3. HOTSPOT ONLINE USERS (from RADIUS radacct table - real active sessions)
 $radius_online_hotspot = 0;
@@ -563,15 +565,9 @@ $iday_total = ORM::for_table('tbl_transactions')
     ->where_not_equal('method', 'Recharge Balance - Administrator')
     ->sum('price');
 
-// Add M-Pesa revenue for today
-$mpesa_revenue_today = ORM::for_table('tbl_payment_gateway')
-    ->where('status', 2)
-    ->where('gateway', 'Daraja')
-    ->where_gte('paid_date', $current_date . ' 00:00:00')
-    ->where_lte('paid_date', $current_date . ' 23:59:59')
-    ->sum('price');
-
-$total_income_today = ($iday_total ?: 0) + ($mpesa_revenue_today ?: 0);
+// No need to add M-Pesa separately - it's already included in tbl_transactions
+// This prevents double counting of M-Pesa payments
+$total_income_today = $iday_total ?: 0;
 
 // Update the iday variable to include M-Pesa
 $ui->assign('iday', $total_income_today);
@@ -584,15 +580,9 @@ $imonth_total = ORM::for_table('tbl_transactions')
     ->where_lte('recharged_on', $current_date)
     ->sum('price');
 
-// Add M-Pesa revenue for this month
-$mpesa_revenue_month = ORM::for_table('tbl_payment_gateway')
-    ->where('status', 2)
-    ->where('gateway', 'Daraja')
-    ->where_gte('paid_date', $start_date . ' 00:00:00')
-    ->where_lte('paid_date', $current_date . ' 23:59:59')
-    ->sum('price');
-
-$total_income_month = ($imonth_total ?: 0) + ($mpesa_revenue_month ?: 0);
+// No need to add M-Pesa separately - it's already included in tbl_transactions
+// This prevents double counting of M-Pesa payments
+$total_income_month = $imonth_total ?: 0;
 
 // Update the imonth variable to include M-Pesa
 $ui->assign('imonth', $total_income_month);
