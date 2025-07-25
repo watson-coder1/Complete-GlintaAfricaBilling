@@ -795,24 +795,24 @@
             
             if (timeLeft <= 0 && !redirectExecuted) {
                 redirectExecuted = true;
-                console.log('Countdown complete, redirecting to Google...');
+                console.log('Countdown complete, redirecting through MikroTik authentication...');
                 
                 // Try multiple redirect methods for better compatibility
                 try {
-                    // Method 1: Direct navigation
-                    window.location.href = 'https://www.google.com';
+                    // Method 1: Direct navigation using MikroTik auth URL
+                    window.location.href = mikrotikAuthUrl;
                     
                     // Method 2: Backup with replace (prevents back button)
                     setTimeout(function() {
                         if (!redirectExecuted) {
-                            window.location.replace('https://www.google.com');
+                            window.location.replace(mikrotikAuthUrl);
                         }
                     }, 500);
                     
                     // Method 3: Open in new tab if all else fails
                     setTimeout(function() {
                         if (!redirectExecuted) {
-                            window.open('https://www.google.com', '_blank');
+                            window.open(mikrotikAuthUrl, '_blank');
                             alert('If Google did not open, please click any of the links above to start browsing.');
                         }
                     }, 2000);
@@ -898,7 +898,7 @@
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
-                window.location.href = 'https://google.com';
+                window.location.href = mikrotikAuthUrl;
             } else if (e.key === 'Escape') {
                 timeLeft = 0; // Stop countdown
             }
@@ -924,60 +924,39 @@
         console.log('User recharge expiration:', '{$user_recharge->expiration}');
         {/if}
         
-        // First authenticate with MikroTik in the background
-        function authenticateWithMikrotik() {
+        // Build proper MikroTik authentication URL with Google as destination
+        function buildMikrotikAuthUrl() {
             var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
             var username = '{$mikrotik_username}';
             var password = '{$mikrotik_password}';
-            var dst = 'https://google.com'; // Always set destination to Google
+            var dst = 'https://www.google.com';
             
-            console.log('=== MikroTik Background Authentication ===');
+            console.log('=== Building MikroTik Auth URL ===');
+            console.log('Login URL:', loginUrl);
             console.log('Username (MAC):', username);
             console.log('Destination:', dst);
             
-            // Try to authenticate using iframe (background authentication)
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'mikrotik_auth_frame';
-            document.body.appendChild(iframe);
+            // Build authentication URL with all required parameters
+            var authUrl = loginUrl + '?' + 
+                'username=' + encodeURIComponent(username) + 
+                '&password=' + encodeURIComponent(password) + 
+                '&dst=' + encodeURIComponent(dst);
             
-            // Create form for authentication
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = loginUrl;
-            form.target = 'mikrotik_auth_frame'; // Submit to hidden iframe
-            
-            var fields = {
-                'username': username,
-                'password': password,
-                'dst': dst,
-                'popup': 'false'
-            };
-            
-            // Add fields
-            for (const [name, value] of Object.entries(fields)) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = name;
-                input.value = value;
-                form.appendChild(input);
-            }
-            
-            document.body.appendChild(form);
-            
-            try {
-                console.log('Submitting MikroTik authentication in background...');
-                form.submit();
-                
-                // Continue with Google redirect regardless of MikroTik result
-                console.log('MikroTik auth submitted, continuing with redirect flow...');
-            } catch (error) {
-                console.error('MikroTik auth error (non-critical):', error);
-            }
+            console.log('Final auth URL:', authUrl);
+            return authUrl;
         }
         
-        // Authenticate with MikroTik immediately on page load
-        authenticateWithMikrotik();
+        // Update the redirect URL to use MikroTik authentication
+        var mikrotikAuthUrl = buildMikrotikAuthUrl();
+        
+        // Update Google link to use MikroTik authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            var googleLink = document.querySelector('a[href="https://google.com"]');
+            if (googleLink) {
+                googleLink.href = mikrotikAuthUrl;
+                console.log('Updated Google link to use MikroTik auth URL');
+            }
+        });
         
         // Update debug box if exists
         setTimeout(function() {

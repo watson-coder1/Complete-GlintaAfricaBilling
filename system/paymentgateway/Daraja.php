@@ -194,7 +194,7 @@ function Daraja_stk_push($phoneNumber, $amount, $accountReference, $transactionD
         'PartyA' => $phoneNumber,
         'PartyB' => $pgData['shortcode'],
         'PhoneNumber' => $phoneNumber,
-        'CallBackURL' => U . 'callback/daraja',
+        'CallBackURL' => U . 'captive_portal/callback',
         'AccountReference' => substr($accountReference, 0, 12), // Max 12 characters
         'TransactionDesc' => substr($transactionDesc, 0, 13)   // Max 13 characters
     ];
