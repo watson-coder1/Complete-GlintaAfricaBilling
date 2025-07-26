@@ -888,10 +888,19 @@ switch ($routes['1']) {
                 $ui->assign($smarty_key, $value);
             }
             
+            // Get RADIUS credentials for the user
+            $radius_username = str_replace(':', '', strtolower($session->mac_address));
+            $radius_user = ORM::for_table('radcheck', 'radius')
+                ->where('username', $radius_username)
+                ->where('attribute', 'Cleartext-Password')
+                ->find_one();
+            
+            $radius_password = $radius_user ? $radius_user->value : $session->mac_address;
+            
             // Core authentication parameters with proper fallbacks
             $ui->assign('mikrotik_login_url', $mikrotik_params['link-login-only'] ?? 'http://192.168.88.1/login');
-            $ui->assign('mikrotik_username', $session->mac_address);
-            $ui->assign('mikrotik_password', $session->mac_address);
+            $ui->assign('mikrotik_username', $radius_username);
+            $ui->assign('mikrotik_password', $radius_password);
             $ui->assign('mikrotik_dst', $mikrotik_params['link-orig'] ?? 'https://google.com');
             $ui->assign('mikrotik_popup', 'true');
             
