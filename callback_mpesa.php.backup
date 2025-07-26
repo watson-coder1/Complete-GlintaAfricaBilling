@@ -301,25 +301,6 @@ function activate_hotspot_service($customer, $plan, $recharge)
         $radcheck->op = ':=';
         $radcheck->value = $radius_password;
         $radcheck->save();
-
-    // For MAC-based authentication, create additional entries
-    $mac_without_colons = str_replace(":", "", strtolower($mac_address));
-
-    // Create Auth-Type entry for MAC authentication
-    $radcheck_auth = ORM::for_table("radcheck", "radius")->create();
-    $radcheck_auth->username = $mac_without_colons;
-    $radcheck_auth->attribute = "Auth-Type";
-    $radcheck_auth->op = ":=";
-    $radcheck_auth->value = "Accept";
-    $radcheck_auth->save();
-
-    // Enable simultaneous use
-    $radcheck_simul = ORM::for_table("radcheck", "radius")->create();
-    $radcheck_simul->username = $mac_without_colons;
-    $radcheck_simul->attribute = "Simultaneous-Use";
-    $radcheck_simul->op = ":=";
-    $radcheck_simul->value = "1";
-    $radcheck_simul->save();
         
         // Set Session-Timeout if plan has time limit
         if ($plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {

@@ -925,67 +925,29 @@
         {/if}
         
         // Build proper MikroTik authentication URL with Google as destination
-        // Build proper MikroTik authentication URL with RADIUS credentials
-function buildMikrotikAuthUrl() {
-    var loginUrl = '{$mikrotik_link_login_only}' || 'http://192.168.88.1/login';
-    var username = '{$radius_username}' || '{$mikrotik_username}';
-    var password = '{$radius_password}' || '{$mikrotik_password}';
-    var dst = 'https://www.google.com';
-
-    console.log('=== Building MikroTik Auth URL ===');
-    console.log('Login URL:', loginUrl);
-    console.log('RADIUS Username:', username);
-    console.log('RADIUS Password:', password);
-    console.log('Destination:', dst);
-
-    // Method 1: Try iframe authentication first
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = loginUrl + '?username=' + encodeURIComponent(username) +
-                 '&password=' + encodeURIComponent(password) +
-                 '&dst=' + encodeURIComponent(dst);
-    document.body.appendChild(iframe);
-
-    // Method 2: Form submission as backup
-    setTimeout(function() {
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = loginUrl;
-        form.style.display = 'none';
-
-        var fields = {
-            'username': username,
-            'password': password,
-            'dst': dst,
-            'popup': 'true'
-        };
-
-        for (var key in fields) {
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = fields[key];
-            form.appendChild(input);
+        function buildMikrotikAuthUrl() {
+            var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
+            var username = '{$mikrotik_username}';
+            var password = '{$mikrotik_password}';
+            var dst = 'https://www.google.com';
+            
+            console.log('=== Building MikroTik Auth URL ===');
+            console.log('Login URL:', loginUrl);
+            console.log('Username (MAC):', username);
+            console.log('Destination:', dst);
+            
+            // Build authentication URL with all required parameters
+            var authUrl = loginUrl + '?' + 
+                'username=' + encodeURIComponent(username) + 
+                '&password=' + encodeURIComponent(password) + 
+                '&dst=' + encodeURIComponent(dst);
+            
+            console.log('Final auth URL:', authUrl);
+            return authUrl;
         }
-
-        document.body.appendChild(form);
-        form.submit();
-    }, 1500);
-
-    // Return destination URL
-    return dst;
-}
-
-// Auto-authenticate on page load
-window.addEventListener('load', function() {
-    console.log('Page loaded, starting MikroTik authentication...');
-    setTimeout(function() {
-        buildMikrotikAuthUrl();
-    }, 500);
-});
-
-// Update the redirect URL to use MikroTik authentication
-var mikrotikAuthUrl = buildMikrotikAuthUrl();
+        
+        // Update the redirect URL to use MikroTik authentication
+        var mikrotikAuthUrl = buildMikrotikAuthUrl();
         
         // Update Google link to use MikroTik authentication
         document.addEventListener('DOMContentLoaded', function() {
