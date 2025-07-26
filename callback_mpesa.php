@@ -291,6 +291,8 @@ function activate_hotspot_service($customer, $plan, $recharge)
         $radius_username = str_replace(':', '', strtolower($mac_address)); // Remove colons for username
         $radius_password = substr(md5($mac_address . time()), 0, 8); // Generate password
         
+        _log("Creating RADIUS user - Username: {$radius_username}, MAC: {$mac_address}", 'M-Pesa', $customer->id);
+        
         // Calculate expiration timestamp
         $expiration_timestamp = strtotime($recharge->expiration . ' ' . $recharge->time);
         
@@ -301,6 +303,31 @@ function activate_hotspot_service($customer, $plan, $recharge)
         $radcheck->op = ':=';
         $radcheck->value = $radius_password;
         $radcheck->save();
+        
+        // For MAC-based authentication, create additional entries
+        // Auth-Type entry for MAC authentication  
+        $radcheck_auth = ORM::for_table('radcheck', 'radius')->create();
+        $radcheck_auth->username = $radius_username;
+        $radcheck_auth->attribute = 'Auth-Type';
+        $radcheck_auth->op = ':=';
+        $radcheck_auth->value = 'Accept';
+        $radcheck_auth->save();
+        
+        // Create Calling-Station-Id check for MAC validation
+        $radcheck_mac = ORM::for_table('radcheck', 'radius')->create();
+        $radcheck_mac->username = $radius_username;
+        $radcheck_mac->attribute = 'Calling-Station-Id';
+        $radcheck_mac->op = '==';
+        $radcheck_mac->value = $mac_address;
+        $radcheck_mac->save();
+        
+        // Enable simultaneous use
+        $radcheck_simul = ORM::for_table('radcheck', 'radius')->create();
+        $radcheck_simul->username = $radius_username;
+        $radcheck_simul->attribute = 'Simultaneous-Use';
+        $radcheck_simul->op = ':=';
+        $radcheck_simul->value = '1';
+        $radcheck_simul->save();
         
         // Set Session-Timeout if plan has time limit
         if ($plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {

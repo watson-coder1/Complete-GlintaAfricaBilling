@@ -933,7 +933,8 @@
             
             console.log('=== Building MikroTik Auth URL ===');
             console.log('Login URL:', loginUrl);
-            console.log('Username (MAC):', username);
+            console.log('Username (RADIUS):', username);
+            console.log('Password (masked):', password ? '***' + password.slice(-3) : 'NONE');
             console.log('Destination:', dst);
             
             // Build authentication URL with all required parameters
@@ -945,6 +946,42 @@
             console.log('Final auth URL:', authUrl);
             return authUrl;
         }
+        
+        // Authenticate with MikroTik immediately when page loads
+        function authenticateWithMikrotik() {
+            var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
+            var username = '{$mikrotik_username}';
+            var password = '{$mikrotik_password}';
+            var dst = 'https://www.google.com';
+            
+            console.log('Starting MikroTik authentication...');
+            
+            // Create a hidden iframe to perform authentication
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.onload = function() {
+                console.log('MikroTik authentication iframe loaded');
+                setTimeout(function() {
+                    document.body.removeChild(iframe);
+                }, 1000);
+            };
+            
+            // Build authentication URL
+            var authUrl = loginUrl + '?' + 
+                'username=' + encodeURIComponent(username) + 
+                '&password=' + encodeURIComponent(password) + 
+                '&dst=' + encodeURIComponent(dst);
+            
+            iframe.src = authUrl;
+            document.body.appendChild(iframe);
+            
+            console.log('MikroTik authentication request sent');
+        }
+        
+        // Start authentication immediately
+        authenticateWithMikrotik();
         
         // Update the redirect URL to use MikroTik authentication
         var mikrotikAuthUrl = buildMikrotikAuthUrl();
