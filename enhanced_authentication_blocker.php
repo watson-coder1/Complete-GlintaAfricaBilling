@@ -90,17 +90,20 @@ class EnhancedAuthenticationBlocker
             return ['blocked' => false, 'reason' => 'No MAC address provided'];
         }
         
-        // Clean and normalize MAC address
-        $mac_address = self::normalizeMacAddress($mac_address);
+        // Store original MAC address for database queries
+        $original_mac = $mac_address;
         
-        // Record this authentication attempt
-        self::recordAuthAttempt($mac_address, $attempt_type, $session_id);
+        // Clean and normalize MAC address for blocking checks
+        $normalized_mac = self::normalizeMacAddress($mac_address);
+        
+        // Record this authentication attempt with original MAC
+        self::recordAuthAttempt($original_mac, $attempt_type, $session_id);
         
         try {
-            // 1. Check for active blocking entry
-            $activeBlock = self::getActiveBlock($mac_address);
+            // 1. Check for active blocking entry (use normalized MAC for blocking checks)
+            $activeBlock = self::getActiveBlock($normalized_mac);
             if ($activeBlock) {
-                self::log("AUTH BLOCKED: {$mac_address} - Active block found (ID: {$activeBlock->id}, Reason: {$activeBlock->reason})");
+                self::log("AUTH BLOCKED: {$original_mac} - Active block found (ID: {$activeBlock->id}, Reason: {$activeBlock->reason})");
                 return [
                     'blocked' => true,
                     'reason' => $activeBlock->reason,
@@ -109,18 +112,18 @@ class EnhancedAuthenticationBlocker
                 ];
             }
             
-            // 2. Check if user has expired recharge without new payment
-            $expiredRecharge = self::hasExpiredRechargeWithoutPayment($mac_address);
+            // 2. Check if user has expired recharge without new payment (use original MAC)
+            $expiredRecharge = self::hasExpiredRechargeWithoutPayment($original_mac);
             if ($expiredRecharge['has_expired']) {
                 // Create new block for expired user trying to authenticate
                 $blockResult = self::blockMacAddress(
-                    $mac_address, 
-                    $mac_address, // username same as MAC for hotspot
+                    $normalized_mac, 
+                    $original_mac, // username as original MAC for hotspot
                     'expired_session_retry',
                     "User attempted to re-authenticate after session expired on {$expiredRecharge['expired_at']}"
                 );
                 
-                self::log("AUTH BLOCKED: {$mac_address} - Expired session retry blocked (Expired: {$expiredRecharge['expired_at']})");
+                self::log("AUTH BLOCKED: {$original_mac} - Expired session retry blocked (Expired: {$expiredRecharge['expired_at']})");
                 
                 return [
                     'blocked' => true,
@@ -131,17 +134,17 @@ class EnhancedAuthenticationBlocker
                 ];
             }
             
-            // 3. Check for suspicious rapid authentication attempts
-            $suspiciousActivity = self::detectSuspiciousActivity($mac_address);
+            // 3. Check for suspicious rapid authentication attempts (use original MAC)
+            $suspiciousActivity = self::detectSuspiciousActivity($original_mac);
             if ($suspiciousActivity['is_suspicious']) {
                 $blockResult = self::blockMacAddress(
-                    $mac_address,
-                    $mac_address,
+                    $normalized_mac,
+                    $original_mac,
                     'suspicious_activity',
                     "Multiple rapid authentication attempts detected: {$suspiciousActivity['attempts']} attempts in {$suspiciousActivity['timeframe']} minutes"
                 );
                 
-                self::log("AUTH BLOCKED: {$mac_address} - Suspicious activity detected ({$suspiciousActivity['attempts']} attempts)");
+                self::log("AUTH BLOCKED: {$original_mac} - Suspicious activity detected ({$suspiciousActivity['attempts']} attempts)");
                 
                 return [
                     'blocked' => true,
@@ -152,10 +155,10 @@ class EnhancedAuthenticationBlocker
                 ];
             }
             
-            // 4. Check if MAC has active session already (prevent duplicate sessions)
-            $activeSession = self::hasActiveSession($mac_address);
+            // 4. Check if MAC has active session already (use original MAC for database query)
+            $activeSession = self::hasActiveSession($original_mac);
             if ($activeSession['has_active']) {
-                self::log("AUTH INFO: {$mac_address} - Already has active session (Plan: {$activeSession['plan']}, Expires: {$activeSession['expires']})");
+                self::log("AUTH INFO: {$original_mac} - Already has active session (Plan: {$activeSession['plan']}, Expires: {$activeSession['expires']})");
                 return [
                     'blocked' => false,
                     'has_active_session' => true,
@@ -165,11 +168,11 @@ class EnhancedAuthenticationBlocker
             }
             
             // Authentication allowed
-            self::log("AUTH ALLOWED: {$mac_address} - No blocking conditions found");
+            self::log("AUTH ALLOWED: {$original_mac} - No blocking conditions found");
             return ['blocked' => false, 'reason' => 'Authentication permitted'];
             
         } catch (Exception $e) {
-            self::log("Error checking authentication block for {$mac_address}: " . $e->getMessage());
+            self::log("Error checking authentication block for {$original_mac}: " . $e->getMessage());
             // On error, allow authentication but log the issue
             return ['blocked' => false, 'reason' => 'Error during check - allowing authentication', 'error' => $e->getMessage()];
         }
@@ -414,6 +417,12 @@ class EnhancedAuthenticationBlocker
     private static function recordAuthAttempt($mac_address, $attempt_type, $session_id = null)
     {
         try {
+            // Validate attempt_type enum values
+            $valid_types = ['captive_portal', 'radius', 'voucher'];
+            if (!in_array($attempt_type, $valid_types)) {
+                $attempt_type = 'captive_portal'; // Default to captive_portal
+            }
+            
             $attempt = ORM::for_table('tbl_auth_attempts')->create();
             $attempt->mac_address = $mac_address;
             $attempt->ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
