@@ -4,7 +4,7 @@
 # This script runs the cleanup tasks and updates the cron check file
 
 LOG_FILE="/var/log/glinta-cleanup.log"
-CRON_CHECK_FILE="/var/www/glintaafrica/files/cron_last_run.txt"
+CRON_CHECK_FILE="/var/www/glintaafrica/system/uploads/cron_last_run.txt"
 WEBROOT="/var/www/glintaafrica"
 
 # Function to log messages
