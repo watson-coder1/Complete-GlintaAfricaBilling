@@ -4,7 +4,7 @@
 # This script runs the cleanup tasks and updates the cron check file
 
 LOG_FILE="/var/log/glinta-cleanup.log"
-CRON_CHECK_FILE="/var/www/glintaafrica/system/cron_check.txt"
+CRON_CHECK_FILE="/var/www/glintaafrica/files/cron_last_run.txt"
 WEBROOT="/var/www/glintaafrica"
 
 # Function to log messages
@@ -37,7 +37,7 @@ log_message "Fix expired users status exit code: $FIX_STATUS_EXIT_CODE"
 
 # 4. Update cron check file to prevent warning
 log_message "Updating cron check file..."
-echo "$(date '+%Y-%m-%d %H:%M:%S')" > $CRON_CHECK_FILE
+echo "$(date +%s)" > $CRON_CHECK_FILE
 CRON_CHECK_EXIT_CODE=$?
 log_message "Cron check file update exit code: $CRON_CHECK_EXIT_CODE"
 
