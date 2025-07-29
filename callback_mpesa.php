@@ -289,8 +289,9 @@ function activate_hotspot_service($customer, $plan, $recharge)
         _log("Starting hotspot activation for MAC: {$mac_address}, Customer: {$customer->id}", 'M-Pesa', $customer->id);
         
         // Create RADIUS user with MAC address authentication
+        // For MikroTik mac-as-username-and-password mode, both username and password should be MAC
         $radius_username = str_replace(':', '', strtolower($mac_address)); // Remove colons for username
-        $radius_password = substr(md5($mac_address . time()), 0, 8); // Generate password
+        $radius_password = $radius_username; // Use same MAC as password for MikroTik compatibility
         
         _log("Creating RADIUS user - Username: {$radius_username}, MAC: {$mac_address}", 'M-Pesa', $customer->id);
         
