@@ -33,6 +33,8 @@
                             <tr>
                                 <th>{Lang::T('Invoice')}</th>
                                 <th>{Lang::T('Username')}</th>
+                                <th>Phone Number</th>
+                                <th>M-Pesa Receipt</th>
                                 <th>{Lang::T('Plan Name')}</th>
                                 <th>{Lang::T('Plan Price')}</th>
                                 <th>{Lang::T('Type')}</th>
@@ -48,6 +50,8 @@
                                     style="cursor:pointer;">{$ds['invoice']}</td>
                                     <td onclick="window.location.href = '{$_url}customers/viewu/{$ds['username']}'"
                                     style="cursor:pointer;">{$ds['username']}</td>
+                                    <td>{if $ds['phone_number']}<a href="tel:{$ds['phone_number']}" class="text-primary">{$ds['phone_number']}</a>{else}-{/if}</td>
+                                    <td>{if $ds['receipt_number']}<span class="label label-success" title="M-Pesa Receipt">{$ds['receipt_number']}</span>{else}-{/if}</td>
                                     <td>{$ds['plan_name']}</td>
                                     <td>{Lang::moneyFormat($ds['price'])}</td>
                                     <td>{$ds['type']}</td>

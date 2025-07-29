@@ -94,10 +94,14 @@ if (empty($c_all)) {
 $ui->assign('c_all', $c_all);
 
 if ($config['hide_uet'] != 'yes') {
-    //user expire
+    //user expire with M-Pesa payment details
     $query = ORM::for_table('tbl_user_recharges')
-        ->where_lte('expiration', $current_date)
-        ->order_by_desc('expiration');
+        ->select('tbl_user_recharges.*')
+        ->select('tbl_payment_gateway.mpesa_phone_number', 'phone_number')
+        ->select('tbl_payment_gateway.mpesa_receipt_number', 'receipt_number')
+        ->left_outer_join('tbl_payment_gateway', ['tbl_user_recharges.username', '=', 'tbl_payment_gateway.username'])
+        ->where_lte('tbl_user_recharges.expiration', $current_date)
+        ->order_by_desc('tbl_user_recharges.expiration');
     $expire = Paginator::findMany($query);
 
     // Get the total count of expired records for pagination

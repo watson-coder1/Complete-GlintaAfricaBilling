@@ -248,6 +248,8 @@
                         <thead>
                             <tr>
                                 <th>{Lang::T('Username')}</th>
+                                <th>Phone Number</th>
+                                <th>M-Pesa Receipt</th>
                                 <th>{Lang::T('Created / Expired')}</th>
                                 <th>{Lang::T('Internet Package')}</th>
                                 <th>{Lang::T('Location')}</th>
@@ -259,6 +261,8 @@
                                 {assign var="rem_started" value="{$expired['recharged_on']} {$expired['recharged_time']}"}
                                 <tr>
                                     <td><a href="{$_url}customers/viewu/{$expired['username']}">{$expired['username']}</a></td>
+                                    <td>{if $expired['phone_number']}{$expired['phone_number']}{else}-{/if}</td>
+                                    <td>{if $expired['receipt_number']}<span class="label label-success">{$expired['receipt_number']}</span>{else}-{/if}</td>
                                     <td><small data-toggle="tooltip" data-placement="top"
                                             title="{Lang::dateAndTimeFormat($expired['recharged_on'],$expired['recharged_time'])}">{Lang::timeElapsed($rem_started)}</small>
                                         /
