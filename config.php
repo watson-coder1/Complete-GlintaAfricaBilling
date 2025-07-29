@@ -11,14 +11,14 @@ $_app_stage = "Live";
 
 // Database SpeedRadius
 $db_host	    = "glinta-mysql-prod";
-$db_user        = "glinta_user";
-$db_pass    	= "Glinta2025!";
+$db_user        = "root";
+$db_pass    	= "GlintaRoot2025!";
 $db_name	    = "glinta_billing";
 
 // Database Radius - Use same database as main app since RADIUS tables are in same DB
 $radius_host	    = "glinta-mysql-prod";
-$radius_user        = "glinta_user";
-$radius_pass    	= "Glinta2025!";
+$radius_user        = "root";
+$radius_pass    	= "GlintaRoot2025!";
 $radius_name	    = "glinta_billing";
 
 if($_app_stage!="Live"){
