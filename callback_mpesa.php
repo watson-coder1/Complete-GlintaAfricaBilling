@@ -237,16 +237,16 @@ function activate_service_after_payment($payment)
             $time_limit = $plan->time_limit;
             
             if ($time_unit == 'Hrs') {
-                $expiration = date('Y-m-d H:i:s', strtotime('+' . $time_limit . ' hours'));
+                $expiration_datetime = strtotime('+' . $time_limit . ' hours');
             } elseif ($time_unit == 'Mins') {
-                $expiration = date('Y-m-d H:i:s', strtotime('+' . $time_limit . ' minutes'));
+                $expiration_datetime = strtotime('+' . $time_limit . ' minutes');
             } else {
                 // Default to 1 day if time unit is not recognized
-                $expiration = date('Y-m-d H:i:s', strtotime('+1 day'));
+                $expiration_datetime = strtotime('+1 day');
             }
             
-            $recharge->expiration = date('Y-m-d', strtotime($expiration));
-            $recharge->time = date('H:i:s', strtotime($expiration));
+            $recharge->expiration = date('Y-m-d', $expiration_datetime);
+            $recharge->time = date('H:i:s', $expiration_datetime);
         } else {
             // Default 30 days for unlimited plans or if plan not found
             $recharge->expiration = date('Y-m-d', strtotime('+30 days'));
