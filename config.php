@@ -15,9 +15,8 @@ $db_user        = "glinta_user";
 $db_pass    	= "Glinta2025!";
 $db_name	    = "glinta_billing";
 
-// Database Radius - Connect to same MySQL that FreeRADIUS uses
-// FreeRADIUS is installed directly on server, connect via Docker gateway
-$radius_host	    = "172.25.0.1";
+// Database Radius - Use same database as main app since RADIUS tables are in same DB
+$radius_host	    = "glinta-mysql-prod";
 $radius_user        = "glinta_user";
 $radius_pass    	= "Glinta2025!";
 $radius_name	    = "glinta_billing";
