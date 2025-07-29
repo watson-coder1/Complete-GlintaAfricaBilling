@@ -17,9 +17,9 @@ log_message "=== Starting Glinta cleanup tasks ==="
 # Change to web directory
 cd $WEBROOT
 
-# 1. Run expired user cleanup (inside Docker)
+# 1. Run expired user cleanup (on host - RADIUS is on host system)
 log_message "Running expired user cleanup..."
-docker exec glinta-web-prod php /var/www/html/radius_cleanup.php >> $LOG_FILE 2>&1
+php -f radius_cleanup.php >> $LOG_FILE 2>&1
 CLEANUP_EXIT_CODE=$?
 log_message "Expired user cleanup exit code: $CLEANUP_EXIT_CODE"
 
