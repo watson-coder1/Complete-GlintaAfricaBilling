@@ -266,6 +266,8 @@ switch ($action) {
                 ->select('tbl_payment_gateway.mpesa_receipt_number', 'receipt_number')
                 ->left_outer_join('tbl_payment_gateway', ['tbl_transactions.username', '=', 'tbl_payment_gateway.username'])
                 ->where_like('tbl_transactions.invoice', '%' . $q . '%')
+                ->order_by_desc('tbl_transactions.recharged_on')
+                ->order_by_desc('tbl_transactions.recharged_time')
                 ->order_by_desc('tbl_transactions.id');
             $d = Paginator::findMany($query, ['q' => $q]);
         } else {
@@ -274,6 +276,8 @@ switch ($action) {
                 ->select('tbl_payment_gateway.mpesa_phone_number', 'phone_number')
                 ->select('tbl_payment_gateway.mpesa_receipt_number', 'receipt_number')
                 ->left_outer_join('tbl_payment_gateway', ['tbl_transactions.username', '=', 'tbl_payment_gateway.username'])
+                ->order_by_desc('tbl_transactions.recharged_on')
+                ->order_by_desc('tbl_transactions.recharged_time')
                 ->order_by_desc('tbl_transactions.id');
             $d = Paginator::findMany($query);
         }

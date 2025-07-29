@@ -82,7 +82,7 @@
                 </a>
             </h3>
         </div>
-        <div id="collapseGeneral" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+        <div id="collapseGeneral" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Application Name / Company
@@ -204,7 +204,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseHideDashboardContent" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseHideDashboardContent" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-3 control-label"><input type="checkbox" name="hide_mrc" value="yes" {if
@@ -242,7 +242,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseRegistration" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseRegistration" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Allow Registration')}</label>
@@ -333,7 +333,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseSecurity" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseSecurity" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-3 control-label">{Lang::T('Enable Session Timeout')}</label>
@@ -408,7 +408,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseVoucher" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseVoucher" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Disable Voucher')}</label>
@@ -475,7 +475,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseFreeRadius" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseFreeRadius" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Enable Radius')}</label>
@@ -510,7 +510,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseExtendPostpaidExpiration" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseExtendPostpaidExpiration" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Allow Extend')}</label>
@@ -557,7 +557,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseCustomerBalanceSystem" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseCustomerBalanceSystem" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Enable System')}</label>
@@ -615,7 +615,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseTelegramNotification" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseTelegramNotification" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Telegram Bot Token')}</label>
@@ -659,7 +659,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseSMSNotification" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseSMSNotification" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('SMS Server URL')}</label>
@@ -713,7 +713,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseWhatsappNotification" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseWhatsappNotification" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('WhatsApp Server URL')}</label>
@@ -750,7 +750,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseEmailNotification" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseEmailNotification" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">SMTP Host : Port</label>
@@ -831,7 +831,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseUserNotification" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseUserNotification" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Expired Notification')}</label>
@@ -897,7 +897,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseTawkToChatWidget" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseTawkToChatWidget" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">https://tawk.to/chat/</label>
@@ -937,7 +937,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseAPIKey" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseAPIKey" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Access Token')}</label>
@@ -967,7 +967,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseProxy" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseProxy" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Proxy Server')}</label>
@@ -1003,7 +1003,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseTaxSystem" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseTaxSystem" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Enable Tax System')}</label>
@@ -1077,7 +1077,7 @@
                 </a>
             </h4>
         </div>
-        <div id="collapseAuthentication" class="panel-collapse collapse" role="tabpanel">
+        <div id="collapseAuthentication" class="panel-collapse collapse in" role="tabpanel">
             <div class="panel-body">
                 <div class="form-group">
                     <label class="col-md-2 control-label">{Lang::T('Github Username')}</label>
@@ -1221,46 +1221,63 @@
 </script>
 
 <script>
-    // Expand all panels by default and ensure checkboxes are clickable
+    // Ensure all settings panels are visible and functional
     document.addEventListener("DOMContentLoaded", function() {
-        // Expand all collapsed panels
-        var panels = document.querySelectorAll('.panel-collapse.collapse');
+        console.log('Settings page loaded - initializing...');
+        
+        // Force expand all panels
+        var panels = document.querySelectorAll('.panel-collapse');
         panels.forEach(function(panel) {
             panel.classList.add('in');
             panel.style.height = 'auto';
+            panel.style.display = 'block';
         });
         
-        // Ensure all checkboxes are properly initialized
+        // Initialize all checkboxes and ensure they're clickable
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(function(checkbox) {
-            // Add click event listener to ensure changes are registered
-            checkbox.addEventListener('change', function() {
-                console.log('Checkbox changed:', this.name, this.checked);
-            });
-        });
+        console.log('Found', checkboxes.length, 'checkboxes');
         
-        // Debug form submission
-        var forms = document.querySelectorAll('form');
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                console.log('Form submitted:', this.action);
-                // Check if there are any validation errors
-                var requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
-                var hasErrors = false;
-                requiredFields.forEach(function(field) {
-                    if (!field.value.trim()) {
-                        console.log('Required field empty:', field.name);
-                        hasErrors = true;
-                    }
-                });
+        checkboxes.forEach(function(checkbox) {
+            // Ensure checkbox is not disabled
+            checkbox.disabled = false;
+            
+            // Add visual feedback on change
+            checkbox.addEventListener('change', function() {
+                console.log('Checkbox changed:', this.name, 'to', this.checked);
                 
-                if (hasErrors) {
-                    alert('Please fill in all required fields before submitting.');
-                    e.preventDefault();
-                    return false;
+                // Add visual feedback
+                var label = this.closest('label');
+                if (label) {
+                    if (this.checked) {
+                        label.style.fontWeight = 'bold';
+                        label.style.color = '#2196F3';
+                    } else {
+                        label.style.fontWeight = 'normal';
+                        label.style.color = '';
+                    }
                 }
             });
+            
+            // Trigger initial styling
+            checkbox.dispatchEvent(new Event('change'));
         });
+        
+        // Make all labels clickable
+        var labels = document.querySelectorAll('label');
+        labels.forEach(function(label) {
+            label.style.cursor = 'pointer';
+        });
+        
+        // Prevent accordion collapse behavior
+        var toggles = document.querySelectorAll('[data-toggle="collapse"]');
+        toggles.forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Collapse toggle clicked - preventing default behavior');
+            });
+        });
+        
+        console.log('Settings page initialization complete');
     });
 </script>
 {include file="sections/footer.tpl"}
