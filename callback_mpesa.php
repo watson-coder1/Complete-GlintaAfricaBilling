@@ -220,20 +220,20 @@ function activate_service_after_payment($payment)
             _log("M-Pesa Transaction already exists, skipping duplicate - Username: {$payment->username}, Amount: {$payment->price}", 'M-Pesa', 0);
         }
         
-          // Check if user recharge already exists to prevent duplicates
-          $existingRecharge = ORM::for_table('tbl_user_recharges')
-              ->where('username', $payment->username)
-              ->where('plan_id', $payment->plan_id)
-              ->where('recharged_on', date('Y-m-d'))
-              ->where('method', 'M-Pesa STK Push')
-              ->where('status', 'on')
-              ->find_one();
-              
-          if ($existingRecharge) {
-              _log("M-Pesa User recharge already exists, skipping duplicate - Username: {$payment->username}, Plan: {$payment->plan_name}", 'M-Pesa', $customer->id);
-              return true; // Return success since user already has active recharge
-          }
-
+        // Check if user recharge already exists to prevent duplicates
+        $existingRecharge = ORM::for_table('tbl_user_recharges')
+            ->where('username', $payment->username)
+            ->where('plan_id', $payment->plan_id)
+            ->where('recharged_on', date('Y-m-d'))
+            ->where('method', 'M-Pesa STK Push')
+            ->where('status', 'on')
+            ->find_one();
+            
+        if ($existingRecharge) {
+            _log("M-Pesa User recharge already exists, skipping duplicate - Username: {$payment->username}, Plan: {$payment->plan_name}", 'M-Pesa', $customer->id);
+            return true; // Return success since user already has active recharge
+        }
+        
         // Create user recharge record
         $recharge = ORM::for_table('tbl_user_recharges')->create();
         $recharge->customer_id = $customer->id;
@@ -347,41 +347,39 @@ function activate_hotspot_service($customer, $plan, $recharge)
         // Calculate expiration timestamp
         $expiration_timestamp = strtotime($recharge->expiration . ' ' . $recharge->time);
         
-        // Insert into radcheck for authentication
-        $radcheck = ORM::for_table('radcheck', 'radius')->create();
-        $radcheck->username = $radius_username;
-        $radcheck->attribute = 'Cleartext-Password';
-        $radcheck->op = ':=';
-        $radcheck->value = $radius_password;
-        $radcheck->save();
-
-    // For MAC-based authentication, create additional entries
-    $mac_without_colons = str_replace(":", "", strtolower($mac_address));
-
-    // Create Auth-Type entry for MAC authentication
-    $radcheck_auth = ORM::for_table("radcheck", "radius")->create();
-    $radcheck_auth->username = $mac_without_colons;
-    $radcheck_auth->attribute = "Auth-Type";
-    $radcheck_auth->op = ":=";
-    $radcheck_auth->value = "Accept";
-    $radcheck_auth->save();
-
-    // Enable simultaneous use
-    $radcheck_simul = ORM::for_table("radcheck", "radius")->create();
-    $radcheck_simul->username = $mac_without_colons;
-    $radcheck_simul->attribute = "Simultaneous-Use";
-    $radcheck_simul->op = ":=";
-    $radcheck_simul->value = "1";
-    $radcheck_simul->save();
+        // Check if RADIUS user already exists
+        $existingRadUser = ORM::for_table('radcheck', 'radius')
+            ->where('username', $radius_username)
+            ->where('attribute', 'Cleartext-Password')
+            ->find_one();
+            
+        if (!$existingRadUser) {
+            // Insert into radcheck for authentication
+            $radcheck = ORM::for_table('radcheck', 'radius')->create();
+            $radcheck->username = $radius_username;
+            $radcheck->attribute = 'Cleartext-Password';
+            $radcheck->op = ':=';
+            $radcheck->value = $radius_password;
+            $radcheck->save();
+        } else {
+            _log("RADIUS user already exists, skipping duplicate creation - Username: {$radius_username}", 'M-Pesa', $customer->id);
+        }
         
         // For MAC-based authentication, create additional entries
-        // Auth-Type entry for MAC authentication  
-        $radcheck_auth = ORM::for_table('radcheck', 'radius')->create();
-        $radcheck_auth->username = $radius_username;
-        $radcheck_auth->attribute = 'Auth-Type';
-        $radcheck_auth->op = ':=';
-        $radcheck_auth->value = 'Accept';
-        $radcheck_auth->save();
+        // Auth-Type entry for MAC authentication
+        $existingAuthType = ORM::for_table('radcheck', 'radius')
+            ->where('username', $radius_username)
+            ->where('attribute', 'Auth-Type')
+            ->find_one();
+            
+        if (!$existingAuthType) {
+            $radcheck_auth = ORM::for_table('radcheck', 'radius')->create();
+            $radcheck_auth->username = $radius_username;
+            $radcheck_auth->attribute = 'Auth-Type';
+            $radcheck_auth->op = ':=';
+            $radcheck_auth->value = 'Accept';
+            $radcheck_auth->save();
+        }
         
         // Create Calling-Station-Id check for MAC validation
         $radcheck_mac = ORM::for_table('radcheck', 'radius')->create();
