@@ -788,7 +788,9 @@
         const countdownEl = document.getElementById('countdown');
         let redirectExecuted = false; // Prevent multiple redirects
         
-        const mikrotikAuthUrl = '{$mikrotik_login_url}?username={$mikrotik_username}&password={$mikrotik_password}&dst={$mikrotik_dst}';
+        // For MAC authentication, we need to let MikroTik reauthenticate
+        // The RADIUS user is already created, so we just redirect to the original URL
+        const redirectUrl = '{$mikrotik_dst|default:"https://www.google.com"}';
 
         function updateCountdown() {
             if (countdownEl) {
@@ -797,7 +799,9 @@
             
             if (timeLeft <= 0 && !redirectExecuted) {
                 redirectExecuted = true;
-                window.location.href = mikrotikAuthUrl;
+                // Simply redirect to the target URL
+                // MikroTik will check RADIUS again automatically
+                window.location.href = redirectUrl;
                 return;
             }
             
