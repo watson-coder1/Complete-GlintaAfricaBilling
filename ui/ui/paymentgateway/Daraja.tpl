@@ -77,7 +77,7 @@
                                         <label for="environment">Environment</label>
                                         <select class="form-control" id="environment" name="environment" required>
                                             <option value="sandbox" {if $daraja_environment == 'sandbox'}selected{/if}>Sandbox (Testing)</option>
-                                            <option value="production" {if $daraja_environment == 'production'}selected{/if}>Production (Live)</option>
+                                            <option value="live" {if $daraja_environment == 'live'}selected{/if}>Production (Live)</option>
                                         </select>
                                         <small class="help-block">Use Sandbox for testing, Production for live payments</small>
                                     </div>
