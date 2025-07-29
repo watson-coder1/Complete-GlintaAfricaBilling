@@ -220,6 +220,20 @@ function activate_service_after_payment($payment)
             _log("M-Pesa Transaction already exists, skipping duplicate - Username: {$payment->username}, Amount: {$payment->price}", 'M-Pesa', 0);
         }
         
+          // Check if user recharge already exists to prevent duplicates
+          $existingRecharge = ORM::for_table('tbl_user_recharges')
+              ->where('username', $payment->username)
+              ->where('plan_id', $payment->plan_id)
+              ->where('recharged_on', date('Y-m-d'))
+              ->where('method', 'M-Pesa STK Push')
+              ->where('status', 'on')
+              ->find_one();
+              
+          if ($existingRecharge) {
+              _log("M-Pesa User recharge already exists, skipping duplicate - Username: {$payment->username}, Plan: {$payment->plan_name}", 'M-Pesa', $customer->id);
+              return true; // Return success since user already has active recharge
+          }
+
         // Create user recharge record
         $recharge = ORM::for_table('tbl_user_recharges')->create();
         $recharge->customer_id = $customer->id;
