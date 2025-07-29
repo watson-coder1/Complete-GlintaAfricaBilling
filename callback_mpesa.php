@@ -228,8 +228,13 @@ function activate_service_after_payment($payment)
         $recharge->namebp = $payment->plan_name;
         $recharge->recharged_on = date('Y-m-d');
         $recharge->recharged_time = date('H:i:s');
-        $recharge->expiration = date('Y-m-d', strtotime('+1 day')); // Set default expiration first
-        $recharge->time = '23:59:59'; // Set default time
+        
+        // Set default expiration and time first
+        $default_expiration = date('Y-m-d', strtotime('+1 day'));
+        $default_time = '23:59:59';
+        
+        $recharge->expiration = $default_expiration;
+        $recharge->time = $default_time;
         
         // Calculate expiration based on plan
         if ($plan && $plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
@@ -259,11 +264,30 @@ function activate_service_after_payment($payment)
             $recharge->time = '23:59:59';
         }
         
+        // Set remaining required fields
         $recharge->status = 'on';
         $recharge->method = 'M-Pesa STK Push';
-        $recharge->routers = $payment->routers;
-        $recharge->type = $plan->type;
-        $recharge->save();
+        $recharge->routers = $payment->routers ?? '';
+        $recharge->type = $plan->type ?? 'Hotspot';
+        $recharge->admin_id = 1; // Set default admin_id
+        
+        // Double check required fields are set
+        if (empty($recharge->expiration)) {
+            $recharge->expiration = $default_expiration;
+        }
+        if (empty($recharge->time)) {
+            $recharge->time = $default_time;
+        }
+        
+        _log("Saving recharge record - Customer: {$recharge->customer_id}, Username: {$recharge->username}, Expiration: {$recharge->expiration}, Time: {$recharge->time}", 'M-Pesa', $customer->id);
+        
+        try {
+            $recharge->save();
+            _log("Recharge record saved successfully for user: {$recharge->username}", 'M-Pesa', $customer->id);
+        } catch (Exception $e) {
+            _log("Failed to save recharge record: " . $e->getMessage(), 'M-Pesa', $customer->id);
+            throw $e; // Re-throw to be caught by outer try-catch
+        }
         
         // Activate based on service type
         if ($plan->type == 'Hotspot') {
