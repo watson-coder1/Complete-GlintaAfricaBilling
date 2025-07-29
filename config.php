@@ -1,6 +1,7 @@
 <?php
 
-$protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off" || $_SERVER["SERVER_PORT"] == 443) ? "https://" : "http://";
+// Force HTTPS since SSL certificate is installed
+$protocol = "https://";
 $host = $_SERVER["HTTP_HOST"];
 $baseDir = rtrim(dirname($_SERVER["SCRIPT_NAME"]), "/\\");
 define("APP_URL", $protocol . $host . $baseDir);
