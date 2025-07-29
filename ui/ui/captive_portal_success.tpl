@@ -714,7 +714,7 @@
         <div class="navigation-section">
             <h3 class="nav-title">🌟 Choose Your Platform</h3>
             <div class="nav-buttons">
-                <a href="https://google.com" class="nav-btn primary" target="_blank">
+                <a href="https://google.com" class="nav-btn primary" id="google-btn">
                     <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" style="height: 20px;">
                     <span>Search</span>
                 </a>
@@ -797,9 +797,22 @@
         };
 
         function authenticateWithMikroTik() {
-            console.log('Starting MikroTik authentication...');
+            console.log('Starting authentication...');
             
-            // Create authentication form
+            // Check if we have proper MikroTik parameters
+            if (mikrotikParams.loginUrl && mikrotikParams.loginUrl !== 'http://192.168.88.1/login' && mikrotikParams.username) {
+                // Use actual MikroTik authentication
+                console.log('Using MikroTik hotspot authentication');
+                authenticateWithActualMikroTik();
+            } else {
+                // Use our internal authentication endpoint
+                console.log('Using internal authentication endpoint');
+                authenticateInternally();
+            }
+        }
+        
+        function authenticateWithActualMikroTik() {
+            // Create authentication form for real MikroTik
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = mikrotikParams.loginUrl;
@@ -840,6 +853,18 @@
                 window.location.href = mikrotikParams.destinationUrl;
             }, 2000);
         }
+        
+        function authenticateInternally() {
+            // Use our internal authentication endpoint
+            const authUrl = '{$_url}/mikrotik_auth.php?web=1&username=' + 
+                encodeURIComponent(mikrotikParams.username) + 
+                '&password=' + encodeURIComponent(mikrotikParams.password) +
+                '&mac=' + encodeURIComponent('{$mac_address|default:""}') +
+                '&dst=' + encodeURIComponent(mikrotikParams.destinationUrl);
+            
+            console.log('Redirecting to internal auth endpoint:', authUrl);
+            window.location.href = authUrl;
+        }
 
         function updateCountdown() {
             if (countdownEl) {
@@ -849,14 +874,9 @@
             if (timeLeft <= 0 && !redirectExecuted) {
                 redirectExecuted = true;
                 
-                // If we have MikroTik parameters, authenticate first
-                if (mikrotikParams.username && mikrotikParams.loginUrl) {
-                    authenticateWithMikroTik();
-                } else {
-                    // Direct redirect as fallback
-                    console.log('Direct redirect to destination');
-                    window.location.href = mikrotikParams.destinationUrl;
-                }
+                // Test connectivity first
+                console.log('Countdown finished, testing connectivity...');
+                testConnectivity();
                 return;
             }
             
@@ -877,13 +897,33 @@
             }
         }
         
+        // Test internet connectivity
+        function testConnectivity() {
+            console.log('Testing internet connectivity...');
+            
+            // Test with a simple image load
+            const img = new Image();
+            img.onload = function() {
+                console.log('✅ Internet connectivity confirmed');
+                // Direct redirect to Google
+                window.location.href = 'https://www.google.com';
+            };
+            img.onerror = function() {
+                console.log('❌ No internet connectivity, attempting authentication...');
+                // Try authentication first
+                authenticateWithMikroTik();
+            };
+            img.src = 'https://www.google.com/favicon.ico?t=' + Date.now();
+        }
+        
         // Add click handlers to navigation buttons
         document.addEventListener('DOMContentLoaded', function() {
-            const googleBtn = document.querySelector('a[href*="google.com"]');
+            const googleBtn = document.getElementById('google-btn');
             if (googleBtn) {
                 googleBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    manualConnect();
+                    console.log('Google button clicked, testing connectivity...');
+                    testConnectivity();
                 });
             }
         });

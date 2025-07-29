@@ -1,43 +1,113 @@
 <?php
-require_once "init.php";
+/**
+ * MikroTik Hotspot Authentication Endpoint
+ * Handles authentication for users after successful payment
+ */
 
-header("Content-Type: application/json");
+// Include system initialization
+require_once 'init.php';
 
-$mac = $_REQUEST["mac"] ?? "";
-$ip = $_REQUEST["ip"] ?? "";
+// Set JSON response header
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-if (empty($mac)) {
-    die(json_encode(["success" => false, "message" => "MAC address required"]));
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-$mac = strtolower(preg_replace("/[^a-f0-9:]/", "", $mac));
-$mac_no_colons = str_replace(":", "", $mac);
+try {
+    // Get authentication parameters
+    $username = $_POST['username'] ?? $_GET['username'] ?? '';
+    $password = $_POST['password'] ?? $_GET['password'] ?? '';
+    $mac = $_POST['mac'] ?? $_GET['mac'] ?? '';
+    $ip = $_POST['ip'] ?? $_GET['ip'] ?? '';
+    $dst = $_POST['dst'] ?? $_GET['dst'] ?? 'https://www.google.com';
 
-$active_recharge = ORM::for_table("tbl_user_recharges")
-    ->where("username", $mac)
-    ->where("status", "on")
-    ->where_gt("expiration", date("Y-m-d"))
-    ->find_one();
+    _log("MikroTik Auth Request - Username: {$username}, MAC: {$mac}, IP: {$ip}, Destination: {$dst}", 'MikroTik-Auth', 0);
 
-if (!$active_recharge) {
-    die(json_encode(["success" => false, "message" => "No active session found"]));
+    if (empty($username) || empty($password)) {
+        _log("MikroTik Auth Error: Missing username or password", 'MikroTik-Auth', 0);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Username and password required'
+        ]);
+        exit();
+    }
+
+    // Verify RADIUS credentials
+    $radiusUser = ORM::for_table('radcheck', 'radius')
+        ->where('username', $username)
+        ->where('attribute', 'Cleartext-Password')
+        ->where('value', $password)
+        ->find_one();
+
+    if (!$radiusUser) {
+        _log("MikroTik Auth Error: Invalid credentials for {$username}", 'MikroTik-Auth', 0);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ]);
+        exit();
+    }
+
+    // Check if user has active session
+    $activeSession = ORM::for_table('tbl_user_recharges')
+        ->where('username', $mac ?: $username)
+        ->where('status', 'on')
+        ->find_one();
+
+    if (!$activeSession) {
+        _log("MikroTik Auth Error: No active session for {$username}", 'MikroTik-Auth', 0);
+        echo json_encode([
+            'success' => false,
+            'message' => 'No active session found'
+        ]);
+        exit();
+    }
+
+    // Build expiration datetime and check if not expired
+    $expirationDateTime = $activeSession->expiration . ' ' . ($activeSession->time ?: '23:59:59');
+    if (strtotime($expirationDateTime) <= time()) {
+        _log("MikroTik Auth Error: Session expired for {$username} - Expired: {$expirationDateTime}", 'MikroTik-Auth', 0);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Session has expired'
+        ]);
+        exit();
+    }
+
+    // Authentication successful
+    _log("MikroTik Auth Success: {$username} authenticated successfully - Session expires: {$expirationDateTime}", 'MikroTik-Auth', 0);
+
+    // For web-based authentication, redirect to destination
+    if (isset($_GET['web']) || $_SERVER['REQUEST_METHOD'] === 'GET') {
+        // Store successful authentication in session/cookie for tracking
+        setcookie('glinta_auth_success', $username, time() + 3600, '/');
+
+        // Redirect to destination URL
+        header('Location: ' . $dst);
+        exit();
+    }
+
+    // For AJAX requests, return success
+    echo json_encode([
+        'success' => true,
+        'message' => 'Authentication successful',
+        'redirect_url' => $dst,
+        'expires' => $expirationDateTime,
+        'plan' => $activeSession->namebp
+    ]);
+
+} catch (Exception $e) {
+    _log('MikroTik Auth Exception: ' . $e->getMessage(), 'MikroTik-Auth', 0);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Authentication error occurred'
+    ]);
 }
-
-$radcheck = ORM::for_table("radcheck", "radius")
-    ->where("username", $mac_no_colons)
-    ->where("attribute", "Cleartext-Password")
-    ->find_one();
-
-if (!$radcheck) {
-    die(json_encode(["success" => false, "message" => "RADIUS user not found"]));
-}
-
-echo json_encode([
-    "success" => true,
-    "username" => $mac_no_colons,
-    "password" => $radcheck->value,
-    "mac" => $mac,
-    "expires" => $active_recharge->expiration,
-    "plan" => $active_recharge->namebp
-]);
 ?>
