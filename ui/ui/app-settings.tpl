@@ -1221,63 +1221,47 @@
 </script>
 
 <script>
-    // Ensure all settings panels are visible and functional
-    document.addEventListener("DOMContentLoaded", function() {
-        console.log('Settings page loaded - initializing...');
-        
-        // Force expand all panels
-        var panels = document.querySelectorAll('.panel-collapse');
-        panels.forEach(function(panel) {
-            panel.classList.add('in');
-            panel.style.height = 'auto';
-            panel.style.display = 'block';
-        });
-        
-        // Initialize all checkboxes and ensure they're clickable
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        console.log('Found', checkboxes.length, 'checkboxes');
-        
-        checkboxes.forEach(function(checkbox) {
-            // Ensure checkbox is not disabled
-            checkbox.disabled = false;
+    // Settings page enhancements - non-intrusive
+    $(document).ready(function() {
+        // Wait for existing scripts to load first
+        setTimeout(function() {
+            console.log('Settings page enhancements loading...');
             
-            // Add visual feedback on change
-            checkbox.addEventListener('change', function() {
-                console.log('Checkbox changed:', this.name, 'to', this.checked);
+            // Ensure all checkboxes are functional
+            var checkboxes = $('input[type="checkbox"]');
+            console.log('Found', checkboxes.length, 'checkboxes');
+            
+            checkboxes.each(function() {
+                var checkbox = $(this);
                 
-                // Add visual feedback
-                var label = this.closest('label');
-                if (label) {
-                    if (this.checked) {
-                        label.style.fontWeight = 'bold';
-                        label.style.color = '#2196F3';
-                    } else {
-                        label.style.fontWeight = 'normal';
-                        label.style.color = '';
+                // Add visual feedback on change
+                checkbox.on('change', function() {
+                    console.log('Checkbox changed:', this.name, 'to', this.checked);
+                    
+                    // Add subtle visual feedback
+                    var label = checkbox.closest('label');
+                    if (label.length) {
+                        if (this.checked) {
+                            label.css('color', '#2196F3');
+                        } else {
+                            label.css('color', '');
+                        }
                     }
+                });
+            });
+            
+            // Make sure all panels are visible (non-intrusive)
+            $('.panel-collapse').each(function() {
+                if (!$(this).hasClass('in')) {
+                    $(this).addClass('in').css({
+                        'height': 'auto',
+                        'display': 'block'
+                    });
                 }
             });
             
-            // Trigger initial styling
-            checkbox.dispatchEvent(new Event('change'));
-        });
-        
-        // Make all labels clickable
-        var labels = document.querySelectorAll('label');
-        labels.forEach(function(label) {
-            label.style.cursor = 'pointer';
-        });
-        
-        // Prevent accordion collapse behavior
-        var toggles = document.querySelectorAll('[data-toggle="collapse"]');
-        toggles.forEach(function(toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Collapse toggle clicked - preventing default behavior');
-            });
-        });
-        
-        console.log('Settings page initialization complete');
+            console.log('Settings page enhancements complete');
+        }, 1000); // Wait 1 second for other scripts to initialize
     });
 </script>
 {include file="sections/footer.tpl"}

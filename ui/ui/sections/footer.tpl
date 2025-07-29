@@ -130,9 +130,37 @@
         }
 
         function apiGetText(){
+            // Safety check to prevent undefined errors
+            if (!listAttApi || posAttApi >= listAttApi.length) {
+                return;
+            }
+            
             var el = listAttApi[posAttApi];
-            $.get(el.getAttribute('api-get-text'), function(data) {
+            if (!el || !el.getAttribute) {
+                posAttApi++;
+                if(posAttApi < listAttApi.length){
+                    apiGetText();
+                }
+                return;
+            }
+            
+            var apiUrl = el.getAttribute('api-get-text');
+            if (!apiUrl) {
+                posAttApi++;
+                if(posAttApi < listAttApi.length){
+                    apiGetText();
+                }
+                return;
+            }
+            
+            $.get(apiUrl, function(data) {
                 el.innerHTML = data;
+                posAttApi++;
+                if(posAttApi < listAttApi.length){
+                    apiGetText();
+                }
+            }).fail(function() {
+                // Handle API call failure
                 posAttApi++;
                 if(posAttApi < listAttApi.length){
                     apiGetText();
