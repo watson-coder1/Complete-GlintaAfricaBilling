@@ -924,7 +924,6 @@ switch ($routes['1']) {
                 date('Y-m-d H:i:s') . " SUCCESS PAGE: Displayed for session " . $sessionId . ", should redirect to Google in 10 seconds\n", FILE_APPEND);
             
             $ui->display('captive_portal_success.tpl');
-            r2($mikrotik_params['link-orig'] ?? 'https://google.com', 's', 'Payment successful! Redirecting...');
             
         } catch (Exception $e) {
             error_log("Captive Portal Success Error: " . $e->getMessage());

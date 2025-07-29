@@ -783,14 +783,63 @@
     </div>
     
     <script>
-        // Countdown timer with improved redirect
+        // Countdown timer with MikroTik authentication
         let timeLeft = 10;
         const countdownEl = document.getElementById('countdown');
         let redirectExecuted = false; // Prevent multiple redirects
         
-        // For MAC authentication, we need to let MikroTik reauthenticate
-        // The RADIUS user is already created, so we just redirect to the original URL
-        const redirectUrl = '{$mikrotik_dst|default:"https://www.google.com"}';
+        // MikroTik authentication parameters
+        const mikrotikParams = {
+            loginUrl: '{$mikrotik_login_url|default:"http://192.168.88.1/login"}',
+            username: '{$mikrotik_username|default:""}',
+            password: '{$mikrotik_password|default:""}',
+            destinationUrl: '{$mikrotik_dst|default:"https://www.google.com"}'
+        };
+
+        function authenticateWithMikroTik() {
+            console.log('Starting MikroTik authentication...');
+            
+            // Create authentication form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = mikrotikParams.loginUrl;
+            form.target = '_blank';
+            form.style.display = 'none';
+            
+            // Add username field
+            const usernameField = document.createElement('input');
+            usernameField.type = 'hidden';
+            usernameField.name = 'username';
+            usernameField.value = mikrotikParams.username;
+            form.appendChild(usernameField);
+            
+            // Add password field
+            const passwordField = document.createElement('input');
+            passwordField.type = 'hidden';
+            passwordField.name = 'password';
+            passwordField.value = mikrotikParams.password;
+            form.appendChild(passwordField);
+            
+            // Add destination URL
+            const dstField = document.createElement('input');
+            dstField.type = 'hidden';
+            dstField.name = 'dst';
+            dstField.value = mikrotikParams.destinationUrl;
+            form.appendChild(dstField);
+            
+            // Submit form
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+            
+            console.log('Authentication request sent to MikroTik');
+            
+            // Wait a moment then redirect
+            setTimeout(function() {
+                console.log('Redirecting to destination...');
+                window.location.href = mikrotikParams.destinationUrl;
+            }, 2000);
+        }
 
         function updateCountdown() {
             if (countdownEl) {
@@ -799,9 +848,15 @@
             
             if (timeLeft <= 0 && !redirectExecuted) {
                 redirectExecuted = true;
-                // Simply redirect to the target URL
-                // MikroTik will check RADIUS again automatically
-                window.location.href = redirectUrl;
+                
+                // If we have MikroTik parameters, authenticate first
+                if (mikrotikParams.username && mikrotikParams.loginUrl) {
+                    authenticateWithMikroTik();
+                } else {
+                    // Direct redirect as fallback
+                    console.log('Direct redirect to destination');
+                    window.location.href = mikrotikParams.destinationUrl;
+                }
                 return;
             }
             
@@ -813,6 +868,25 @@
         setTimeout(function() {
             updateCountdown();
         }, 2000);
+        
+        // Also provide manual buttons for authentication
+        function manualConnect() {
+            if (!redirectExecuted) {
+                redirectExecuted = true;
+                authenticateWithMikroTik();
+            }
+        }
+        
+        // Add click handlers to navigation buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const googleBtn = document.querySelector('a[href*="google.com"]');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    manualConnect();
+                });
+            }
+        });
     </script>
 </body>
 </html>
