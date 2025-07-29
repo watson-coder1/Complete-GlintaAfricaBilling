@@ -175,6 +175,7 @@ function activate_service_after_payment($payment)
                 // Create temporary customer record for captive portal user
                 $customer = ORM::for_table('tbl_customers')->create();
                 $customer->username = $payment->username;
+                $customer->password = substr(md5($payment->username . time()), 0, 8);
                 $customer->fullname = 'Captive Portal User';
                 $customer->email = '';
                 $customer->phonenumber = '';
