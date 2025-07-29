@@ -4,6 +4,71 @@
         font-weight: bolder;
         font-size: large;
     }
+    
+    /* Ensure switches are always clickable */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        z-index: 1;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    /* Make regular checkboxes more visible */
+    input[type="checkbox"]:not(.switch input) {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+    
+    /* Ensure panel sections are visible */
+    .panel-collapse {
+        transition: height 0.35s ease;
+    }
+    
+    /* Make labels clickable */
+    label {
+        cursor: pointer;
+    }
 </style>
 
 <form class="form-horizontal" method="post" role="form" action="{$_url}settings/app-post" enctype="multipart/form-data">
@@ -1152,6 +1217,50 @@
 
         // Call the function whenever the tax rate dropdown value changes
         document.getElementById("tax_rate").addEventListener("change", toggleCustomTaxRate);
+    });
+</script>
+
+<script>
+    // Expand all panels by default and ensure checkboxes are clickable
+    document.addEventListener("DOMContentLoaded", function() {
+        // Expand all collapsed panels
+        var panels = document.querySelectorAll('.panel-collapse.collapse');
+        panels.forEach(function(panel) {
+            panel.classList.add('in');
+            panel.style.height = 'auto';
+        });
+        
+        // Ensure all checkboxes are properly initialized
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            // Add click event listener to ensure changes are registered
+            checkbox.addEventListener('change', function() {
+                console.log('Checkbox changed:', this.name, this.checked);
+            });
+        });
+        
+        // Debug form submission
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                console.log('Form submitted:', this.action);
+                // Check if there are any validation errors
+                var requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
+                var hasErrors = false;
+                requiredFields.forEach(function(field) {
+                    if (!field.value.trim()) {
+                        console.log('Required field empty:', field.name);
+                        hasErrors = true;
+                    }
+                });
+                
+                if (hasErrors) {
+                    alert('Please fill in all required fields before submitting.');
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
     });
 </script>
 {include file="sections/footer.tpl"}
