@@ -228,6 +228,8 @@ function activate_service_after_payment($payment)
         $recharge->namebp = $payment->plan_name;
         $recharge->recharged_on = date('Y-m-d');
         $recharge->recharged_time = date('H:i:s');
+        $recharge->expiration = date('Y-m-d', strtotime('+1 day')); // Set default expiration first
+        $recharge->time = '23:59:59'; // Set default time
         
         // Calculate expiration based on plan
         if ($plan && $plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
