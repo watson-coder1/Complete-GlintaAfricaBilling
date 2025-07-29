@@ -788,6 +788,8 @@
         const countdownEl = document.getElementById('countdown');
         let redirectExecuted = false; // Prevent multiple redirects
         
+        const mikrotikAuthUrl = '{$mikrotik_login_url}?username={$mikrotik_username}&password={$mikrotik_password}&dst={$mikrotik_dst}';
+
         function updateCountdown() {
             if (countdownEl) {
                 countdownEl.textContent = timeLeft;
@@ -795,31 +797,7 @@
             
             if (timeLeft <= 0 && !redirectExecuted) {
                 redirectExecuted = true;
-                console.log('Countdown complete, redirecting through MikroTik authentication...');
-                
-                // Try multiple redirect methods for better compatibility
-                try {
-                    // Method 1: Direct navigation using MikroTik auth URL
-                    window.location.href = mikrotikAuthUrl;
-                    
-                    // Method 2: Backup with replace (prevents back button)
-                    setTimeout(function() {
-                        if (!redirectExecuted) {
-                            window.location.replace(mikrotikAuthUrl);
-                        }
-                    }, 500);
-                    
-                    // Method 3: Open in new tab if all else fails
-                    setTimeout(function() {
-                        if (!redirectExecuted) {
-                            window.open(mikrotikAuthUrl, '_blank');
-                            alert('If Google did not open, please click any of the links above to start browsing.');
-                        }
-                    }, 2000);
-                } catch (e) {
-                    console.error('Redirect error:', e);
-                    alert('Please click on the Google button above to start browsing.');
-                }
+                window.location.href = mikrotikAuthUrl;
                 return;
             }
             
@@ -827,183 +805,10 @@
             setTimeout(updateCountdown, 1000);
         }
         
-        // Start countdown after a short delay to ensure MikroTik auth completes
+        // Start countdown after a short delay
         setTimeout(function() {
-            console.log('Starting Google redirect countdown...');
             updateCountdown();
         }, 2000);
-        
-        // Add click effects to buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            });
-        });
-        
-        // Add hover effects to session items
-        document.querySelectorAll('.session-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
-                this.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(-5px) scale(1)';
-                this.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
-            });
-        });
-        
-        // Add celebration sound effect (optional)
-        function playCelebrationSound() {
-            // Create a simple beep sound using Web Audio API
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-                
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            } catch (e) {
-                // Silent fail if Web Audio API is not supported
-            }
-        }
-        
-        // Play celebration sound after 1 second
-        setTimeout(playCelebrationSound, 1000);
-        
-        // Add dynamic background effects
-        setInterval(() => {
-            const container = document.querySelector('.success-container');
-            if (container) {
-                const randomOpacity = 0.2 + Math.random() * 0.2;
-                container.style.boxShadow = 
-                    '0 30px 60px rgba(0, 0, 0, 0.3), ' +
-                    '0 0 100px rgba(16, 185, 129, ' + randomOpacity + ')';
-            }
-        }, 2000);
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                window.location.href = mikrotikAuthUrl;
-            } else if (e.key === 'Escape') {
-                timeLeft = 0; // Stop countdown
-            }
-        });
-        
-        // Handle page visibility change
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                // Pause countdown when tab is not visible
-                timeLeft += 1;
-            }
-        });
-        
-        // Debug: Check current URL to understand captive portal structure
-        console.log('Success page loaded. Current URL:', window.location.href);
-        console.log('Protocol:', window.location.protocol);
-        console.log('Hostname:', window.location.hostname);
-        console.log('MAC Address from session:', '{$session->mac_address}');
-        console.log('Session status:', '{$session->status}');
-        console.log('User recharge exists:', '{if $user_recharge}YES{else}NO{/if}');
-        {if $user_recharge}
-        console.log('User recharge status:', '{$user_recharge->status}');
-        console.log('User recharge expiration:', '{$user_recharge->expiration}');
-        {/if}
-        
-        // Build proper MikroTik authentication URL with Google as destination
-        function buildMikrotikAuthUrl() {
-            var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
-            var username = '{$mikrotik_username}';
-            var password = '{$mikrotik_password}';
-            var dst = 'https://www.google.com';
-            
-            console.log('=== Building MikroTik Auth URL ===');
-            console.log('Login URL:', loginUrl);
-            console.log('Username (RADIUS):', username);
-            console.log('Password (masked):', password ? '***' + password.slice(-3) : 'NONE');
-            console.log('Destination:', dst);
-            
-            // Build authentication URL with all required parameters
-            var authUrl = loginUrl + '?' + 
-                'username=' + encodeURIComponent(username) + 
-                '&password=' + encodeURIComponent(password) + 
-                '&dst=' + encodeURIComponent(dst);
-            
-            console.log('Final auth URL:', authUrl);
-            return authUrl;
-        }
-        
-        // Authenticate with MikroTik immediately when page loads
-        function authenticateWithMikrotik() {
-            var loginUrl = '{$mikrotik_login_url}' || 'http://192.168.88.1/login';
-            var username = '{$mikrotik_username}';
-            var password = '{$mikrotik_password}';
-            var dst = 'https://www.google.com';
-            
-            console.log('Starting MikroTik authentication...');
-            
-            // Create a hidden iframe to perform authentication
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.style.width = '1px';
-            iframe.style.height = '1px';
-            iframe.onload = function() {
-                console.log('MikroTik authentication iframe loaded');
-                setTimeout(function() {
-                    document.body.removeChild(iframe);
-                }, 1000);
-            };
-            
-            // Build authentication URL
-            var authUrl = loginUrl + '?' + 
-                'username=' + encodeURIComponent(username) + 
-                '&password=' + encodeURIComponent(password) + 
-                '&dst=' + encodeURIComponent(dst);
-            
-            iframe.src = authUrl;
-            document.body.appendChild(iframe);
-            
-            console.log('MikroTik authentication request sent');
-        }
-        
-        // Start authentication immediately
-        authenticateWithMikrotik();
-        
-        // Update the redirect URL to use MikroTik authentication
-        var mikrotikAuthUrl = buildMikrotikAuthUrl();
-        
-        // Update Google link to use MikroTik authentication
-        document.addEventListener('DOMContentLoaded', function() {
-            var googleLink = document.querySelector('a[href="https://google.com"]');
-            if (googleLink) {
-                googleLink.href = mikrotikAuthUrl;
-                console.log('Updated Google link to use MikroTik auth URL');
-            }
-        });
-        
-        // Update debug box if exists
-        setTimeout(function() {
-            var debugBox = document.getElementById('debug-info');
-            if (debugBox) {
-                debugBox.innerHTML += '<br><strong>✅ Auth Status:</strong>';
-                debugBox.innerHTML += '<br>MikroTik: Background auth sent';
-                debugBox.innerHTML += '<br>Redirect: Preparing for Google...';
-            }
-        }, 1000);
     </script>
 </body>
 </html>
