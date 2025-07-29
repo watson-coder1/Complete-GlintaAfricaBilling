@@ -128,7 +128,13 @@ switch ($routes['1']) {
                     ->find_one();
                 
                 if ($existingSession) {
-                    r2(U . 'captive_portal/success/' . $existingSession->session_id, 's', $authCheck['message']);
+                    // Pass MikroTik parameters to success page
+                    $mikrotik_params = http_build_query($_GET);
+                    $redirect_url = U . 'captive_portal/success/' . $existingSession->session_id;
+                    if ($mikrotik_params) {
+                        $redirect_url .= '?' . $mikrotik_params;
+                    }
+                    r2($redirect_url, 's', $authCheck['message']);
                 } else {
                     // Create a success session for the active user
                     $successSession = ORM::for_table('tbl_portal_sessions')->create();
@@ -139,7 +145,13 @@ switch ($routes['1']) {
                     $successSession->created_at = date('Y-m-d H:i:s');
                     $successSession->save();
                     
-                    r2(U . 'captive_portal/success/' . $successSession->session_id, 's', $authCheck['message']);
+                    // Pass MikroTik parameters to success page
+                    $mikrotik_params = http_build_query($_GET);
+                    $redirect_url = U . 'captive_portal/success/' . $successSession->session_id;
+                    if ($mikrotik_params) {
+                        $redirect_url .= '?' . $mikrotik_params;
+                    }
+                    r2($redirect_url, 's', $authCheck['message']);
                 }
                 return;
             }
@@ -778,6 +790,58 @@ switch ($routes['1']) {
         }
         break;
         
+    case 'check':
+        // Check if user has active session and redirect accordingly
+        try {
+            $mac = $_GET['mac'] ?? '';
+            
+            if (empty($mac)) {
+                r2(U . 'captive_portal', 'e', 'MAC address required');
+                return;
+            }
+            
+            // Clean MAC address
+            $mac = strtolower(preg_replace('/[^a-f0-9:]/', '', $mac));
+            
+            // Check for active session
+            $authCheck = EnhancedAuthenticationBlocker::isAuthenticationBlocked($mac, 'check_endpoint');
+            
+            if (isset($authCheck['has_active_session']) && $authCheck['has_active_session']) {
+                // User has active session, redirect to success
+                $existingSession = ORM::for_table('tbl_portal_sessions')
+                    ->where('mac_address', $mac)
+                    ->where_in('status', ['completed', 'active'])
+                    ->order_by_desc('created_at')
+                    ->find_one();
+                
+                if (!$existingSession) {
+                    // Create success session
+                    $existingSession = ORM::for_table('tbl_portal_sessions')->create();
+                    $existingSession->session_id = uniqid('check_', true);
+                    $existingSession->mac_address = $mac;
+                    $existingSession->ip_address = $_SERVER['REMOTE_ADDR'] ?? '';
+                    $existingSession->status = 'completed';
+                    $existingSession->created_at = date('Y-m-d H:i:s');
+                    $existingSession->save();
+                }
+                
+                // Pass MikroTik parameters to success page
+                $mikrotik_params = http_build_query($_GET);
+                $redirect_url = U . 'captive_portal/success/' . $existingSession->session_id;
+                if ($mikrotik_params) {
+                    $redirect_url .= '?' . $mikrotik_params;
+                }
+                r2($redirect_url, 's', 'You have an active internet session');
+            } else {
+                r2(U . 'captive_portal', 'i', 'No active session found. Please make a payment to access the internet.');
+            }
+            
+        } catch (Exception $e) {
+            error_log("Captive Portal Check Error: " . $e->getMessage());
+            r2(U . 'captive_portal', 'e', 'Unable to check session status');
+        }
+        break;
+        
     case 'success':
         // Success page after payment completion
         try {
@@ -924,7 +988,6 @@ switch ($routes['1']) {
                 date('Y-m-d H:i:s') . " SUCCESS PAGE: Displayed for session " . $sessionId . ", should redirect to Google in 10 seconds\n", FILE_APPEND);
             
             $ui->display('captive_portal_success.tpl');
-            r2($mikrotik_params['link-orig'] ?? 'https://google.com', 's', 'Payment successful! Redirecting...');
             
         } catch (Exception $e) {
             error_log("Captive Portal Success Error: " . $e->getMessage());

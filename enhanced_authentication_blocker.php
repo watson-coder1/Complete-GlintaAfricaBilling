@@ -322,19 +322,35 @@ class EnhancedAuthenticationBlocker
     private static function hasActiveSession($mac_address)
     {
         try {
+            // Current datetime for comparison
+            $currentDateTime = date('Y-m-d H:i:s');
+            $currentDate = date('Y-m-d');
+            $currentTime = date('H:i:s');
+            
             $activeSession = ORM::for_table('tbl_user_recharges')
                 ->where('username', $mac_address)
                 ->where('status', 'on')
-                ->where_gt('expiration', date('Y-m-d H:i:s'))
                 ->find_one();
             
             if ($activeSession) {
-                return [
-                    'has_active' => true,
-                    'plan' => $activeSession->namebp,
-                    'expires' => $activeSession->expiration,
-                    'recharge_id' => $activeSession->id()
-                ];
+                // Build the full expiration datetime
+                $expirationDateTime = $activeSession->expiration . ' ' . ($activeSession->time ?: '23:59:59');
+                
+                // Check if the session hasn't expired yet
+                if (strtotime($expirationDateTime) > strtotime($currentDateTime)) {
+                    self::log("ACTIVE SESSION FOUND: {$mac_address} - Plan: {$activeSession->namebp}, Expires: {$expirationDateTime}");
+                    
+                    return [
+                        'has_active' => true,
+                        'plan' => $activeSession->namebp,
+                        'expires' => $expirationDateTime,
+                        'expiration_date' => $activeSession->expiration,
+                        'expiration_time' => $activeSession->time,
+                        'recharge_id' => $activeSession->id()
+                    ];
+                } else {
+                    self::log("EXPIRED SESSION: {$mac_address} - Plan: {$activeSession->namebp}, Expired: {$expirationDateTime}");
+                }
             }
             
             return ['has_active' => false];
