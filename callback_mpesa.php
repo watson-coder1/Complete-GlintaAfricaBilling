@@ -307,6 +307,13 @@ function activate_service_after_payment($payment)
             $recharge->time = $default_time;
         }
         
+        // Final check before save to ensure expiration is set
+        if (empty($recharge->expiration) || $recharge->expiration == null) {
+            $recharge->expiration = date("Y-m-d", strtotime("+1 day"));
+        }
+        if (empty($recharge->time) || $recharge->time == null) {
+            $recharge->time = "23:59:59";
+        }
         _log("Saving recharge record - Customer: {$recharge->customer_id}, Username: {$recharge->username}, Expiration: {$recharge->expiration}, Time: {$recharge->time}", 'M-Pesa', $customer->id);
         
         try {
