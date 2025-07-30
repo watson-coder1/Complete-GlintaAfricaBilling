@@ -26,9 +26,9 @@ try {
     $mac = $_POST['mac'] ?? $_GET['mac'] ?? '';
     $ip = $_POST['ip'] ?? $_GET['ip'] ?? '';
     $dst = $_POST['dst'] ?? $_GET['dst'] ?? 'https://www.google.com';
-    
+
     _log("MikroTik Auth Request - Username: {$username}, MAC: {$mac}, IP: {$ip}, Destination: {$dst}", 'MikroTik-Auth', 0);
-    
+
     if (empty($username) || empty($password)) {
         _log("MikroTik Auth Error: Missing username or password", 'MikroTik-Auth', 0);
         echo json_encode([
@@ -37,14 +37,14 @@ try {
         ]);
         exit();
     }
-    
+
     // Verify RADIUS credentials
     $radiusUser = ORM::for_table('radcheck', 'radius')
         ->where('username', $username)
         ->where('attribute', 'Cleartext-Password')
         ->where('value', $password)
         ->find_one();
-    
+
     if (!$radiusUser) {
         _log("MikroTik Auth Error: Invalid credentials for {$username}", 'MikroTik-Auth', 0);
         echo json_encode([
@@ -53,13 +53,13 @@ try {
         ]);
         exit();
     }
-    
+
     // Check if user has active session
     $activeSession = ORM::for_table('tbl_user_recharges')
         ->where('username', $mac ?: $username)
         ->where('status', 'on')
         ->find_one();
-    
+
     if (!$activeSession) {
         _log("MikroTik Auth Error: No active session for {$username}", 'MikroTik-Auth', 0);
         echo json_encode([
@@ -68,7 +68,7 @@ try {
         ]);
         exit();
     }
-    
+
     // Build expiration datetime and check if not expired
     $expirationDateTime = $activeSession->expiration . ' ' . ($activeSession->time ?: '23:59:59');
     if (strtotime($expirationDateTime) <= time()) {
@@ -79,20 +79,20 @@ try {
         ]);
         exit();
     }
-    
+
     // Authentication successful
     _log("MikroTik Auth Success: {$username} authenticated successfully - Session expires: {$expirationDateTime}", 'MikroTik-Auth', 0);
-    
+
     // For web-based authentication, redirect to destination
     if (isset($_GET['web']) || $_SERVER['REQUEST_METHOD'] === 'GET') {
         // Store successful authentication in session/cookie for tracking
         setcookie('glinta_auth_success', $username, time() + 3600, '/');
-        
+
         // Redirect to destination URL
         header('Location: ' . $dst);
         exit();
     }
-    
+
     // For AJAX requests, return success
     echo json_encode([
         'success' => true,
@@ -101,10 +101,10 @@ try {
         'expires' => $expirationDateTime,
         'plan' => $activeSession->namebp
     ]);
-    
+
 } catch (Exception $e) {
     _log('MikroTik Auth Exception: ' . $e->getMessage(), 'MikroTik-Auth', 0);
-    
+
     echo json_encode([
         'success' => false,
         'message' => 'Authentication error occurred'

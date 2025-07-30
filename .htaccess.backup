@@ -1,0 +1,13 @@
+Options -Indexes
+RewriteEngine On
+
+# Handle file and directory requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Main rewrite rule
+RewriteRule ^(.*)$ index.php?_route=$1 [QSA,L]
+
+# Security rules
+RewriteRule ^system/ - [F]
+RewriteRule ^\.git/ - [F]

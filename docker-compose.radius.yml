@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  freeradius:
+    image: freeradius/freeradius-server:3.2.3
+    container_name: glinta-radius-prod
+    restart: unless-stopped
+    command: -X
+    ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+    volumes:
+      - ./radius-config:/etc/freeradius/3.0
+    networks:
+      - glintaafrica_default
+    environment:
+      - MYSQL_HOST=glinta-mysql-prod
+      - MYSQL_USER=glinta_user
+      - MYSQL_PASSWORD=Glinta2025!
+      - MYSQL_DATABASE=glinta_billing
+
+networks:
+  glintaafrica_default:
+    external: true

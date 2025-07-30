@@ -1,0 +1,50 @@
+sql {
+    driver = "rlm_sql_mysql"
+
+    server = "glinta-mysql-prod"
+    port = 3306
+    login = "glinta_user"
+    password = "Glinta2025!"
+    radius_db = "glinta_billing"
+
+    read_groups = yes
+
+    pool {
+        start = 5
+        min = 5
+        max = 10
+        lifetime = 0
+        idle_timeout = 60
+    }
+
+    client_table = "nas"
+
+    authorize_check_query = "SELECT id, username, attribute, value, op FROM radcheck WHERE username = '%{SQL-User-Name}' ORDER BY id"
+    authorize_reply_query = "SELECT id, username, attribute, value, op FROM radreply WHERE username = '%{SQL-User-Name}' ORDER BY id"
+
+    group_membership_query = "SELECT groupname FROM radusergroup WHERE username = '%{SQL-User-Name}' ORDER BY priority"
+
+    authorize_group_check_query = "SELECT id, groupname, attribute, Value, op FROM radgroupcheck WHERE groupname = '%{SQL-Group}' ORDER BY id"
+    authorize_group_reply_query = "SELECT id, groupname, attribute, value, op FROM radgroupreply WHERE groupname = '%{SQL-Group}' ORDER BY id"
+
+    accounting {
+        reference = "%{tolower:type.%{Acct-Status-Type}.query}"
+
+        type {
+            start {
+                query = "INSERT INTO radacct (acctsessionid, acctuniqueid, username, realm, nasipaddress, nasportid, nasporttype, acctstarttime,
+acctupdatetime, acctstoptime, acctsessiontime, acctauthentic, connectinfo_start, connectinfo_stop, acctinputoctets, acctoutputoctets, calledstationid,
+callingstationid, acctterminatecause, servicetype, framedprotocol, framedipaddress) VALUES ('%{Acct-Session-Id}', '%{Acct-Unique-Session-Id}',
+'%{SQL-User-Name}', '%{Realm}', '%{NAS-IP-Address}', '%{NAS-Port}', '%{NAS-Port-Type}', '%S', '%S', NULL, '0', '%{Acct-Authentic}', '%{Connect-Info}', '',     
+'0', '0', '%{Called-Station-Id}', '%{Calling-Station-Id}', '', '%{Service-Type}', '%{Framed-Protocol}', '%{Framed-IP-Address}')"
+            }
+
+            stop {
+                query = "UPDATE radacct SET acctstoptime = '%S', acctsessiontime = '%{Acct-Session-Time}', acctinputoctets =
+'%{%{Acct-Input-Gigawords}:-0}' << 32 | '%{%{Acct-Input-Octets}:-0}', acctoutputoctets = '%{%{Acct-Output-Gigawords}:-0}' << 32 |
+'%{%{Acct-Output-Octets}:-0}', acctterminatecause = '%{Acct-Terminate-Cause}', connectinfo_stop = '%{Connect-Info}' WHERE acctsessionid =
+'%{Acct-Session-Id}' AND username = '%{SQL-User-Name}' AND nasipaddress = '%{NAS-IP-Address}'"
+            }
+        }
+    }
+}
