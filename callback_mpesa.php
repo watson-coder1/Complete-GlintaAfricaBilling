@@ -236,6 +236,17 @@ function activate_service_after_payment($payment)
         
         // Create user recharge record
         $recharge = ORM::for_table('tbl_user_recharges')->create();
+        
+        // CRITICAL: Set all required fields immediately to prevent null errors
+        $recharge->expiration = date("Y-m-d", strtotime("+1 day"));
+        $recharge->time = "23:59:59";
+        $recharge->status = "on";
+        $recharge->method = "M-Pesa STK Push";
+        $recharge->routers = "";
+        $recharge->type = "Hotspot";
+        $recharge->admin_id = 1;
+        
+        // Set basic fields
         $recharge->customer_id = $customer->id;
         $recharge->username = $payment->username;
         $recharge->plan_id = $payment->plan_id;
@@ -243,12 +254,7 @@ function activate_service_after_payment($payment)
         $recharge->recharged_on = date('Y-m-d');
         $recharge->recharged_time = date('H:i:s');
         
-        // Set default expiration and time first
-        $default_expiration = date('Y-m-d', strtotime('+1 day'));
-        $default_time = '23:59:59';
-        
-        $recharge->expiration = $default_expiration;
-        $recharge->time = $default_time;
+        // Calculate proper expiration based on plan (will override defaults set above)
         
         // Calculate expiration based on plan
         if ($plan && $plan->typebp == 'Limited' && $plan->limit_type == 'Time_Limit') {
@@ -272,26 +278,9 @@ function activate_service_after_payment($payment)
             $recharge->time = '23:59:59';
         }
         
-        // Ensure expiration is always set
-        if (empty($recharge->expiration)) {
-            $recharge->expiration = date('Y-m-d', strtotime('+1 day'));
-            $recharge->time = '23:59:59';
-        }
-        
-        // Set remaining required fields
-        $recharge->status = 'on';
-        $recharge->method = 'M-Pesa STK Push';
+        // Update routers and type based on payment/plan data
         $recharge->routers = $payment->routers ?? '';
         $recharge->type = $plan->type ?? 'Hotspot';
-        $recharge->admin_id = 1; // Set default admin_id
-        
-        // Double check required fields are set
-        if (empty($recharge->expiration)) {
-            $recharge->expiration = $default_expiration;
-        }
-        if (empty($recharge->time)) {
-            $recharge->time = $default_time;
-        }
         
         _log("Saving recharge record - Customer: {$recharge->customer_id}, Username: {$recharge->username}, Expiration: {$recharge->expiration}, Time: {$recharge->time}", 'M-Pesa', $customer->id);
         
