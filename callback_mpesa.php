@@ -250,6 +250,14 @@ function activate_service_after_payment($payment)
 
         // Create user recharge record
         $recharge = ORM::for_table('tbl_user_recharges')->create();
+        // CRITICAL: Set default values immediately to prevent null errors
+        $recharge->expiration = date("Y-m-d", strtotime("+1 day"));
+        $recharge->time = "23:59:59";
+        $recharge->status = "on";
+        $recharge->method = "M-Pesa STK Push";
+        $recharge->routers = "";
+        $recharge->type = "Hotspot";
+        $recharge->admin_id = 1;
         $recharge->customer_id = $customer->id;
         $recharge->username = $payment->username;
         $recharge->plan_id = $payment->plan_id;
@@ -520,3 +528,12 @@ function activate_pppoe_service($customer, $plan, $recharge)
         return false;
     }
 }
+// Add this debug log right before line 320 (before $recharge->save())
+_log("DEBUG - Fields before save: customer_id=" . $recharge->customer_id .
+     ", username=" . $recharge->username .
+     ", plan_id=" . $recharge->plan_id .
+     ", expiration=" . $recharge->expiration .
+     ", time=" . $recharge->time .
+     ", status=" . $recharge->status .
+     ", method=" . $recharge->method .
+     ", admin_id=" . $recharge->admin_id, 'M-Pesa', $customer->id);
